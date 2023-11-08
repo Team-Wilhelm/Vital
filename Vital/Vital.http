@@ -1,0 +1,6 @@
+@Vital_HostAddress = http://localhost:5261
+
+GET {{Vital_HostAddress}}/
+Accept: application/json
+
+###
