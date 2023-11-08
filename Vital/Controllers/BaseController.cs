@@ -1,9 +1,9 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 
-namespace Vital.Controllers; 
+namespace Vital.Controllers;
 
 [ApiController]
 [Route("[controller]")]
 public class BaseController : ControllerBase {
-    
+
 }

@@ -1,24 +1,20 @@
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Vital.Models.Exception;
-using Vital.Models.Responses;
 
-namespace Vital.Filters; 
+namespace Vital.Filters;
 
-public class ExceptionFilter : IAsyncExceptionFilter
-{
+public class ExceptionFilter : IAsyncExceptionFilter {
     private readonly IHostEnvironment _hostEnvironment;
     private readonly ILogger<ExceptionFilter> _logger;
 
-    public ExceptionFilter(IHostEnvironment hostEnvironment, ILogger<ExceptionFilter> logger)
-    {
+    public ExceptionFilter(IHostEnvironment hostEnvironment, ILogger<ExceptionFilter> logger) {
         _hostEnvironment = hostEnvironment;
         _logger = logger;
     }
 
-    public async Task OnExceptionAsync(ExceptionContext context)
-    {
+    public async Task OnExceptionAsync(ExceptionContext context) {
         context.ExceptionHandled = true;
         const string baseErrorMessage = "Something went wrong";
         var trace = Activity.Current?.Id ?? context?.HttpContext.TraceIdentifier;
@@ -28,10 +24,8 @@ public class ExceptionFilter : IAsyncExceptionFilter
         int statusCode;
         string errorMessage;
 
-        if (exception is AppException appException)
-        {
-            switch (appException)
-            {
+        if (exception is AppException appException) {
+            switch (appException) {
                 case NotFoundException notFoundException:
                     errorCode = "NotFound";
                     statusCode = StatusCodes.Status404NotFound;
@@ -46,9 +40,7 @@ public class ExceptionFilter : IAsyncExceptionFilter
                     errorMessage = "AppException not handled in exception filter";
                     break;
             }
-        }
-        else
-        {
+        } else {
             // Unhandled error
             _logger.LogError(exception, "Unhandled exception");
 
@@ -56,8 +48,7 @@ public class ExceptionFilter : IAsyncExceptionFilter
             statusCode = StatusCodes.Status500InternalServerError;
             errorMessage = exception.Message;
 
-            if (_hostEnvironment.IsDevelopment() || _hostEnvironment.IsStaging())
-            {
+            if (_hostEnvironment.IsDevelopment() || _hostEnvironment.IsStaging()) {
                 errorMessage = exception.Message;
             }
         }

@@ -1,11 +1,9 @@
-using AutoMapper;
+﻿using AutoMapper;
 
-namespace Vital.Extension.Mapping; 
+namespace Vital.Extension.Mapping;
 
-public class MappingProfile : Profile
-{
-    public MappingProfile()
-    {
-        
+public class MappingProfile : Profile {
+    public MappingProfile() {
+
     }
 }

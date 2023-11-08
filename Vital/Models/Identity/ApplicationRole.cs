@@ -1,7 +1,7 @@
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 
-namespace Vital.Models.Identity; 
+namespace Vital.Models.Identity;
 
 public class ApplicationRole : IdentityRole<Guid> {
-    
+
 }

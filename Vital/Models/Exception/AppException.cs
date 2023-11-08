@@ -1,9 +1,7 @@
-namespace Vital.Models.Exception; 
+﻿namespace Vital.Models.Exception;
 
-public abstract class AppException : System.Exception
-{
-    public AppException(string error) : base(error)
-    {
+public abstract class AppException : System.Exception {
+    public AppException(string error) : base(error) {
 
     }
 }
