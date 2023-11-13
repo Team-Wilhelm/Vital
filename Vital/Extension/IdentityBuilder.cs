@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Models.Identity;
 using Vital.Data;
-using Vital.Models.Identity;
 
 namespace Vital.Extension;
 

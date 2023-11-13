@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Vital.Models.Identity;
+using Models.Identity;
 
 namespace Vital.Data;
 
