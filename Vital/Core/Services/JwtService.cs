@@ -1,14 +1,13 @@
-using System.IdentityModel.Tokens.Jwt;
+﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using Vital.Core.Services.Interfaces;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Models.Identity;
 using Vital.Configuration;
+using Vital.Core.Services.Interfaces;
 
-namespace Vital.Core.Services; 
+namespace Vital.Core.Services;
 
 public class JwtService : IJwtService
 {

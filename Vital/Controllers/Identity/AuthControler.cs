@@ -1,11 +1,11 @@
-using Vital.Core.Services.Interfaces;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 using Models.Identity;
 using Models.Responses;
+using Vital.Core.Services.Interfaces;
 
-namespace Vital.Controllers.Identity; 
+namespace Vital.Controllers.Identity;
 
 [Route("/Identity/[controller]")]
 public class AuthController : BaseController
@@ -33,7 +33,8 @@ public class AuthController : BaseController
         }
 
         var user = await _userManager.FindByEmailAsync(request.Email);
-        if (user == null) {
+        if (user == null)
+        {
             throw new Exception("Wrong username or password");
         }
 
