@@ -1,4 +1,6 @@
 ﻿using Infrastructure.Initialize;
+using Vital.Core.Services;
+using Vital.Core.Services.Interfaces;
 
 namespace Vital.Extension;
 
@@ -14,7 +16,7 @@ public static class ServicesAndRepositoryExtension
 
         #region Service
 
-
+        services.AddTransient<IJwtService, JwtService>();
 
         #endregion
 
