@@ -4,9 +4,12 @@ using Vital.Data;
 
 namespace Vital.Extension;
 
-public static class IdentityBuilder {
-    public static IServiceCollection SetupIdentity(this IServiceCollection services) {
-        services.AddIdentityCore<ApplicationUser>(options => {
+public static class IdentityBuilder
+{
+    public static IServiceCollection SetupIdentity(this IServiceCollection services)
+    {
+        services.AddIdentityCore<ApplicationUser>(options =>
+        {
             // Password settings.
             options.Password.RequireDigit = false;
             options.Password.RequireNonAlphanumeric = false;

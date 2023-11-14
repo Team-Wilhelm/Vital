@@ -105,7 +105,6 @@ csharp_style_throw_expression = true:suggestion
 csharp_style_conditional_delegate_call = true:suggestion
 
 # Newline settings
-csharp_new_line_before_open_brace = none
 csharp_new_line_before_else = false
 csharp_new_line_before_catch = false
 csharp_new_line_before_finally = false
