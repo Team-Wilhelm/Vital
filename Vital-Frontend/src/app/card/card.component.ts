@@ -1,9 +1,10 @@
 import {Component, Input, OnInit} from '@angular/core';
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-card',
   template: `
-    <div [ngClass]="getClassList()">
+    <div [ngClass]="getClassList()" (click)="onClick()">
       <div class="card-body">
         <h2 class="card-title">{{cardTitle}}</h2>
         <ng-content></ng-content>
@@ -17,10 +18,11 @@ export class CardComponent implements OnInit {
   @Input() cardTitle: string = '';
   @Input() isTextContent: boolean = true;
   @Input() cardColor: string = '';
+  @Input() redirectLink: string = '';
 
   classList: string[] = [];
 
-  constructor() {
+  constructor(private router: Router) {
 
   }
 
@@ -36,9 +38,17 @@ export class CardComponent implements OnInit {
     } else {
       this.classList.push('bg-card');
     }
+
+    if (this.redirectLink) {
+      this.classList.push('cursor-pointer');
+    }
   }
 
   getClassList() {
     return this.classList.join(' ');
+  }
+
+  onClick(){
+    this.router.navigate([this.redirectLink]);
   }
 }

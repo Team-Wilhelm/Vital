@@ -1,7 +1,9 @@
 <div class="grid grid-cols-6 gap-4 grid-rows-5">
 
   <!-- Upcoming period -->
-  <app-card cardTitle="Your next period" class="col-span-1 row-span-1">
+  <app-card cardTitle="Your next period"
+            class="col-span-1 row-span-1"
+            [redirectLink]="'/analytics'">
     <p> I will display data for the upcoming period. </p>
   </app-card>
 
@@ -28,13 +30,16 @@
   <!-- Analytics -->
   <app-card cardTitle="Analytics"
             class="col-span-2 row-span-1"
+            [redirectLink]="'/analytics'"
   >
     <p>Click here for a detailed overview of your cycle.</p>
   </app-card>
 
   <!-- Current cycle -->
   <app-card cardTitle="Current cycle"
-            class="col-span-4 row-span-1">
+            class="col-span-4 row-span-1"
+            [redirectLink]="'/analytics'"
+  >
     <p>I will display data for the upcoming week.</p>
   </app-card>
 
