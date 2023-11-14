@@ -1,6 +1,6 @@
 # file: .github/workflows/dotnetcore.yml
 
-name: ASP.NET Core - build and test
+name: Vital - build and test
 
 on:
   push:
