@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Models;
+using Models.Days;
 using Models.Identity;
 using Vital.Data;
 
@@ -45,9 +46,70 @@ public class DbInitializer
 
         await _context.Cycles.AddAsync(new Cycle()
         {
-
+            Id = Guid.Parse("2AF6BC6C-B3C0-4E77-97D9-9FA6D36C4A0A"),
+            UserId = Guid.Parse("ADFEAD4C-823B-41E5-9C7E-C84AA04192A4"),
+            StartDate = DateTimeOffset.UtcNow.AddDays(-10),
+            EndDate = DateTimeOffset.UtcNow.AddDays(10)
         });
 
+        // Add cycle days
+        await _context.CycleDays.AddAsync(new CycleDay()
+        {
+            Id = Guid.NewGuid(),
+            UserId = Guid.Parse("ADFEAD4C-823B-41E5-9C7E-C84AA04192A4"),
+            Date = DateTimeOffset.UtcNow,
+            CycleId = Guid.Parse("2AF6BC6C-B3C0-4E77-97D9-9FA6D36C4A0A"),
+            IsPeriodDay = true
+        });
+        await _context.CycleDays.AddAsync(new CycleDay()
+        {
+            Id = Guid.NewGuid(),
+            UserId = Guid.Parse("ADFEAD4C-823B-41E5-9C7E-C84AA04192A4"),
+            Date = DateTimeOffset.UtcNow.AddDays(-1),
+            CycleId = Guid.Parse("2AF6BC6C-B3C0-4E77-97D9-9FA6D36C4A0A"),
+            IsPeriodDay = true
+        });
+        await _context.CycleDays.AddAsync(new CycleDay()
+        {
+            Id = Guid.NewGuid(),
+            UserId = Guid.Parse("ADFEAD4C-823B-41E5-9C7E-C84AA04192A4"),
+            Date = DateTimeOffset.UtcNow.AddDays(-2),
+            CycleId = Guid.Parse("2AF6BC6C-B3C0-4E77-97D9-9FA6D36C4A0A"),
+            IsPeriodDay = true
+        });
+        await _context.CycleDays.AddAsync(new CycleDay()
+        {
+            Id = Guid.NewGuid(),
+            UserId = Guid.Parse("ADFEAD4C-823B-41E5-9C7E-C84AA04192A4"),
+            Date = DateTimeOffset.UtcNow.AddDays(-3),
+            CycleId = Guid.Parse("2AF6BC6C-B3C0-4E77-97D9-9FA6D36C4A0A"),
+            IsPeriodDay = true
+            
+        });
+        await _context.CycleDays.AddAsync(new CycleDay()
+        {
+            Id = Guid.NewGuid(),
+            UserId = Guid.Parse("ADFEAD4C-823B-41E5-9C7E-C84AA04192A4"),
+            Date = DateTimeOffset.UtcNow.AddDays(-4),
+            CycleId = Guid.Parse("2AF6BC6C-B3C0-4E77-97D9-9FA6D36C4A0A"),
+            IsPeriodDay = true
+        });
+        await _context.CycleDays.AddAsync(new CycleDay()
+        {
+            Id = Guid.NewGuid(),
+            UserId = Guid.Parse("ADFEAD4C-823B-41E5-9C7E-C84AA04192A4"),
+            Date = DateTimeOffset.UtcNow.AddDays(-5),
+            CycleId = Guid.Parse("2AF6BC6C-B3C0-4E77-97D9-9FA6D36C4A0A"),
+            IsPeriodDay = false
+        });
+        await _context.CycleDays.AddAsync(new CycleDay()
+        {
+            Id = Guid.NewGuid(),
+            UserId = Guid.Parse("ADFEAD4C-823B-41E5-9C7E-C84AA04192A4"),
+            Date = DateTimeOffset.UtcNow.AddDays(-6),
+            CycleId = Guid.Parse("2AF6BC6C-B3C0-4E77-97D9-9FA6D36C4A0A"),
+            IsPeriodDay = false
+        });
 
         await _context.SaveChangesAsync();
     }
