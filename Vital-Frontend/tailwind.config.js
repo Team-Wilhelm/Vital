@@ -8,7 +8,9 @@ module.exports = {
       colors: {
         'background' : '#EFEAE6',
         'yellow-accent': '#EEAF3A',
+        'green-accent' : '#82B09E',
         'card' : '#FAF7F5',
+        'card-hover' : '#ffffff',
       },
     },
     container: {
