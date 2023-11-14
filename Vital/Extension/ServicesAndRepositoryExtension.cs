@@ -1,4 +1,6 @@
-﻿namespace Vital.Extension;
+﻿using Infrastructure.Initialize;
+
+namespace Vital.Extension;
 
 public static class ServicesAndRepositoryExtension {
     public static IServiceCollection AddServicesAndRepositories(this IServiceCollection services) {
@@ -13,6 +15,8 @@ public static class ServicesAndRepositoryExtension {
 
 
         #endregion
+
+        services.AddScoped<DbInitializer>();
 
         return services;
     }

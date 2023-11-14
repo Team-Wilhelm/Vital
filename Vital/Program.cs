@@ -2,6 +2,7 @@
 using System.Text;
 using System.Text.Json.Serialization;
 using FluentValidation.AspNetCore;
+using Infrastructure.Initialize;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -139,6 +140,16 @@ app.UseSerilogRequestLogging(options => {
             diagnosticContext.Set("UserAgent", httpContext.Request.Headers.UserAgent);
         };
 });
+
+if (app.Environment.IsDevelopment())
+{
+    if (args.Contains("db-init") || args.Contains("--db-init"))
+    {
+        using var scope = app.Services.CreateScope();
+        var dbInitializer = scope.ServiceProvider.GetRequiredService<DbInitializer>();
+        await dbInitializer.Init();
+    }
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment()) {
