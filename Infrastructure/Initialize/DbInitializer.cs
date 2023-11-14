@@ -1,9 +1,9 @@
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Models;
 using Models.Identity;
 using Vital.Data;
 
-namespace Infrastructure.Initialize; 
+namespace Infrastructure.Initialize;
 
 public class DbInitializer
 {
@@ -24,7 +24,7 @@ public class DbInitializer
         // to ensure that database is empty
         _context.Database.EnsureDeleted();
         _context.Database.EnsureCreated();
-        
+
         if (_roleManager.Roles.SingleOrDefault(r => r.Name == "User") == null)
         {
             await _roleManager.CreateAsync(new ApplicationRole
@@ -32,7 +32,7 @@ public class DbInitializer
                 Name = "User"
             });
         }
-        
+
         var user = new ApplicationUser()
         {
             Id = Guid.Parse("ADFEAD4C-823B-41E5-9C7E-C84AA04192A4"),
@@ -43,11 +43,12 @@ public class DbInitializer
         await _userManager.CreateAsync(user, "P@ssw0rd.+");
         await _userManager.AddToRoleAsync(user, "User");
 
-        await _context.Cycles.AddAsync(new Cycle() {
-            
+        await _context.Cycles.AddAsync(new Cycle()
+        {
+
         });
-        
-        
+
+
         await _context.SaveChangesAsync();
     }
 }

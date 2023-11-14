@@ -6,16 +6,18 @@ using Models.Identity;
 
 namespace Vital.Data;
 
-public class ApplicationDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, Guid> {
+public class ApplicationDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, Guid>
+{
     // Data models
 
     public DbSet<Cycle> Cycles { get; set; }
     public DbSet<CycleDay> CycleDays { get; set; }
     public DbSet<MenopauseDay> MenopauseDays { get; set; }
     public DbSet<PregnancyDay> PregnancyDays { get; set; }
-    
+
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
-        : base(options) {
+        : base(options)
+    {
 
     }
 
@@ -23,7 +25,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
     {
         modelBuilder.Entity<CalendarDay>()
             .HasDiscriminator(b => b.State);
-        
+
         base.OnModelCreating(modelBuilder);
     }
 }

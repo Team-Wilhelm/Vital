@@ -1,7 +1,8 @@
 ﻿using Models.Days;
 
-namespace Models; 
+namespace Models;
 
-public class Period {
+public class Period
+{
     public List<CycleDay> CycleDays { get; set; }
 }

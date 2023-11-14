@@ -187,4 +187,6 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+app.MapPost("/hc", () => Results.Ok());
+
 app.Run();

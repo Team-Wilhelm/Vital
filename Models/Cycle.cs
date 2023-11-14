@@ -2,9 +2,10 @@
 using Models.Days;
 using Models.Identity;
 
-namespace Models; 
+namespace Models;
 
-public class Cycle {
+public class Cycle
+{
     public Guid Id { get; set; }
     public DateTimeOffset StartDate { get; set; }
     public DateTimeOffset EndDate { get; set; }

@@ -1,9 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Models.Days;
+﻿using Models.Days;
 
-namespace Models; 
+namespace Models;
 
-public class Metrics {
+public class Metrics
+{
     public Guid Id { get; set; }
     public List<CalendarDay> CalendarDays { get; set; }
     /// <example>Headache</example>
