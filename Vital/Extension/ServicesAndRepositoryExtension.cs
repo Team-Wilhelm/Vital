@@ -1,7 +1,13 @@
-﻿namespace Vital.Extension;
+﻿using Infrastructure.Initialize;
+using Vital.Core.Services;
+using Vital.Core.Services.Interfaces;
 
-public static class ServicesAndRepositoryExtension {
-    public static IServiceCollection AddServicesAndRepositories(this IServiceCollection services) {
+namespace Vital.Extension;
+
+public static class ServicesAndRepositoryExtension
+{
+    public static IServiceCollection AddServicesAndRepositories(this IServiceCollection services)
+    {
         #region Repository
 
 
@@ -10,9 +16,11 @@ public static class ServicesAndRepositoryExtension {
 
         #region Service
 
-
+        services.AddTransient<IJwtService, JwtService>();
 
         #endregion
+
+        services.AddScoped<DbInitializer>();
 
         return services;
     }

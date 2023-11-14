@@ -2,6 +2,7 @@
 
 namespace Models.Identity;
 
-public class ApplicationUser : IdentityUser<Guid> {
+public class ApplicationUser : IdentityUser<Guid>
+{
 
 }

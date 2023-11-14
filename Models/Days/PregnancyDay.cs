@@ -1,5 +1,6 @@
-﻿namespace Models.Days; 
+﻿namespace Models.Days;
 
-public class PregnancyDay : CalendarDay {
-    
+public class PregnancyDay : CalendarDay
+{
+
 }
