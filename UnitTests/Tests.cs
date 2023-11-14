@@ -1,14 +1,12 @@
 ﻿using NUnit.Framework;
 
-namespace UnitTests
+namespace UnitTests;
+
+public class Tests
 {
-    [TestFixture]
-    public class Tests
+    [Test]
+    public void Test1()
     {
-        [Test]
-        public void Test1()
-        {
-            Assert.True(true);
-        }
+        Assert.True(true);
     }
 }
