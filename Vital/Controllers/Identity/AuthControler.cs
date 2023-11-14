@@ -43,6 +43,12 @@ public class AuthController : BaseController
         {
             throw new Exception("Wrong username or password");
         }
+
+        if (!user.EmailConfirmed)
+        {
+            throw new Exception("Email is not confirmed");
+        }
+        
         var roles = await _userManager.GetRolesAsync(user);
         var token = _jwtService.GenerateJwtToken(user, roles, null);
         return Ok(new AuthResponse()
@@ -52,5 +58,34 @@ public class AuthController : BaseController
             Token = token,
             Roles = roles.ToList()
         });
+    }
+    
+    /// <summary>
+    /// Register user
+    /// </summary>
+    /// <param name="request"></param>
+    /// <returns></returns>
+    /// <exception cref="Exception"></exception>
+    [HttpPost("Register")]
+    public async Task<IActionResult> Register([FromBody] RegisterRequest request)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
+        var user = new ApplicationUser()
+        {
+            Email = request.Email,
+            UserName = request.Email
+        };
+
+        var result = await _userManager.CreateAsync(user, request.Password);
+        if (!result.Succeeded)
+        {
+            throw new Exception("Cannot create user");
+        }
+
+        return Ok();
     }
 }
