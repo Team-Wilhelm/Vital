@@ -1,19 +1,44 @@
-import {Component, Input, OnChanges, SimpleChanges} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 
 @Component({
   selector: 'app-card',
   template: `
-    <div class="card bg-card text-primary-content h-full w-full">
+    <div [ngClass]="getClassList()">
       <div class="card-body">
         <h2 class="card-title">{{cardTitle}}</h2>
-        <p>{{cardBody}}</p>
+        <ng-content></ng-content>
       </div>
     </div>
   `
 })
 
-export class CardComponent {
+export class CardComponent implements OnInit {
   title = 'card';
-  @Input() cardTitle: string = 'card title';
-  @Input() cardBody: string = 'card body';
+  @Input() cardTitle: string = '';
+  @Input() isTextContent: boolean = true;
+  @Input() cardColor: string = '';
+
+  classList: string[] = [];
+
+  constructor() {
+
+  }
+
+  ngOnInit() {
+    this.classList.push('card', 'h-full', 'w-full');
+
+    if (this.isTextContent) {
+      this.classList.push('text-primary-content');
+    }
+
+    if (this.cardColor) {
+      this.classList.push(this.cardColor);
+    } else {
+      this.classList.push('bg-card');
+    }
+  }
+
+  getClassList() {
+    return this.classList.join(' ');
+  }
 }

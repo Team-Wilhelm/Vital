@@ -1,20 +1,21 @@
 <div class="grid grid-cols-6 gap-4 grid-rows-5">
 
-    <!-- Upcoming period -->
-  <app-card cardTitle="Your next period:"
-            cardBody="Your next period is likely to start in the next 5 days."
-  />
+  <!-- Upcoming period -->
+  <app-card cardTitle="Your next period" class="col-span-1 row-span-1">
+    <p> I will display data for the upcoming period. </p>
+  </app-card>
 
   <!-- Hot water bottle mascot -->
-  <div class="card bg-yellow-accent col-span-1 row-span-1">
-    <figure><img src="assets/hot-water-bottle.png" alt="Mascot" /></figure>
-  </div>
+  <app-card [isTextContent]="false" cardColor="bg-yellow-accent">
+    <figure><img src="assets/hot-water-bottle.png" alt="hot water bottle mascot"/></figure>
+  </app-card>
 
   <!-- Metrics -->
   <app-card cardTitle="Metrics"
-            cardBody="Add your metrics here."
             class="col-span-2 row-span-2"
-  />
+  >
+    <p>I will track metrics.</p>
+  </app-card>
 
   <!-- Calendar -->
   <div class="card bg-card text-primary-content col-span-2 row-span-3">
@@ -26,27 +27,26 @@
 
   <!-- Analytics -->
   <app-card cardTitle="Analytics"
-            cardBody="Click here for a detailed overview of your cycle."
             class="col-span-2 row-span-1"
-  />
+  >
+    <p>Click here for a detailed overview of your cycle.</p>
+  </app-card>
 
   <!-- Current cycle -->
   <app-card cardTitle="Current cycle"
-            cardBody="I will display data for the upcoming week."
-            class="col-span-4 row-span-1"
-  />
+            class="col-span-4 row-span-1">
+    <p>I will display data for the upcoming week.</p>
+  </app-card>
 
   <!-- Medications -->
-  <div class="card bg-card text-primary-content col-span-4 row-span-2">
-    <div class="card-body">
-      <h2 class="card-title">Medication</h2>
-      <ul>
-        <li>Medication 1</li>
-        <li>Medication 2</li>
-        <li>Medication 3</li>
-      </ul>
-    </div>
-  </div>
+  <app-card cardTitle="Medication"
+            class="col-span-4 row-span-2">
+    <ul>
+      <li>Medication 1</li>
+      <li>Medication 2</li>
+      <li>Medication 3</li>
+    </ul>
+  </app-card>
 
   <!-- Slay T-rex -->
   <div class="card bg-card col-span-2 row-span-2">
