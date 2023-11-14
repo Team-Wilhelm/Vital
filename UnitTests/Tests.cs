@@ -1,6 +1,4 @@
-﻿using NUnit.Framework;
-
-namespace UnitTests;
+﻿namespace UnitTests;
 
 public class Tests
 {

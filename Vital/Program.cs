@@ -168,7 +168,6 @@ if (app.Environment.IsDevelopment())
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    Console.WriteLine("It is dev");
     app.UseCors("Development");
     app.UseStaticFiles();
     app.UseSwagger();
