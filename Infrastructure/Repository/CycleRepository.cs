@@ -2,6 +2,7 @@
 using Dapper;
 using Infrastructure.Repository.Interface;
 using Models;
+using Models.Days;
 using Models.Pagination;
 
 namespace Infrastructure.Repository;
@@ -25,13 +26,22 @@ public class CycleRepository : ICycleRepository
             PageSize = paginator.ItemsPerPage,
             Offset = (paginator.Page - 1) * paginator.ItemsPerPage
         });
-        return await PaginatedList<Cycle>.CreateAsync(list, paginator.Page, paginator.ItemsPerPage, count);
+
+        var enumerable = list.ToList();
+        enumerable.ToList().ForEach(cycle =>
+        {
+            cycle.CycleDays = GetCycleDaysForCycleAsync(cycle.Id).Result.ToList();
+        });
+        
+        return await PaginatedList<Cycle>.CreateAsync(enumerable, paginator.Page, paginator.ItemsPerPage, count);
     }
 
     public async Task<Cycle?> GetById(Guid id)
     {
         var sql = @"SELECT * FROM ""Cycles"" WHERE ""Id""=@id";
-        return await _db.QuerySingleOrDefaultAsync<Cycle>(sql, new { id });
+        var cycle = await _db.QuerySingleOrDefaultAsync<Cycle>(sql, new { id });
+        if (cycle != null) cycle.CycleDays = GetCycleDaysForCycleAsync(cycle.Id).Result.ToList();
+        return cycle;
     }
 
     public async Task<Cycle> Create(Cycle cycle)
@@ -56,5 +66,12 @@ public class CycleRepository : ICycleRepository
         });
         
         return cycle;
+    }
+
+    public async Task<IEnumerable<CycleDay>> GetCycleDaysForCycleAsync(Guid cycleId)
+    {
+        var sql = @"SELECT * FROM ""CalendarDay"" WHERE ""CycleId""=@CycleId";
+        var cycleDays = await _db.QueryAsync<CycleDay>(sql, new { CycleId = cycleId });
+        return cycleDays;
     }
 }
