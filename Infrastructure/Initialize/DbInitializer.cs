@@ -2,7 +2,7 @@
 using Models;
 using Models.Days;
 using Models.Identity;
-using Vital.Data;
+using Infrastructure.Data;
 
 namespace Infrastructure.Initialize;
 

@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.Data;
+using System.Reflection;
 using System.Text;
 using System.Text.Json.Serialization;
 using FluentValidation.AspNetCore;
@@ -9,7 +10,8 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Serilog;
 using Vital.Configuration;
-using Vital.Data;
+using Infrastructure.Data;
+using Npgsql;
 using Vital.Extension;
 using Vital.Extension.Mapping;
 using Vital.Filters;
@@ -22,10 +24,19 @@ builder.Host.UseSerilog(
 
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("Jwt"));
 
+// Use PostgreSQL with EF Core for database management
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
     options.UseNpgsql(connectionString ?? throw new Exception("Connection string cannot be null"));
+});
+
+// Use PostgreSQL with Dapper for working with data
+builder.Services.AddScoped<IDbConnection>(container =>
+{
+    var connection = new NpgsqlConnection(connectionString ?? throw new Exception("Connection string cannot be null"));
+    connection.Open();
+    return connection;
 });
 
 builder.Services.SetupIdentity();
