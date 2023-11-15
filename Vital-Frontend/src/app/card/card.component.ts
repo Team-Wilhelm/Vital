@@ -6,7 +6,7 @@ import {Router} from "@angular/router";
   template: `
     <div [ngClass]="getClassList()" (click)="onClick()">
       <div class="card-body">
-        <h2 class="card-title text-3xl">{{cardTitle}}</h2>
+        <h2 class="card-title text-2xl md:text-3xl">{{cardTitle}}</h2>
         <ng-content></ng-content>
       </div>
     </div>
@@ -28,7 +28,7 @@ export class CardComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.classList.push('card', 'h-full', 'w-full', 'shadow-md');
+    this.classList.push('card', 'card-compact', 'md:card-normal', 'h-full', 'w-full', 'shadow-md');
 
     if (this.isTextContent) {
       this.classList.push('text-primary-content');

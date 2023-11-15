@@ -1,7 +1,15 @@
-<div class="grid grid-cols-6 gap-4 grid-rows-5">
+<div class="lg:grid
+lg:grid-cols-6
+lg:grid-rows-5
+lg:gap-4
+
+flex flex-col
+justify-between
+min-h-[830px]
+">
 
   <!-- Upcoming period -->
-  <app-card class="col-span-1 row-span-1"
+  <app-card class="lg:col-span-1 lg:row-span-1 hidden lg:flex"
             [redirectLink]="'/analytics'"
             [compact]="true"
   >
@@ -16,27 +24,24 @@
   </app-card>
 
   <!-- Hot water bottle mascot -->
-  <app-card [isTextContent]="false" cardColor="bg-yellow-accent" [compact]="true">
+  <app-card [isTextContent]="false" cardColor="bg-yellow-accent" [compact]="true" class="hidden lg:flex">
     <figure><img src="assets/hot-water-bottle.png" alt="hot water bottle mascot"/></figure>
   </app-card>
 
   <!-- Metrics -->
   <app-card cardTitle="Metrics"
-            class="col-span-2 row-span-2">
+            class="lg:col-span-2 lg:row-span-2 order-4">
     <p>I will track metrics.</p>
   </app-card>
 
   <!-- Calendar -->
-  <div class="card bg-card text-primary-content col-span-2 row-span-3">
-    <div class="card-body">
-      <h2 class="card-title">I am a calendar</h2>
-      <p>Click here for a detailed overview of your cycle.</p>
-    </div>
-  </div>
+  <app-card class="text-primary-content lg:col-span-2 lg:row-span-3 order-2" cardTitle="Calendar">
+    <p class="min-h-[230px]">I am a calendar</p>
+  </app-card>
 
   <!-- Analytics -->
   <app-card cardTitle="Analytics"
-            class="col-span-2 row-span-1"
+            class="lg:col-span-2 lg:row-span-1 hidden lg:flex"
             [redirectLink]="'/analytics'"
   >
     <p>Click here for a detailed overview of your cycle.</p>
@@ -44,10 +49,11 @@
 
   <!-- Current cycle -->
   <app-card cardTitle="Current cycle"
-            class="col-span-4 row-span-1"
+            class="lg:col-span-4 lg:row-span-1 order-1
+            max-h-64 overflow-x-scroll"
             [redirectLink]="'/analytics'"
   >
-    <div class="pt-5 flex justify-between">
+    <div class="md:pt-5 flex justify-between">
       <app-current-cycle></app-current-cycle>
       <app-current-cycle></app-current-cycle>
       <app-current-cycle></app-current-cycle>
@@ -60,15 +66,15 @@
 
   <!-- Medications -->
   <app-card cardTitle="Medication"
-            class="col-span-4 row-span-2">
+            class="lg:col-span-4 lg:row-span-2 order-3">
 
-    <div class="flex-col h-full justify-between overflow-scroll">
+    <div class="flex-col h-full justify-between max-h-[300px] overflow-y-scroll">
         <medication-list-item *ngFor="let number of [1,2,3]" medicationName="Lexaurin" medicationDosage="{{number}}" medicationTime="22:22" [listIndex]="number" />
     </div>
   </app-card>
 
   <!-- Slay T-rex -->
-  <div class="card bg-card col-span-2 row-span-2">
+  <div class="card bg-card hidden lg:flex lg:col-span-2 lg:row-span-2">
     <figure><img src="assets/OIG.png" alt="Slay T-rex"/></figure>
   </div>
 

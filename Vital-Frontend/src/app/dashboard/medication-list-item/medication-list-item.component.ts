@@ -4,8 +4,8 @@ import {Component, Input, OnInit} from '@angular/core';
   selector: 'medication-list-item',
   template: `
       <div [ngClass]="classString">
-        <div class="flex-col">
-          <p class="font-bold">{{medicationName}}</p>
+        <div class="flex md:flex-col">
+          <p class="font-bold pe-3 md:p-0">{{medicationName}}</p>
           <p>{{medicationDosage}}</p>
         </div>
 
