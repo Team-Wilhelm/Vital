@@ -23,4 +23,20 @@ public interface ICycleRepository
     /// <returns>A task that represents the asynchronous operation. 
     /// The task result contains a Cycle object, or null if no objects were found with the provided ID.</returns>
     Task<Cycle?> GetById(Guid id);
+    
+    /// <summary>
+    /// Creates a new Cycle object in the database.
+    /// </summary>
+    /// <param name="cycle">The Cycle object that should be added to the database.</param>
+    /// <returns>A task that represents the asynchronous operation. 
+    /// The task result contains the Cycle object that was added.</returns>
+    Task<Cycle> Create(Cycle cycle);
+    
+    /// <summary>
+    /// Updates an existing Cycle object in the database with new values.
+    /// </summary>
+    /// <param name="cycle">The Cycle object containing the updated values.</param>
+    /// <returns>A task that represents the asynchronous operation. 
+    /// The task result contains the updated Cycle object.</returns>
+    Task<Cycle> Update(Cycle cycle);
 }

@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Models;
 using Models.Dto;
@@ -12,7 +13,7 @@ namespace Vital.Controllers;
 /// <summary>
 /// Controller responsible for accessing Cycle data.
 /// </summary>
-//[Authorize]
+[Authorize]
 public class CycleController : BaseController
 {
     private readonly ICycleService _cycleService;
@@ -54,4 +55,33 @@ public class CycleController : BaseController
 
         return Ok(cycle);
     }
+    
+    /// <summary>
+    /// Creates a new Cycle object with the specified details.
+    /// </summary>
+    /// <param name="dto">A CreateCycleDto object containing the details for the new Cycle object.</param>
+    [HttpPost]
+    [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(Cycle))]
+    public async Task<IActionResult> Create([FromBody] CreateCycleDto dto)
+    {
+        var cycle = await _cycleService.Create(dto);
+
+        return Created("", cycle);
+    }
+
+    /// <summary>
+    /// Updates an existing Cycle object with new values.
+    /// </summary>
+    /// <param name="id">The unique identifier of the Cycle object to be updated.</param>
+    /// <param name="dto">A UpdateCycleDto object containing the updated values.</param>
+    [HttpPut("{id:guid}")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Cycle))]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Update(Guid id, [FromBody] UpdateCycleDto dto)
+    {
+        var cycle = await _cycleService.Update(id, dto);
+
+        return Ok(cycle);
+    }
+    
 }

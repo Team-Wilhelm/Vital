@@ -30,8 +30,31 @@ public class CycleRepository : ICycleRepository
 
     public async Task<Cycle?> GetById(Guid id)
     {
-        var sql = @"SELECT * FROM Cycles WHERE Id=@id";
+        var sql = @"SELECT * FROM ""Cycles"" WHERE ""Id""=@id";
         return await _db.QuerySingleOrDefaultAsync<Cycle>(sql, new { id });
     }
 
+    public async Task<Cycle> Create(Cycle cycle)
+    {
+        var sql = @"INSERT INTO ""Cycles"" (""Id"", ""StartDate"", ""EndDate"", ""UserId"") 
+                VALUES (@Id, @StartDate, @EndDate, @UserId)";
+
+        await _db.ExecuteAsync(sql, cycle);
+    
+        return cycle;
+    }
+
+    public async Task<Cycle> Update(Cycle cycle)
+    {
+        var sql = @"UPDATE ""Cycles"" SET ""StartDate""=@StartDate, ""EndDate""=@EndDate WHERE ""Id""=@Id";
+        
+        await _db.ExecuteAsync(sql, new
+        {
+            cycle.Id,
+            cycle.StartDate,
+            cycle.EndDate
+        });
+        
+        return cycle;
+    }
 }

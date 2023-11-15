@@ -1,4 +1,5 @@
 ﻿using Models;
+using Models.Dto;
 using Models.Pagination;
 
 namespace Vital.Core.Services.Interfaces;
@@ -23,4 +24,21 @@ public interface ICycleService
     /// <returns>A task that represents the asynchronous operation. 
     /// The task result contains a Cycle object, or null if no objects were found with the provided ID.</returns>
     Task<Cycle?> GetById(Guid id);
+    
+    /// <summary>
+    /// Creates a new Cycle object with the specified details.
+    /// </summary>
+    /// <param name="dto">A CreateCycleDto object containing the details for the new Cycle object.</param>
+    /// <returns>A task that represents the asynchronous operation. 
+    /// The task result contains the Cycle object that was added.</returns>
+    Task<Cycle> Create(CreateCycleDto dto);
+
+    /// <summary>
+    /// Updates an existing Cycle object with new values.
+    /// </summary>
+    /// <param name="id">The unique identifier of the Cycle object to be updated.</param>
+    /// <param name="dto">An UpdateCycleDto object containing the updated values.</param>
+    /// <returns>A task that represents the asynchronous operation. 
+    /// The task result contains the updated Cycle object.</returns>
+    Task<Cycle> Update(Guid id, UpdateCycleDto dto);
 }
