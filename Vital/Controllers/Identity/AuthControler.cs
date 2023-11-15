@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
+using Models.Dto.Identity;
 using Models.Identity;
 using Models.Responses;
 using Vital.Core.Services.Interfaces;
@@ -25,7 +26,7 @@ public class AuthController : BaseController
     /// <param name="request"></param>
     /// <returns></returns>
     [HttpPost("Login")]
-    public async Task<IActionResult> Login([FromBody] LoginRequest request)
+    public async Task<IActionResult> Login([FromBody] LoginRequestDto request)
     {
         if (!ModelState.IsValid)
         {
@@ -63,24 +64,25 @@ public class AuthController : BaseController
     /// <summary>
     /// Register user
     /// </summary>
-    /// <param name="request"></param>
+    /// <param name="requestDto"></param>
     /// <returns></returns>
     /// <exception cref="Exception"></exception>
     [HttpPost("Register")]
-    public async Task<IActionResult> Register([FromBody] RegisterRequest request)
+    public async Task<IActionResult> Register([FromBody] RegisterRequestDto requestDto)
     {
         if (!ModelState.IsValid)
         {
             return BadRequest(ModelState);
         }
+        
 
         var user = new ApplicationUser()
         {
-            Email = request.Email,
-            UserName = request.Email
+            Email = requestDto.Email,
+            UserName = requestDto.Email
         };
 
-        var result = await _userManager.CreateAsync(user, request.Password);
+        var result = await _userManager.CreateAsync(user, requestDto.Password);
         if (!result.Succeeded)
         {
             throw new Exception("Cannot create user");

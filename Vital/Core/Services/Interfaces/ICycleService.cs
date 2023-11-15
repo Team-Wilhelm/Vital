@@ -1,5 +1,6 @@
 ﻿using Models;
 using Models.Dto;
+using Models.Dto.Cycle;
 using Models.Pagination;
 
 namespace Vital.Core.Services.Interfaces;
