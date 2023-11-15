@@ -1,4 +1,4 @@
-using AutoMapper;
+﻿using AutoMapper;
 using Models.Pagination;
 
 namespace Vital.Extension.Mapping;

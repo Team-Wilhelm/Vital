@@ -1,4 +1,4 @@
-using Models;
+﻿using Models;
 using Models.Pagination;
 
 namespace Vital.Core.Services.Interfaces;

@@ -1,5 +1,4 @@
-using AutoMapper;
-using Microsoft.AspNetCore.Authorization;
+﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Models;
 using Models.Dto;
@@ -23,7 +22,7 @@ public class CycleController : BaseController
     {
         _cycleService = cycleService;
         _mapper = mapper;
-    } 
+    }
 
     /// <summary>
     /// Retrieves a paginated list of Cycle objects.
@@ -33,9 +32,9 @@ public class CycleController : BaseController
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(PaginatedList<Cycle>))]
     public async Task<IActionResult> GetAll([FromQuery] Paginator paginator)
     {
-       var list = await  _cycleService.Get(paginator);
+        var list = await _cycleService.Get(paginator);
 
-       return Ok(_mapper.MapPaginatedList<Cycle,CycleDto>(list));
+        return Ok(_mapper.MapPaginatedList<Cycle, CycleDto>(list));
     }
 
     /// <summary>

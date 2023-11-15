@@ -1,4 +1,4 @@
-using Infrastructure.Repository.Interface;
+﻿using Infrastructure.Repository.Interface;
 using Models;
 using Models.Pagination;
 using Vital.Core.Services.Interfaces;
@@ -13,12 +13,12 @@ public class CycleService : ICycleService
     {
         _cycleRepository = cycleRepository;
     }
-    
+
     public async Task<PaginatedList<Cycle>> Get(Paginator paginator)
     {
         return await _cycleRepository.Get(paginator);
     }
-    
+
     public async Task<Cycle?> GetById(Guid id)
     {
         return await _cycleRepository.GetById(id);

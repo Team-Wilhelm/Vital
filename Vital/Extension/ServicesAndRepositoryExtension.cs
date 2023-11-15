@@ -23,7 +23,7 @@ public static class ServicesAndRepositoryExtension
         services.AddTransient<IJwtService, JwtService>();
 
         #endregion
-        
+
         services.AddScoped<CurrentContext>();
 
         services.AddScoped<DbInitializer>();

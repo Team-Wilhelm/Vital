@@ -1,4 +1,4 @@
-using System.Data;
+﻿using System.Data;
 using Dapper;
 using Infrastructure.Repository.Interface;
 using Models;
@@ -14,7 +14,7 @@ public class CycleRepository : ICycleRepository
     {
         _db = db;
     }
-    
+
     public async Task<PaginatedList<Cycle>> Get(Paginator paginator)
     {
         var sql = @"SELECT * FROM ""Cycles""
@@ -31,7 +31,7 @@ public class CycleRepository : ICycleRepository
     public async Task<Cycle?> GetById(Guid id)
     {
         var sql = @"SELECT * FROM Cycles WHERE Id=@id";
-        return await _db.QuerySingleOrDefaultAsync<Cycle>(sql, new {id});
+        return await _db.QuerySingleOrDefaultAsync<Cycle>(sql, new { id });
     }
-    
+
 }
