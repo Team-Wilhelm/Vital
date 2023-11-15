@@ -48,7 +48,7 @@ public class AuthController : BaseController
         {
             throw new Exception("Email is not confirmed");
         }
-        
+
         var roles = await _userManager.GetRolesAsync(user);
         var token = _jwtService.GenerateJwtToken(user, roles, null);
         return Ok(new AuthResponse()
@@ -59,7 +59,7 @@ public class AuthController : BaseController
             Roles = roles.ToList()
         });
     }
-    
+
     /// <summary>
     /// Register user
     /// </summary>

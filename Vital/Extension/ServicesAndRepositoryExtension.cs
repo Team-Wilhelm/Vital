@@ -1,4 +1,7 @@
 ﻿using Infrastructure.Initialize;
+using Infrastructure.Repository;
+using Infrastructure.Repository.Interface;
+using Vital.Core.Context;
 using Vital.Core.Services;
 using Vital.Core.Services.Interfaces;
 
@@ -10,15 +13,18 @@ public static class ServicesAndRepositoryExtension
     {
         #region Repository
 
-
+        services.AddScoped<ICycleRepository, CycleRepository>();
 
         #endregion
 
         #region Service
 
+        services.AddScoped<ICycleService, CycleService>();
         services.AddTransient<IJwtService, JwtService>();
 
         #endregion
+
+        services.AddScoped<CurrentContext>();
 
         services.AddScoped<DbInitializer>();
 

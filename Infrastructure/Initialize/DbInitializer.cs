@@ -1,8 +1,8 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Infrastructure.Data;
+using Microsoft.AspNetCore.Identity;
 using Models;
 using Models.Days;
 using Models.Identity;
-using Vital.Data;
 
 namespace Infrastructure.Initialize;
 
@@ -84,7 +84,7 @@ public class DbInitializer
             Date = DateTimeOffset.UtcNow.AddDays(-3),
             CycleId = Guid.Parse("2AF6BC6C-B3C0-4E77-97D9-9FA6D36C4A0A"),
             IsPeriodDay = true
-            
+
         });
         await _context.CycleDays.AddAsync(new CycleDay()
         {
