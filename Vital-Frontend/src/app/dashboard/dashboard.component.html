@@ -56,13 +56,9 @@ md:min-h-[calc(100vh-5rem)]
             [redirectLink]="'/analytics'"
   >
     <div class="flex h-full justify-between items-center">
-      <app-current-cycle></app-current-cycle>
-      <app-current-cycle></app-current-cycle>
-      <app-current-cycle></app-current-cycle>
-      <app-current-cycle></app-current-cycle>
-      <app-current-cycle></app-current-cycle>
-      <app-current-cycle></app-current-cycle>
-      <app-current-cycle></app-current-cycle>
+      <app-current-cycle *ngFor="let day of currentCycleDays"
+                         [date]="day.date">
+      </app-current-cycle>
     </div>
   </app-card>
 

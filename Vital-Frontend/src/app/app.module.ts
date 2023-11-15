@@ -9,6 +9,7 @@ import { AnalyticsComponent } from './analytics/analytics.component';
 import {CardComponent} from "./card/card.component";
 import {CurrentCycleComponent} from "./dashboard/current-cycle/current-cycle.component";
 import {MedicationListItemComponent} from "./dashboard/medication-list-item/medication-list-item.component";
+import { HttpClientModule} from "@angular/common/http";
 
 @NgModule({
   declarations: [
@@ -22,7 +23,8 @@ import {MedicationListItemComponent} from "./dashboard/medication-list-item/medi
     imports: [
         BrowserModule,
         AppRoutingModule,
-        NgOptimizedImage
+        NgOptimizedImage,
+      HttpClientModule
     ],
   providers: [],
   bootstrap: [AppComponent]
