@@ -15,11 +15,11 @@ md:min-h-[calc(100vh-5rem)]
             [redirectLink]="'/analytics'"
             [compact]="true"
   >
-    <div class="flex justify-center items-center w-full h-full rounded-full bg-green-accent">
-      <div class="flex justify-center items-center w-4/5 h-4/5 rounded-full bg-green-light-accent text-center">
+    <div class="flex justify-center items-center w-full rounded-full bg-green-accent aspect-square">
+      <div class="flex justify-center items-center w-4/5 rounded-full bg-green-light-accent text-center aspect-square">
         <div class="flex-col">
-          <p class="text-3xl">X days</p>
-          <p class="text-lg">Estimated next period</p>
+          <p class="lg:text-lg xl:text-xl 3xl:text-3xl">X days</p>
+          <p class="text-sm 3xl:text-lg hidden 2xl:block">Estimated next period</p>
         </div>
       </div>
     </div>
@@ -55,7 +55,7 @@ md:min-h-[calc(100vh-5rem)]
             max-h-64 overflow-x-scroll"
             [redirectLink]="'/analytics'"
   >
-    <div class="lg:pt-5 flex justify-between">
+    <div class="flex h-full justify-between items-center">
       <app-current-cycle></app-current-cycle>
       <app-current-cycle></app-current-cycle>
       <app-current-cycle></app-current-cycle>
@@ -75,9 +75,10 @@ md:min-h-[calc(100vh-5rem)]
     </div>
   </app-card>
 
-  <!-- Slay T-rex -->
+  <!-- Slay T-rex
   <div class="card bg-card hidden lg:block lg:col-span-2 lg:row-span-2 lg:order-none">
     <figure><img src="assets/OIG.png" alt="Slay T-rex"/></figure>
   </div>
+  -->
 
 </div>
