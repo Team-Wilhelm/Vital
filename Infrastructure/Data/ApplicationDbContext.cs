@@ -4,7 +4,7 @@ using Models;
 using Models.Days;
 using Models.Identity;
 
-namespace Vital.Data;
+namespace Infrastructure.Data;
 
 public class ApplicationDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, Guid>
 {

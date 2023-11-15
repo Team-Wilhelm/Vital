@@ -19,7 +19,7 @@ public class HealthCheckTests
 
         Assert.True(response.IsSuccessStatusCode);
     }
-    
+
     /// <summary>
     /// Test if the health check endpoint is working
     /// </summary>
@@ -32,7 +32,7 @@ public class HealthCheckTests
         // Check if the default endpoint is working
         var response = await httpClient.PostAsJsonAsync("/hc", new { });
         var isSuccess = !response.IsSuccessStatusCode;
-        
+
         Assert.IsFalse(isSuccess);
     }
 }
