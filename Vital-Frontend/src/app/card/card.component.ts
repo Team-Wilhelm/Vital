@@ -6,7 +6,7 @@ import {Router} from "@angular/router";
   template: `
     <div [ngClass]="getClassList()" (click)="onClick()">
       <div class="card-body">
-        <h2 class="card-title">{{cardTitle}}</h2>
+        <h2 class="card-title text-3xl">{{cardTitle}}</h2>
         <ng-content></ng-content>
       </div>
     </div>

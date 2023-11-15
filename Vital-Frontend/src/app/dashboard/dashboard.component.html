@@ -6,10 +6,10 @@
             [compact]="true"
   >
     <div class="flex justify-center items-center w-full h-full rounded-full bg-green-accent">
-      <div class="flex justify-center items-center w-4/5 h-4/5 rounded-full bg-[#B8DACD] text-center">
+      <div class="flex justify-center items-center w-4/5 h-4/5 rounded-full bg-green-light-accent text-center">
         <div class="flex-col">
-          <p class="text-2xl">X days</p>
-          <p>Until next period</p>
+          <p class="text-3xl">X days</p>
+          <p class="text-lg">Estimated next period</p>
         </div>
       </div>
     </div>
@@ -22,8 +22,7 @@
 
   <!-- Metrics -->
   <app-card cardTitle="Metrics"
-            class="col-span-2 row-span-2"
-  >
+            class="col-span-2 row-span-2">
     <p>I will track metrics.</p>
   </app-card>
 
@@ -48,22 +47,29 @@
             class="col-span-4 row-span-1"
             [redirectLink]="'/analytics'"
   >
-    <p>I will display data for the upcoming week.</p>
+    <div class="pt-5 flex justify-between">
+      <app-current-cycle></app-current-cycle>
+      <app-current-cycle></app-current-cycle>
+      <app-current-cycle></app-current-cycle>
+      <app-current-cycle></app-current-cycle>
+      <app-current-cycle></app-current-cycle>
+      <app-current-cycle></app-current-cycle>
+      <app-current-cycle></app-current-cycle>
+    </div>
   </app-card>
 
   <!-- Medications -->
   <app-card cardTitle="Medication"
             class="col-span-4 row-span-2">
-    <ul>
-      <li>Medication 1</li>
-      <li>Medication 2</li>
-      <li>Medication 3</li>
-    </ul>
+
+    <div class="flex-col h-full justify-between overflow-scroll">
+        <medication-list-item *ngFor="let number of [1,2,3]" medicationName="Lexaurin" medicationDosage="{{number}}" medicationTime="22:22" [listIndex]="number" />
+    </div>
   </app-card>
 
   <!-- Slay T-rex -->
   <div class="card bg-card col-span-2 row-span-2">
-    <figure><img ngSrc="assets/OIG.png" alt="Slay T-rex" height="778" width="778"/></figure>
+    <figure><img src="assets/OIG.png" alt="Slay T-rex"/></figure>
   </div>
 
 </div>

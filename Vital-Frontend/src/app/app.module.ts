@@ -7,13 +7,17 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 import {NgOptimizedImage} from "@angular/common";
 import { AnalyticsComponent } from './analytics/analytics.component';
 import {CardComponent} from "./card/card.component";
+import {CurrentCycleComponent} from "./dashboard/current-cycle/current-cycle.component";
+import {MedicationListItemComponent} from "./dashboard/medication-list-item/medication-list-item.component";
 
 @NgModule({
   declarations: [
     AppComponent,
     DashboardComponent,
     AnalyticsComponent,
-    CardComponent
+    CardComponent,
+    CurrentCycleComponent,
+    MedicationListItemComponent
   ],
     imports: [
         BrowserModule,
