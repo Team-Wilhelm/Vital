@@ -12,6 +12,7 @@ using Serilog;
 using Vital.Configuration;
 using Infrastructure.Data;
 using Npgsql;
+using Vital.Core.Middleware;
 using Vital.Extension;
 using Vital.Extension.Mapping;
 using Vital.Filters;
@@ -198,5 +199,7 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.MapPost("/hc", () => Results.Ok());
+
+app.UseMiddleware<CurrentContextMiddleware>();
 
 app.Run();
