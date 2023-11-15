@@ -3,15 +3,27 @@ import { BrowserModule } from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { DashboardComponent } from './dashboard/dashboard.component';
+import {NgOptimizedImage} from "@angular/common";
+import { AnalyticsComponent } from './analytics/analytics.component';
+import {CardComponent} from "./card/card.component";
+import {CurrentCycleComponent} from "./dashboard/current-cycle/current-cycle.component";
+import {MedicationListItemComponent} from "./dashboard/medication-list-item/medication-list-item.component";
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    DashboardComponent,
+    AnalyticsComponent,
+    CardComponent,
+    CurrentCycleComponent,
+    MedicationListItemComponent
   ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule
-  ],
+    imports: [
+        BrowserModule,
+        AppRoutingModule,
+        NgOptimizedImage
+    ],
   providers: [],
   bootstrap: [AppComponent]
 })
