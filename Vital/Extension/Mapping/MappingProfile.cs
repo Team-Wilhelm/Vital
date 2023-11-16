@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Models;
 using Models.Dto;
+using Models.Dto.Cycle;
 using Models.Pagination;
 
 namespace Vital.Extension.Mapping;
