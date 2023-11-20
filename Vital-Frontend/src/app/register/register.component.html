@@ -1,19 +1,32 @@
 <div class="flex w-full h-full justify-center items-center lg:relative">
-    <app-card cardTitle="Sign Up" [hoverable]="false"
-              class="flex flex-col justify-around
+  <app-card cardTitle="Sign Up" [hoverable]="false"
+            class="flex flex-col justify-around
               lg:absolute lg:top-[20%] lg:right-44"
+  >
+    <p class="mb-3">In order to use Vital, please log in or register.</p>
+    <input type="email" placeholder="E-mail address" class="input bg-background" aria-label="Email"
+           [formControl]="registerForm.controls.email"
+           [class.input-error]="registerForm.controls.email.invalid && registerForm.controls.email.touched"
     >
-        <p class="mb-3">In order to use Vital, please log in or register.</p>
-        <input type="email" placeholder="E-mail address" class="input bg-background" aria-label="Email"
-               [formControl]="registerForm.controls.email"
-               [class.input-error]="registerForm.controls.email.invalid && registerForm.controls.email.touched"
-        >
-        <input type="password" placeholder="Password" class="input bg-background mb-1" aria-label="Password"
-               [formControl]="registerForm.controls.password">
-        <input type="password" placeholder="Repeat password" class="input bg-background mb-1" aria-label="Repeat password"
-               [formControl]="registerForm.controls.repeatPassword">
-        <a href="#" class="text-accent self-end mb-1">Forgot password?</a>
-        <button class="btn btn-accent" (click)="register()">Sign Up</button>
-        <p class="text-center">Already have an account? <a href="javascript:void(0)" class="text-accent">Login</a></p>
-    </app-card>
+    <p [hidden]="!(registerForm.controls.email.invalid && registerForm.controls.email.touched)"
+       class="text-error self-center">Please enter a valid e-mail address.</p>
+    <input type="password" placeholder="Password" class="input bg-background mb-1" aria-label="Password"
+           [formControl]="registerForm.controls.password" #passwordField>
+    <div [hidden]="!passwordField.matches(':focus')">
+      <ul class="list-disc list-inside">
+        <li [ngClass]="{'text-error': !passwordRulesMet.lengthCondition, 'text-success': passwordRulesMet.lengthCondition}">At least 6 characters</li>
+        <li [ngClass]="{'text-error': !passwordRulesMet.uppercaseCondition, 'text-success': passwordRulesMet.uppercaseCondition}">At least 1 uppercase letter</li>
+        <li [ngClass]="{'text-error': !passwordRulesMet.lowercaseCondition, 'text-success': passwordRulesMet.lowercaseCondition}">At least 1 lowercase letter</li>
+        <li [ngClass]="{'text-error': !passwordRulesMet.digitCondition, 'text-success': passwordRulesMet.digitCondition}">At least 1 number</li>
+        <li [ngClass]="{'text-error': !passwordRulesMet.specialCondition, 'text-success': passwordRulesMet.specialCondition}">At least 1 special character</li>
+      </ul>
+    </div>
+    <input type="password" placeholder="Repeat password" class="input bg-background mb-1" aria-label="Repeat password"
+           [formControl]="registerForm.controls.repeatPassword">
+    <p [hidden]="!(registerForm.invalid && registerForm.controls.email.valid && registerForm.controls.password.valid)">
+      Passwords do not match.</p>
+    <a href="#" class="text-accent self-end mb-1">Forgot password?</a>
+    <button class="btn btn-accent" (click)="register()">Sign Up</button>
+    <p class="text-center">Already have an account? <a href="javascript:void(0)" class="text-accent">Login</a></p>
+  </app-card>
 </div>

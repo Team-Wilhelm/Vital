@@ -12,5 +12,14 @@ export function PasswordValidator(control: AbstractControl)  {
     const valid = lengthCondition && digitCondition && lowercaseCondition && uppercaseCondition && specialCondition;
     if (valid) return null;
 
-    return {validPassword: false};
+    return {
+        password: {
+            valid: false,
+            lengthCondition: lengthCondition,
+            digitCondition: digitCondition,
+            lowercaseCondition: lowercaseCondition,
+            uppercaseCondition: uppercaseCondition,
+            specialCondition: specialCondition
+        }
+    }
 }
