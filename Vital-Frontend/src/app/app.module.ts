@@ -15,6 +15,7 @@ import {AuthHttpInterceptor} from "./interceptors/auth-http-interceptor";
 import {TokenService} from "./services/token.service";
 import {CycleService} from "./services/cycle.service";
 import {JWT_OPTIONS, JwtHelperService} from "@auth0/angular-jwt";
+import {ReactiveFormsModule} from "@angular/forms";
 
 @NgModule({
   declarations: [
@@ -26,12 +27,13 @@ import {JWT_OPTIONS, JwtHelperService} from "@auth0/angular-jwt";
     MedicationListItemComponent,
     LoginComponent
   ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    NgOptimizedImage,
-    HttpClientModule,
-  ],
+    imports: [
+        BrowserModule,
+        AppRoutingModule,
+        NgOptimizedImage,
+        HttpClientModule,
+        ReactiveFormsModule,
+    ],
   providers: [
     TokenService,
     CycleService,

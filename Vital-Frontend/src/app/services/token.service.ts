@@ -3,12 +3,11 @@ import {JwtHelperService} from "@auth0/angular-jwt";
 import {environment} from "../../../environments/environment";
 import {HttpClient} from "@angular/common/http";
 import {firstValueFrom} from "rxjs";
+import {LoginDto} from "../interfaces/Utilities";
 
 @Injectable()
 export class TokenService {
   private readonly storage: Storage = window.sessionStorage;
-
-  // store the URL so we can redirect after logging in
 
   constructor(public jwtHelper: JwtHelperService, private httpClient: HttpClient) {
   }
@@ -30,12 +29,8 @@ export class TokenService {
     return !this.jwtHelper.isTokenExpired(token);
   }
 
-  public async login() {
-    const request = this.httpClient.post<any>(environment.baseUrl + '/identity/auth/login',
-      {
-        email: environment.userEmailAddress,
-        password: environment.userPassword
-      });
+  public async login(loginDto: LoginDto) {
+    const request = this.httpClient.post<any>(environment.baseUrl + '/identity/auth/login', loginDto);
     const response = await firstValueFrom(request);
     const token = response.token;
     this.setToken(token);

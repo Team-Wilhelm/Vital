@@ -3,7 +3,7 @@ import {RouterModule, Routes} from '@angular/router';
 import {DashboardComponent} from "./dashboard/dashboard.component";
 import {AnalyticsComponent} from "./analytics/analytics.component";
 import {LoginComponent} from "./login/login.component";
-import {authGuard} from "./auth.guard";
+import {authGuard} from "./gurads/auth.guard";
 
 const routes: Routes = [
     {path: '', redirectTo: 'dashboard', pathMatch: 'full'},
