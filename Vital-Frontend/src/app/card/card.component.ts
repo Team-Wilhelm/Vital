@@ -59,6 +59,7 @@ export class CardComponent implements OnInit {
   }
 
   onClick(){
+    if (this.redirectLink === '') return;
     this.router.navigate([this.redirectLink]);
   }
 }
