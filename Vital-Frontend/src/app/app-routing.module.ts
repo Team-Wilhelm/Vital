@@ -4,6 +4,7 @@ import {DashboardComponent} from "./dashboard/dashboard.component";
 import {AnalyticsComponent} from "./analytics/analytics.component";
 import {LoginComponent} from "./login/login.component";
 import {authGuard} from "./gurads/auth.guard";
+import {RegisterComponent} from "./register/register.component";
 
 const routes: Routes = [
     {path: '', redirectTo: 'dashboard', pathMatch: 'full'},
@@ -12,8 +13,13 @@ const routes: Routes = [
         component: DashboardComponent,
         canActivate: [authGuard]
     },
-    {path: 'analytics', component: AnalyticsComponent},
+    {
+        path: 'analytics',
+        component: AnalyticsComponent,
+        canActivate: [authGuard]
+    },
     {path: 'login', component: LoginComponent},
+    {path: 'register', component: RegisterComponent},
     {path: '**', redirectTo: 'dashboard'}
 ];
 

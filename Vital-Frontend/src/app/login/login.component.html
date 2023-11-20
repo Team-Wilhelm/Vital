@@ -12,5 +12,7 @@
                [formControl]="loginForm.controls.password">
         <a href="#" class="text-accent self-end mb-1">Forgot password?</a>
         <button class="btn btn-accent" (click)="login()">Login</button>
+        <p class="text-center">Don't have an account? <a href="javascript:void(0)" class="text-accent" (click)="redirectToRegister()">Register</a>
+        </p>
     </app-card>
 </div>

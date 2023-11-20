@@ -16,6 +16,7 @@ import {TokenService} from "./services/token.service";
 import {CycleService} from "./services/cycle.service";
 import {JWT_OPTIONS, JwtHelperService} from "@auth0/angular-jwt";
 import {ReactiveFormsModule} from "@angular/forms";
+import {RegisterComponent} from "./register/register.component";
 
 @NgModule({
   declarations: [
@@ -25,7 +26,8 @@ import {ReactiveFormsModule} from "@angular/forms";
     CardComponent,
     CurrentCycleComponent,
     MedicationListItemComponent,
-    LoginComponent
+    LoginComponent,
+    RegisterComponent
   ],
     imports: [
         BrowserModule,
