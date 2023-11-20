@@ -8,12 +8,14 @@ module.exports = {
       colors: {
         'background' : '#EFEAE6',
         'yellow-accent': '#EEAF3A',
+        'green-accent' : '#82B09E',
+        'green-light-accent' : '#B8DACD',
         'card' : '#FAF7F5',
+        'card-hover' : '#ffffff',
       },
     },
     container: {
       center: true,
-      padding: '1rem',
     }
   },
   plugins: [require("daisyui")],
