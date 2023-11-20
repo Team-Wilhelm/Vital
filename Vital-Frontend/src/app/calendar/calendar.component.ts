@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {Calendar, CalendarOptions} from '@fullcalendar/core';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin, {DateClickArg} from '@fullcalendar/interaction';
@@ -11,7 +11,7 @@ import {DataService} from "../services/data.service";
   selector: 'calendar',
   templateUrl: './calendar.component.html',
 })
-export class CalendarComponent {
+export class CalendarComponent implements OnInit{
 
   constructor(private dataService: DataService, private router: Router) {}
 
@@ -42,6 +42,7 @@ export class CalendarComponent {
 
   createEvent() {
     this.newEvent = {
+      title: 'Period',
       start: '2023-11-01',
       id: '123',
       allDay: true,
@@ -54,6 +55,10 @@ export class CalendarComponent {
     };
     this.eventList.push(this.newEvent);
     this.calendarOptions.events = this.eventList;
+  }
+
+  ngOnInit() {
+    this.createEvent()
   }
 }
 

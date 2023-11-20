@@ -9,9 +9,8 @@ import {DataService} from "../services/data.service";
 export class AddMetricPageComponent implements OnInit{
   public allMetrics: Metric[] = [];
   public selectedMetrics: Metric[] = [];
-  public dateParameter: string | null = null;
 
-  constructor(private route: ActivatedRoute, private dataService: DataService) {
+  constructor(private dataService: DataService) {
     this.allMetrics.push(
       {
         name: 'Period',

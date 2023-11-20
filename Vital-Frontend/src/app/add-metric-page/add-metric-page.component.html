@@ -1,5 +1,7 @@
-<div>
-<h1>Track for {{dateParameter}}</h1>
+<div class="card bg-amber-100">
+  <div class="card-body">
+
+<h1>Select one or more:</h1>
 <div *ngFor="let metric of allMetrics">
   <input type="checkbox" [(ngModel)]="metric.isSelected" (click)="onCheckboxChange(metric)">
   {{ metric.name }}
@@ -12,4 +14,5 @@
   </div>
 </div>
 
+  </div>
 </div>
