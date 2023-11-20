@@ -20,6 +20,7 @@ export class CardComponent implements OnInit {
   @Input() cardColor: string = '';
   @Input() redirectLink: string = '';
   @Input() compact: boolean = false;
+  @Input() hoverable: boolean = true;
 
   classList: string[] = [];
 
@@ -48,7 +49,9 @@ export class CardComponent implements OnInit {
       this.classList.push('cursor-pointer');
     }
 
-    this.classList.push('hover:bg-card-hover');
+    if (this.hoverable) {
+      this.classList.push('hover:bg-card-hover');
+    }
   }
 
   getClassList() {

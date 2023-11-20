@@ -1,0 +1,12 @@
+<div class="flex w-full h-full justify-center items-center lg:relative">
+    <app-card cardTitle="Log In" [hoverable]="false"
+              class="flex flex-col justify-around
+              lg:absolute lg:top-[20%] lg:right-44"
+    >
+        <p class="mb-3">In order to use Vital, please log in or register.</p>
+        <input type="email" placeholder="E-mail address" class="input bg-background" aria-label="Email">
+        <input type="password" placeholder="Password" class="input bg-background mb-1" aria-label="Password">
+        <a href="#" class="text-accent self-end mb-1">Forgot password?</a>
+        <button class="btn btn-accent" (click)="login()">Login</button>
+    </app-card>
+</div>

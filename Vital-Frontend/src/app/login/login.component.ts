@@ -4,15 +4,7 @@ import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-login',
-  template: `
-    <div class="flex justify-center items-center">
-      <div class="flex flex-col min-h-[100px] justify-around" aria-hidden="true">
-        <input type="email" class="bg-card">
-        <input type="password" class="bg-card">
-        <button class="bg-primary text-white" (click)="login()">Login</button>
-      </div>
-    </div>
-  `
+  templateUrl: './login.component.html',
 })
 export class LoginComponent {
   redirectUrl: string | null = null;
@@ -26,4 +18,7 @@ export class LoginComponent {
       await this.router.navigate([this.redirectUrl || '']);
     }
   }
+
+  //TODO: Add link to register page
+  //TODO: Nicer login page for mobile, add background image
 }
