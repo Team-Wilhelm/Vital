@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Models;
 using Models.Dto;
+using Models.Dto.Cycle;
 using Models.Pagination;
 using Vital.Core.Services.Interfaces;
 using Vital.Extension.Mapping;

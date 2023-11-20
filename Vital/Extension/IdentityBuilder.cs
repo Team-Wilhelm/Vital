@@ -10,10 +10,12 @@ public static class IdentityBuilder
     {
         services.AddIdentityCore<ApplicationUser>(options =>
         {
+            // Sign in settings.
+            options.SignIn.RequireConfirmedEmail = true;
             // Password settings.
-            options.Password.RequireDigit = false;
-            options.Password.RequireNonAlphanumeric = false;
-            options.Password.RequireUppercase = false;
+            options.Password.RequireDigit = true;
+            options.Password.RequireNonAlphanumeric = true;
+            options.Password.RequireUppercase = true;
             options.Password.RequiredLength = 6;
         })
             .AddRoles<ApplicationRole>()
