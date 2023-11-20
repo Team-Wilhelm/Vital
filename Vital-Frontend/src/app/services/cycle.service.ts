@@ -1,8 +1,8 @@
 ﻿import {Injectable} from "@angular/core";
 import {Cycle, CycleDay} from "../interfaces/Models";
 import {HttpClient} from "@angular/common/http";
-import {environment} from "../../../environments/environment";
 import {firstValueFrom} from "rxjs";
+import {environment} from "../../../environments/environment";
 
 @Injectable({
   providedIn: 'root'
@@ -13,7 +13,6 @@ export class CycleService {
   lastThreeCycles: Cycle[] = [];
   currentCycleWeek: CycleDay[] = []; // 3 days before and after current day
   currentCycle: Cycle | undefined;
-  jwtToken: string = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6ImFkZmVhZDRjLTgyM2ItNDFlNS05YzdlLWM4NGFhMDQxOTJhNCIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL2VtYWlsYWRkcmVzcyI6InVzZXJAYXBwIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoiVXNlciIsImV4cCI6MTcwMDE1MTgxOSwiaXNzIjoidml0YWwuY29tIiwiYXVkIjoidml0YWwuY29tIn0.QdUREJW6UAyq4O3Qk9fVRLeCPs3r8K7q9pCLv5g1gw4';
 
   constructor(private httpClient: HttpClient) {
     this.getCurrentCycleFromApi();
@@ -33,8 +32,7 @@ export class CycleService {
   }
 
   async getCurrentCycleFromApi() {
-     //TODO: change hardcoded cycleId and fix the jwtToken
-    this.currentCycle = await firstValueFrom(this.httpClient.get<Cycle>(environment.baseUrl + '/cycle/2af6bc6c-b3c0-4e77-97d9-9fa6d36c4a0a', {headers: {Authorization: this.jwtToken}}));
+    this.currentCycle = await firstValueFrom(this.httpClient.get<Cycle>(environment.baseUrl + '/cycle/2af6bc6c-b3c0-4e77-97d9-9fa6d36c4a0a'));
     this.currentCycleDays = this.currentCycle.cycleDays;
 
     // I am doing this because the date is coming from the API as a UTC string
