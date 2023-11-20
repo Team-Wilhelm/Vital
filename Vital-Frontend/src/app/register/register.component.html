@@ -4,29 +4,57 @@
               lg:absolute lg:top-[20%] lg:right-44"
   >
     <p class="mb-3">In order to use Vital, please log in or register.</p>
+
+    <!-- E-mail -->
+    <p [hidden]="!(registerForm.controls.email.invalid && emailField.matches(':focus'))"
+       class="text-error self-center">Please enter a valid e-mail address.</p>
     <input type="email" placeholder="E-mail address" class="input bg-background" aria-label="Email"
            [formControl]="registerForm.controls.email"
-           [class.input-error]="registerForm.controls.email.invalid && registerForm.controls.email.touched"
+           [class.input-error]="registerForm.controls.email.invalid && registerForm.controls.email.touched" #emailField
     >
-    <p [hidden]="!(registerForm.controls.email.invalid && registerForm.controls.email.touched)"
-       class="text-error self-center">Please enter a valid e-mail address.</p>
+
+    <!-- Password -->
     <input type="password" placeholder="Password" class="input bg-background mb-1" aria-label="Password"
-           [formControl]="registerForm.controls.password" #passwordField>
+           [formControl]="registerForm.controls.password"
+           [class.input-error]="registerForm.controls.password.invalid && registerForm.controls.password.touched"
+           #passwordField
+    >
     <div [hidden]="!passwordField.matches(':focus')">
       <ul class="list-disc list-inside">
-        <li [ngClass]="{'text-error': !passwordRulesMet.lengthCondition, 'text-success': passwordRulesMet.lengthCondition}">At least 6 characters</li>
-        <li [ngClass]="{'text-error': !passwordRulesMet.uppercaseCondition, 'text-success': passwordRulesMet.uppercaseCondition}">At least 1 uppercase letter</li>
-        <li [ngClass]="{'text-error': !passwordRulesMet.lowercaseCondition, 'text-success': passwordRulesMet.lowercaseCondition}">At least 1 lowercase letter</li>
-        <li [ngClass]="{'text-error': !passwordRulesMet.digitCondition, 'text-success': passwordRulesMet.digitCondition}">At least 1 number</li>
-        <li [ngClass]="{'text-error': !passwordRulesMet.specialCondition, 'text-success': passwordRulesMet.specialCondition}">At least 1 special character</li>
+        <li [ngClass]="{'text-primary-content': !passwordRulesMet.lengthCondition, 'text-success': passwordRulesMet.lengthCondition}">
+          At least 6 characters
+          <span *ngIf="passwordRulesMet.lengthCondition">&#x2713;</span>
+        </li>
+        <li [ngClass]="{'text-primary-content': !passwordRulesMet.uppercaseCondition, 'text-success': passwordRulesMet.uppercaseCondition}">
+          At least 1 uppercase letter
+          <span *ngIf="passwordRulesMet.uppercaseCondition">&#x2713;</span>
+        </li>
+        <li [ngClass]="{'text-primary-content': !passwordRulesMet.lowercaseCondition, 'text-success': passwordRulesMet.lowercaseCondition}">
+          At least 1 lowercase letter
+          <span *ngIf="passwordRulesMet.lowercaseCondition">&#x2713;</span>
+        </li>
+        <li [ngClass]="{'text-primary-content': !passwordRulesMet.digitCondition, 'text-success': passwordRulesMet.digitCondition}">
+          At least 1 digit
+          <span *ngIf="passwordRulesMet.digitCondition">&#x2713;</span>
+        </li>
+        <li [ngClass]="{'text-primary-content': !passwordRulesMet.specialCondition, 'text-success': passwordRulesMet.specialCondition}">
+          At least 1 special character
+          <span *ngIf="passwordRulesMet.specialCondition">&#x2713;</span>
+        </li>
       </ul>
     </div>
+
+    <!-- Repeat password -->
     <input type="password" placeholder="Repeat password" class="input bg-background mb-1" aria-label="Repeat password"
-           [formControl]="registerForm.controls.repeatPassword">
+           [formControl]="registerForm.controls.repeatPassword"
+           [class.input-error]="registerForm.controls.repeatPassword.invalid && registerForm.controls.repeatPassword.touched"
+    >
     <p [hidden]="!(registerForm.invalid && registerForm.controls.email.valid && registerForm.controls.password.valid)">
       Passwords do not match.</p>
+
+    <!-- Register button -->
     <a href="#" class="text-accent self-end mb-1">Forgot password?</a>
     <button class="btn btn-accent" (click)="register()">Sign Up</button>
-    <p class="text-center">Already have an account? <a href="javascript:void(0)" class="text-accent">Login</a></p>
+    <p class="text-center">Already have an account? <a href="javascript:void(0)" (click)="redirectToLogin()" class="text-accent">Login</a></p>
   </app-card>
 </div>

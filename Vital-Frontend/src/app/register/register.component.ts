@@ -53,6 +53,12 @@ export class RegisterComponent {
           specialCondition: /[^a-zA-Z\d]/.test(value)
         };
       });
+
+
     }
+  }
+
+  redirectToLogin() {
+    this.router.navigate(['/login']);
   }
 }
