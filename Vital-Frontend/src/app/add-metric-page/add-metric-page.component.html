@@ -1,18 +1,28 @@
 <div class="card bg-amber-100">
   <div class="card-body">
 
-<h1>Select one or more:</h1>
-<div *ngFor="let metric of allMetrics">
-  <input type="checkbox" [(ngModel)]="metric.isSelected" (click)="onCheckboxChange(metric)">
-  {{ metric.name }}
+    <h1 class="text-lg font-semibold mb-4">Select one or more:</h1>
 
-  <div *ngIf="metric.isSelected">
-    <label *ngFor="let value of metric.values">
-      <input type="radio" [name]="metric.name" [value]="value" [(ngModel)]="metric.selectedValue" (change)="onRadioChange(metric, value)">
-      {{ value }}
-    </label>
+    <div *ngFor="let metric of allMetrics" class="mb-4">
+      <div class="flex items-center">
+        <input type="checkbox" id="{{ metric.name }}" [(ngModel)]="metric.isSelected" (click)="onCheckboxChange(metric)"
+               class="hidden">
+        <label for="{{ metric.name }}"
+               [ngClass]="{'button-selected': metric.isSelected, 'button-unselected': !metric.isSelected}"
+               class="px-4 py-2 border rounded-full cursor-pointer transition duration-300 ease-in-out hover:bg-gray-400">
+          {{ metric.name }}
+        </label>
+      </div>
+
+      <div *ngIf="metric.isSelected" class="mt-2">
+        <div *ngFor="let value of metric.values" class="flex items-center">
+          <input type="radio" [name]="metric.name" [value]="value" [(ngModel)]="metric.selectedValue"
+                 (change)="onRadioChange(metric, value)" class="mr-2">
+          <span>{{ value }}</span>
+        </div>
+      </div>
+    </div>
+
   </div>
 </div>
 
-  </div>
-</div>
