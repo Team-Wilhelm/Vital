@@ -5,9 +5,11 @@ import {Router} from "@angular/router";
 @Component({
   selector: 'app-login',
   template: `
-    <div class="relative">
-      <div class="absolute top-0 right-0 bg-gray-100 p-2 rounded">
-        <a routerLink="/register" class="text-blue-500">Register</a>
+    <div class="flex justify-center items-center">
+      <div class="flex flex-col min-h-[100px] justify-around" aria-hidden="true">
+        <input type="email" class="bg-card">
+        <input type="password" class="bg-card">
+        <button class="bg-primary text-white" (click)="login()">Login</button>
       </div>
     </div>
   `
