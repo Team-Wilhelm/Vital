@@ -1,21 +1,26 @@
 ﻿using System.Net.Http.Json;
-using IntegrationTests.ApiFactor;
+using IntegrationTests.Setup;
 
 namespace IntegrationTests;
 
+[Collection("VitalApi")]
 public class HealthCheckTests
 {
+    private readonly HttpClient _client;
+
+    public HealthCheckTests(VitalApiFactory waf)
+    {
+        _client = waf.Client;
+    }
+    
     /// <summary>
     /// Test if the health check endpoint is working
     /// </summary>
-    [Test]
+    [Fact]
     public async Task Should_return_200_ok_When_send_hc()
     {
-        var api = new VitalApiFactory();
-        var httpClient = api.CreateClient();
-
         // Check if the default endpoint is working
-        var response = await httpClient.PostAsJsonAsync("/hc", new { });
+        var response = await _client.PostAsJsonAsync("/hc", new { });
 
         Assert.True(response.IsSuccessStatusCode);
     }
@@ -23,16 +28,13 @@ public class HealthCheckTests
     /// <summary>
     /// Test if the health check endpoint is working
     /// </summary>
-    [Test]
+    [Fact]
     public async Task Should_not_bad_When_send_hc()
     {
-        var api = new VitalApiFactory();
-        var httpClient = api.CreateClient();
-
         // Check if the default endpoint is working
-        var response = await httpClient.PostAsJsonAsync("/hc", new { });
+        var response = await _client.PostAsJsonAsync("/hc", new { });
         var isSuccess = !response.IsSuccessStatusCode;
 
-        Assert.IsFalse(isSuccess);
+        Assert.False(isSuccess);
     }
 }

@@ -1,6 +1,6 @@
 ﻿using Models.Days;
 
-namespace Models.Dto;
+namespace Models.Dto.Cycle;
 
 public class CycleDto
 {

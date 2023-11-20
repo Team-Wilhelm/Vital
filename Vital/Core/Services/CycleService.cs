@@ -2,6 +2,7 @@
 using Infrastructure.Repository.Interface;
 using Models;
 using Models.Dto;
+using Models.Dto.Cycle;
 using Models.Pagination;
 using Vital.Core.Context;
 using Vital.Core.Services.Interfaces;

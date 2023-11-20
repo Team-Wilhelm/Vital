@@ -1,4 +1,4 @@
-﻿namespace Models.Dto;
+﻿namespace Models.Dto.Cycle;
 
 public class UpdateCycleDto
 {
