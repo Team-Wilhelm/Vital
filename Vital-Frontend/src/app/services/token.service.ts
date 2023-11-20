@@ -40,4 +40,8 @@ export class TokenService {
     const request = this.httpClient.post<any>(environment.baseUrl + '/identity/auth/register', registerDto);
     await firstValueFrom(request);
   }
+
+  public logout() {
+    this.clearToken();
+  }
 }

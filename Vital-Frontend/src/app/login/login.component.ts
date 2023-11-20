@@ -25,10 +25,11 @@ export class LoginComponent {
     async login(): Promise<void> {
         await this.tokenService.login(this.loginForm.value as LoginDto);
         if (this.tokenService.isAuthenticated()) {
-            await this.router.navigate([this.redirectUrl || '']);
+            await this.router.navigate([this.redirectUrl || '/dashboard']);
         }
     }
 
+    // This routes to the register page correctly, but interacting with it reloads login page again for some reason
     async redirectToRegister() {
         await this.router.navigate(['/register']);
     }
