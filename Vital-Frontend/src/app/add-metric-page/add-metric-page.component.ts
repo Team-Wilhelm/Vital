@@ -34,10 +34,7 @@ export class AddMetricPageComponent implements OnInit{
     );
   }
 
-  //TODO check routing
   ngOnInit(): void {
-      //this.route.paramMap.subscribe(params => {
-      //const clickedDate = params.get('clickedDate');
     this.dataService.clickedDate$.subscribe(clickedDate => {
       console.log('Clicked Date Add-Metrics:', clickedDate);
     });
