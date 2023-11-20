@@ -6,7 +6,7 @@ import {AddMetricPageComponent} from "./add-metric-page/add-metric-page.componen
 const routes: Routes = [
   { path: '', component: DashboardComponent, pathMatch: 'full' },
   //TODO check routing
-  { path: 'add-metric/:clickedDate', component: AddMetricPageComponent, pathMatch: 'prefix' },
+  { path: 'add-metric', component: AddMetricPageComponent, pathMatch: 'full' },
 ];
 
 @NgModule({

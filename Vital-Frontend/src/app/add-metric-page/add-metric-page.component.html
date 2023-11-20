@@ -1,0 +1,15 @@
+<div>
+<h1>Track for {{dateParameter}}</h1>
+<div *ngFor="let metric of allMetrics">
+  <input type="checkbox" [(ngModel)]="metric.isSelected" (click)="onCheckboxChange(metric)">
+  {{ metric.name }}
+
+  <div *ngIf="metric.isSelected">
+    <label *ngFor="let value of metric.values">
+      <input type="radio" [name]="metric.name" [value]="value" [(ngModel)]="metric.selectedValue" (change)="onRadioChange(metric, value)">
+      {{ value }}
+    </label>
+  </div>
+</div>
+
+</div>
