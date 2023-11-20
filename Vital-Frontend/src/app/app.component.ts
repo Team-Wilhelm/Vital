@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
-import {TokenService} from "./services/token.service";
-import {addWarning} from "@angular-devkit/build-angular/src/utils/webpack-diagnostics";
 import {Router} from "@angular/router";
+import {TokenService} from "./services/token.service";
 
 @Component({
   selector: 'app-root',
