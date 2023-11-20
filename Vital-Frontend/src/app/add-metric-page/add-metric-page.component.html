@@ -1,4 +1,4 @@
-<div class="card bg-amber-100">
+<div class="card bg-card">
   <div class="card-body">
 
     <h1 class="text-lg font-semibold mb-4">Select one or more:</h1>
@@ -8,8 +8,8 @@
         <input type="checkbox" id="{{ metric.name }}" [(ngModel)]="metric.isSelected" (click)="onCheckboxChange(metric)"
                class="hidden">
         <label for="{{ metric.name }}"
-               [ngClass]="{'button-selected': metric.isSelected, 'button-unselected': !metric.isSelected}"
-               class="px-4 py-2 border rounded-full cursor-pointer transition duration-300 ease-in-out hover:bg-gray-400">
+               [ngClass]="{'bg-button-selected text-white': metric.isSelected, 'bg-button-unselected text-black': !metric.isSelected}"
+               class="px-4 py-2 border rounded-full cursor-pointer transition duration-300 ease-in-out hover:badge-warning">
           {{ metric.name }}
         </label>
       </div>
@@ -25,4 +25,5 @@
 
   </div>
 </div>
+
 
