@@ -59,17 +59,17 @@ public class MetricRepository : IMetricRepository
         return metrics.ToList();
     }
 
-    public async Task UploadMetricForADay(Guid calendarDayId, List<MetricsDto> metricsDtoList)
+    public async Task UploadMetricForADay(Guid calendarDayId, List<MetricRegisterMetricDto> metrics)
     {
         // Delete all metrics for the day, if there are any
-        var sql = @"DELETE FROM ""CalendarDayMetrics"" WHERE ""CalendarDaysId""=@calendarDayId";
+        var sql = @"DELETE FROM ""CalendarDayMetric"" WHERE ""CalendarDayId""=@calendarDayId";
         await _db.ExecuteAsync(sql, new { calendarDayId });
         
         // Insert new metrics for the day
-        sql = @"INSERT INTO ""CalendarDayMetrics"" (""CalendarDaysId"", ""MetricsId"") VALUES (@calendarDayId, @metricsId)";
-        foreach (var metricsDto in metricsDtoList)
+        sql = @"INSERT INTO ""CalendarDayMetric"" (""Id"",""CalendarDayId"", ""MetricsId"", ""MetricValueId"") VALUES (@Id, @calendarDayId, @metricsId, @metricValueId)";
+        foreach (var metricsDto in metrics)
         {
-            await _db.ExecuteAsync(sql, new { calendarDayId, metricsId = metricsDto.Id });
+            await _db.ExecuteAsync(sql, new { Id = Guid.NewGuid(), calendarDayId, metricsId = metricsDto.MetricsId, metricValueId = metricsDto.MetricValueId });
         }
     }
 }

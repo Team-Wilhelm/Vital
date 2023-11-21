@@ -10,5 +10,5 @@ namespace Infrastructure.Repository.Interface;
 public interface IMetricRepository
 {
     Task<ICollection<CalendarDayMetric>> Get(Guid userId, DateTimeOffset date);
-    Task UploadMetricForADay(Guid calendarDayId, List<MetricsDto> metricsDto);
+    Task UploadMetricForADay(Guid calendarDayId, List<MetricRegisterMetricDto> metrics);
 }

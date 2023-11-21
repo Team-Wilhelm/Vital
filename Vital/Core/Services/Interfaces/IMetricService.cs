@@ -9,5 +9,5 @@ namespace Vital.Core.Services.Interfaces;
 public interface IMetricService
 {
     Task<ICollection<CalendarDayMetric>> Get(Guid userId, DateTimeOffset date);
-    Task<CalendarDayDto> UploadMetricForADay(Guid userId, List<MetricsDto> metricsDto, DateTimeOffset dateTimeOffset);
+    Task<CalendarDayDto> UploadMetricForADay(Guid userId, List<MetricRegisterMetricDto> metricsDto, DateTimeOffset dateTimeOffset);
 }

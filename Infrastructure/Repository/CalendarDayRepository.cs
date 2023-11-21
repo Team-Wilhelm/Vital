@@ -20,18 +20,25 @@ public class CalendarDayRepository : ICalendarDayRepository
         var state = await _db.QuerySingleOrDefaultAsync<string>(sql, new { userId, date });
         
         sql = @"SELECT * FROM ""CalendarDay"" WHERE ""UserId""=@userId AND CAST(""Date"" AS DATE) = CAST(@date AS DATE)";
-        
-        return state switch
-        {
-            "CycleDay" => await _db.QuerySingleOrDefaultAsync<CycleDay>(sql, new { userId, date }),
-            _ => throw new InvalidOperationException("Invalid state")
-        };
+
+        return CreateCalendarDay(state!, sql, new { userId, date });
     }
     
     public async Task<CalendarDay?> GetById(Guid calendarDayId)
     {
-        var sql = @"SELECT * FROM ""CalendarDay"" WHERE ""Id""=@calendarDayId";
-        var calendarDay = await _db.QuerySingleOrDefaultAsync<CalendarDay>(sql, new { calendarDayId });
-        return calendarDay;
+        var sql = @"SELECT ""State"" FROM ""CalendarDay"" WHERE ""Id""=@calendarDayId";
+        var state = await _db.QuerySingleOrDefaultAsync<string>(sql, new { calendarDayId });
+        
+        sql = @"SELECT * FROM ""CalendarDay"" WHERE ""Id""=@calendarDayId";
+        return CreateCalendarDay(state!, sql, new { calendarDayId });
+    }
+    
+    private CalendarDay? CreateCalendarDay(string state, string sql, object param)
+    {
+        return state switch
+        {
+            "CycleDay" => _db.QuerySingleOrDefault<CycleDay>(sql, param),
+            _ => throw new InvalidOperationException("Invalid state")
+        };
     }
 }

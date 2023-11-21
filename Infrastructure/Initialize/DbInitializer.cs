@@ -55,7 +55,8 @@ public class DbInitializer
         });
         
         // Add metrics
-        await _context.Metrics.AddRangeAsync(new Metrics()
+        await _context.Metrics.AddRangeAsync(
+            new Metrics()
         {
             Id = Guid.Parse("d56807fe-05ca-4901-a564-68f14e31b241"),
             Name = "Flow",
@@ -76,7 +77,7 @@ public class DbInitializer
                 new()
                 {
                     Id = Guid.Parse("24d4c8aa-614d-467f-9afb-9e2f744cf151"),
-                    Name = "Medium",
+                    Name = "Moderate",
                     MetricsId = Guid.Parse("d56807fe-05ca-4901-a564-68f14e31b241")
                 },
                 new()
@@ -85,8 +86,41 @@ public class DbInitializer
                     Name = "Heavy",
                     MetricsId = Guid.Parse("d56807fe-05ca-4901-a564-68f14e31b241")
                 }
+            },
+        }, new Metrics()
+            {
+                Id = Guid.Parse("51DA609D-4477-47B8-B1B5-E4298A729D03"),
+                Name = "Cramps",
+                Values = new List<MetricValue>()
+                {
+                    new()
+                    {
+                        Id = Guid.Parse("65C85602-CA96-40F2-8CD1-268DCBFDA131"),
+                        Name = "None",
+                        MetricsId = Guid.Parse("51DA609D-4477-47B8-B1B5-E4298A729D03")
+                    },
+                    new()
+                    {
+                        Id = Guid.Parse("FA7BFF97-3C82-448A-A9E7-C346880D3264"),
+                        Name = "Light",
+                        MetricsId = Guid.Parse("51DA609D-4477-47B8-B1B5-E4298A729D03")
+                    },
+                    new()
+                    {
+                        Id = Guid.Parse("F0F0F0F0-0F0F-0F0F-0F0F-0F0F0F0F0F0F"),
+                        Name = "Moderate",
+                        MetricsId = Guid.Parse("51DA609D-4477-47B8-B1B5-E4298A729D03")
+                    },
+                    new()
+                    {
+                        Id = Guid.Parse("F1F1F1F1-1F1F-1F1F-1F1F-1F1F1F1F1F1F"),
+                        Name = "Severe",
+                        MetricsId = Guid.Parse("51DA609D-4477-47B8-B1B5-E4298A729D03")
+                    }
+                    
+                }
             }
-        });
+            );
 
         // Add cycle days
         await _context.CycleDays.AddAsync(new CycleDay()

@@ -29,7 +29,7 @@ public class MetricService : IMetricService
         return list;
     }
 
-    public async Task<CalendarDayDto> UploadMetricForADay(Guid userId, List<MetricsDto> metricsDtoList,
+    public async Task<CalendarDayDto> UploadMetricForADay(Guid userId, List<MetricRegisterMetricDto> metrics,
         DateTimeOffset dateTimeOffset)
     {
         var calendarDay = await _calendarDayRepository.GetByDate(userId, dateTimeOffset);
@@ -38,8 +38,8 @@ public class MetricService : IMetricService
             throw new NotFoundException();
         }
         
-        await _metricRepository.UploadMetricForADay(calendarDay.Id, metricsDtoList);
-        calendarDay = await _calendarDayRepository.GetById(calendarDay.Id);
+        await _metricRepository.UploadMetricForADay(calendarDay.Id, metrics);
+        calendarDay = await _calendarDayRepository.GetById(calendarDay.Id); //TODO: Include a list of selected metrics
         return _mapper.Map<CalendarDayDto>(calendarDay);
     }
 }

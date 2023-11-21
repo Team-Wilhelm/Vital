@@ -25,10 +25,14 @@ public class MetricController : BaseController
         _currentContext = currentContext;
     }
     
+    /// <summary>
+    /// Gets the metrics for a day for the current user (based on the token).
+    /// </summary>
+    /// <param name="date"></param>
     [HttpGet("{date}")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ICollection<CalendarDayMetric>))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> Get([FromRoute] string date)
+    public async Task<IActionResult> GetAsync([FromRoute] string date)
     {
         var parsedDate = DateTimeOffset.Parse(date);
         var userId = _currentContext.UserId!.Value;
@@ -37,14 +41,19 @@ public class MetricController : BaseController
         return Ok(list);
     }
     
+    /// <summary>
+    /// Deletes any existing metrics for the day and uploads the new metrics.
+    /// </summary>
+    /// <param name="metrics"></param>
+    /// <param name="dateTimeOffsetString"></param>
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(CalendarDayDto))]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> UploadMetricForADay([FromBody] List<MetricsDto> metricsDto, [FromQuery] string dateTimeOffsetString)
+    public async Task<IActionResult> UploadMetricForADayAsync([FromBody] List<MetricRegisterMetricDto> metrics, [FromQuery] string dateTimeOffsetString)
     {
         var dateTimeOffset = DateTimeOffset.Parse(dateTimeOffsetString);
         var userId = _currentContext.UserId!.Value;
-        var calendarDayDto = await _metricService.UploadMetricForADay(userId, metricsDto, dateTimeOffset);
+        var calendarDayDto = await _metricService.UploadMetricForADay(userId, metrics, dateTimeOffset);
         return Ok(calendarDayDto);
     }
 }
