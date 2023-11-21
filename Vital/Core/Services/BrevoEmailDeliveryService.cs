@@ -5,11 +5,11 @@ using Vital.Core.Services.Interfaces;
 
 namespace Vital.Core.Services;
 
-public class BrevoMailService : IMailService
+public class BrevoEmailDeliveryService : IEmailDeliveryService
 {
     private readonly BrevoSettings _brevoSettings;
 
-    public BrevoMailService(IOptions<BrevoSettings> brevoSettings)
+    public BrevoEmailDeliveryService(IOptions<BrevoSettings> brevoSettings)
     {
         _brevoSettings = brevoSettings.Value;
     }
