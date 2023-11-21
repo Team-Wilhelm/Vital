@@ -5,6 +5,7 @@ using Models.Dto;
 using Models.Dto.Cycle;
 using Models.Dto.Metrics;
 using Models.Pagination;
+using Models.Util;
 
 namespace Vital.Extension.Mapping;
 
@@ -24,5 +25,6 @@ public class MappingProfile : Profile
         // Metric
         CreateMap<Metrics, MetricsDto>();
         CreateMap<MetricValue, MetricValueDto>();
+        CreateMap<CalendarDayMetric, CalendarDayMetricDto>();
     }
 }
