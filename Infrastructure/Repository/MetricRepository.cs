@@ -14,15 +14,21 @@ namespace Infrastructure.Repository;
 public class MetricRepository : IMetricRepository
 {
     private readonly IDbConnection _db;
+    private readonly ICalendarDayRepository _calendarDayRepository;
 
-    public MetricRepository(IDbConnection db)
+    public MetricRepository(IDbConnection db, ICalendarDayRepository calendarDayRepository)
     {
         _db = db;
+        _calendarDayRepository = calendarDayRepository;
     }
     
     public async Task<ICollection<CalendarDayMetric>> Get(Guid userId, DateTimeOffset date)
     {
-        var calendarDayId = await GetCalendarDayId(userId, date);
+        var calendarDay = await _calendarDayRepository.GetByDate(userId, date);
+        if (calendarDay is null)
+        {
+            return new List<CalendarDayMetric>();
+        }
         
         var sql = @"SELECT * FROM ""Metrics"" 
                     INNER JOIN ""MetricValue"" ON ""Metrics"".""Id"" = ""MetricValue"".""MetricsId""
@@ -31,16 +37,9 @@ public class MetricRepository : IMetricRepository
         
         var metrics = await _db.QueryAsync<CalendarDayMetric>(sql, new
         {
-            calendarDayId
+            calendarDayId = calendarDay.Id
         });
         return metrics.ToList();
-    }
-
-    public async Task<Guid> GetCalendarDayId(Guid userId, DateTimeOffset date)
-    {
-        var sql = @"SELECT ""Id"" FROM ""CalendarDay"" WHERE ""UserId""=@userId AND ""Date""=@date";
-        var calendarDayId = await _db.QuerySingleOrDefaultAsync<Guid>(sql, new { userId, date });
-        return calendarDayId;
     }
 
     public async Task UploadMetricForADay(Guid calendarDayId, List<MetricsDto> metricsDtoList)

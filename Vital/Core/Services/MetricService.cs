@@ -32,7 +32,7 @@ public class MetricService : IMetricService
     public async Task<CalendarDayDto> UploadMetricForADay(Guid userId, List<MetricsDto> metricsDtoList,
         DateTimeOffset dateTimeOffset)
     {
-        var calendarDay = await _calendarDayRepository.GetByDate(dateTimeOffset, userId);
+        var calendarDay = await _calendarDayRepository.GetByDate(userId, dateTimeOffset);
         if (calendarDay is null)
         {
             throw new NotFoundException();

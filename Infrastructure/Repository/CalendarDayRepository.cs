@@ -14,11 +14,18 @@ public class CalendarDayRepository : ICalendarDayRepository
         _db = db;
     }
 
-    public async Task<CalendarDay?> GetByDate(DateTimeOffset dateTimeOffset, Guid userId)
+    public async Task<CalendarDay?> GetByDate(Guid userId, DateTimeOffset date)
     {
-        var sql = @"SELECT * FROM ""CalendarDay"" WHERE ""Date""=@dateTimeOffset AND ""UserId""=@userId";
-        var calendarDay = await _db.QuerySingleOrDefaultAsync<CalendarDay>(sql, new { dateTimeOffset, userId });
-        return calendarDay;
+        var sql =  @"SELECT ""State"" FROM ""CalendarDay"" WHERE ""UserId""=@userId AND CAST(""Date"" AS DATE) = CAST(@date AS DATE)";
+        var state = await _db.QuerySingleOrDefaultAsync<string>(sql, new { userId, date });
+        
+        sql = @"SELECT * FROM ""CalendarDay"" WHERE ""UserId""=@userId AND CAST(""Date"" AS DATE) = CAST(@date AS DATE)";
+        
+        return state switch
+        {
+            "CycleDay" => await _db.QuerySingleOrDefaultAsync<CycleDay>(sql, new { userId, date }),
+            _ => throw new InvalidOperationException("Invalid state")
+        };
     }
     
     public async Task<CalendarDay?> GetById(Guid calendarDayId)
