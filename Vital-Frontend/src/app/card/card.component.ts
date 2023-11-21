@@ -20,6 +20,7 @@ export class CardComponent implements OnInit {
   @Input() cardColor: string = '';
   @Input() redirectLink: string = '';
   @Input() compact: boolean = false;
+  @Input() hoverable: boolean = true;
 
   classList: string[] = [];
 
@@ -28,7 +29,7 @@ export class CardComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.classList.push('card', 'card-compact', 'lg:card-normal', 'h-full', 'w-full', 'shadow-md');
+    this.classList.push('card', 'card-compact', 'xl:card-normal', 'h-full', 'w-full', 'shadow-md');
 
     if (this.isTextContent) {
       this.classList.push('text-primary-content');
@@ -48,7 +49,9 @@ export class CardComponent implements OnInit {
       this.classList.push('cursor-pointer');
     }
 
-    this.classList.push('hover:bg-card-hover');
+    if (this.hoverable) {
+      this.classList.push('hover:bg-card-hover');
+    }
   }
 
   getClassList() {
@@ -56,6 +59,7 @@ export class CardComponent implements OnInit {
   }
 
   onClick(){
+    if (this.redirectLink === '') return;
     this.router.navigate([this.redirectLink]);
   }
 }
