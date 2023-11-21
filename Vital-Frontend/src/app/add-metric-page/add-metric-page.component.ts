@@ -1,6 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import {DataService} from "../services/data.service";
+import {MetricService} from "../services/metric.service";
 
 @Component({
   selector: 'add-metric',
@@ -9,33 +10,15 @@ import {DataService} from "../services/data.service";
 export class AddMetricPageComponent implements OnInit{
   public allMetrics: Metric[] = [];
   public selectedMetrics: Metric[] = [];
+  public clickedDate: string | undefined;
 
-  constructor(private dataService: DataService) {
-    this.allMetrics.push(
-      {
-        name: 'Period',
-        isSelected: false,
-        selectedValue: null,
-        values: ['None', 'Light', 'Moderate', 'Heavy'],
-      },
-      {
-        name: 'Cramps',
-        isSelected: false,
-        selectedValue: null,
-        values: ['None', 'Mild', 'Moderate', 'Severe'],
-      },
-      {
-        name: 'Headache',
-        isSelected: false,
-        selectedValue: null,
-        values: ['None', 'Mild', 'Moderate', 'Severe'],
-      }
-    );
+  constructor(private dataService: DataService, private metricService: MetricService) {
+    this.getMetrics().then();
   }
 
   ngOnInit(): void {
     this.dataService.clickedDate$.subscribe(clickedDate => {
-      console.log('Clicked Date Add-Metrics:', clickedDate);
+      this.clickedDate = clickedDate?.toISOString();
     });
   }
 
@@ -60,8 +43,7 @@ export class AddMetricPageComponent implements OnInit{
     this.updateSelectedMetrics();
   }
 
-  //TODO send Date as ISOString: const isoString = currentDate.toISOString();
-  private updateSelectedMetrics() {
+  public updateSelectedMetrics() {
     // Clear the selectedMetrics array
     this.selectedMetrics = [];
 
@@ -72,11 +54,34 @@ export class AddMetricPageComponent implements OnInit{
       }
     });
   }
+
+  public async saveMetrics() {
+    const metricDtos: MetricDto[] = [];
+    this.selectedMetrics.forEach((metric) => {
+      metricDtos.push({
+        id: metric.name,
+        value: metric.selectedValue!,
+      });
+    });
+    await this.metricService.AddMetricsForDay(this.clickedDate!, metricDtos);
+  }
+
+  public async getMetrics() {
+    this.allMetrics = await this.metricService.getAllMetricsWithValues();
+  }
+
 }
 
-interface Metric {
+
+//TODO move to interfaces directory and update them
+export interface Metric {
   name: string;
   isSelected: boolean;
   selectedValue: string | null;
   values: string[];
+}
+
+export interface MetricDto {
+  id: string;
+  value: string;
 }
