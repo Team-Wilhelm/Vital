@@ -43,6 +43,11 @@ public class CycleService : ICycleService
         return cycle;
     }
 
+    public async Task<Cycle> CreateUponRegister(Cycle cycle)
+    {
+        return await _cycleRepository.Create(cycle);
+    }
+
     public async Task<Cycle> Update(Guid id, UpdateCycleDto dto)
     {
         var cycle = await _cycleRepository.GetById(id);
@@ -55,5 +60,17 @@ public class CycleService : ICycleService
         await _cycleRepository.Update(cycle);
         
         return cycle;
+    }
+
+    public async Task<List<PredictedPeriodDayDto>> GetPredictedPeriod(Guid cycleId)
+    {
+        var cycle = await _cycleRepository.GetById(cycleId);
+        if (cycle is null)
+        {
+            throw new NotFoundException();
+        }
+
+        // TODO: change
+        return new List<PredictedPeriodDayDto>();
     }
 }

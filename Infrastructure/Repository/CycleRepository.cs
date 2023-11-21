@@ -68,7 +68,7 @@ public class CycleRepository : ICycleRepository
         return cycle;
     }
 
-    public async Task<IEnumerable<CycleDay>> GetCycleDaysForCycleAsync(Guid cycleId)
+    private async Task<IEnumerable<CycleDay>> GetCycleDaysForCycleAsync(Guid cycleId)
     {
         var sql = @"SELECT * FROM ""CalendarDay"" WHERE ""CycleId""=@CycleId";
         var cycleDays = await _db.QueryAsync<CycleDay>(sql, new { CycleId = cycleId });
