@@ -21,7 +21,7 @@ public static class ServicesAndRepositoryExtension
 
         services.AddTransient<ICycleService, CycleService>();
         services.AddTransient<IJwtService, JwtService>();
-        services.AddTransient<IMailService, BrevoMailService>();
+        services.AddTransient<IEmailDeliveryService, BrevoEmailDeliveryService>();
 
         #endregion
 
