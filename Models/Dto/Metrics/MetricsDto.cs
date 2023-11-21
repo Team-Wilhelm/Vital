@@ -1,8 +1,6 @@
-﻿using Models.Days;
+﻿namespace Models.Dto.Metrics;
 
-namespace Models;
-
-public class Metrics
+public class MetricsDto
 {
     public Guid Id { get; set; }
     public required string Name { get; set; }

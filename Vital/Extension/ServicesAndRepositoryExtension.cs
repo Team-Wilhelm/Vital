@@ -15,6 +15,7 @@ public static class ServicesAndRepositoryExtension
 
         services.AddScoped<ICycleRepository, CycleRepository>();
         services.AddScoped<IMetricRepository, MetricRepository>();
+        services.AddScoped<ICalendarDayRepository, CalendarDayRepository>();
 
         #endregion
 

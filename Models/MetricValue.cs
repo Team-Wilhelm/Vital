@@ -2,9 +2,10 @@
 
 namespace Models;
 
-public class Metrics
+public class MetricValue
 {
     public Guid Id { get; set; }
+    public Guid MetricsId { get; set; }
+    /// <example> "Mild" "Severe"... </example>
     public required string Name { get; set; }
-    public List<MetricValue> Values { get; set; } = new();
 }

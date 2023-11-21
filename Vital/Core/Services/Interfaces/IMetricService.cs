@@ -1,9 +1,13 @@
 ﻿using Models;
+using Models.Dto.Cycle;
+using Models.Dto.Metrics;
 using Models.Pagination;
+using Models.Util;
 
 namespace Vital.Core.Services.Interfaces;
 
 public interface IMetricService
 {
-    Task<PaginatedList<Metrics>> Get(Guid userId, DateTimeOffset date, Paginator paginator);
+    Task<ICollection<CalendarDayMetric>> Get(Guid userId, DateTimeOffset date);
+    Task<CalendarDayDto> UploadMetricForADay(Guid userId, List<MetricsDto> metricsDto, DateTimeOffset dateTimeOffset);
 }
