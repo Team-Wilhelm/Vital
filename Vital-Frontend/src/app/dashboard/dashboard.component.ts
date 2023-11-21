@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {CycleService} from "../services/cycle.service";
+import {CycleService} from "../services/cycle-service";
 import {CycleDay} from "../interfaces/Models";
 
 @Component({
