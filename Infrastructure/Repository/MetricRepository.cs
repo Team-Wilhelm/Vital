@@ -35,9 +35,9 @@ public class MetricRepository : IMetricRepository
                 MV.""Id"" as {nameof(CalendarDayMetric.MetricValue.Id)},
                 MV.""Name"" as {nameof(CalendarDayMetric.MetricValue.Name)},
                 MV.""MetricsId"" as {nameof(CalendarDayMetric.MetricValue.MetricsId)}
-                FROM ""Metrics"" 
-                    INNER JOIN ""MetricValue"" MV ON ""Metrics"".""Id"" = MV.""MetricsId""
-                    INNER JOIN public.""CalendarDayMetric"" CDM on ""Metrics"".""Id"" = CDM.""MetricsId""    
+                FROM ""CalendarDayMetric"" CDM
+                    INNER JOIN ""MetricValue"" MV ON CDM.""MetricValueId"" = MV.""Id""
+                    INNER JOIN ""Metrics"" on ""Metrics"".""Id"" = CDM.""MetricsId""    
                 WHERE CDM.""CalendarDayId""=@calendarDayId";
         if (calendarDay is null)
         {
