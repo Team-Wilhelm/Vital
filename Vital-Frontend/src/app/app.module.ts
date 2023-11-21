@@ -9,7 +9,6 @@ import {AnalyticsComponent} from './analytics/analytics.component';
 import {CardComponent} from "./card/card.component";
 import {CurrentCycleComponent} from "./dashboard/current-cycle/current-cycle.component";
 import {MedicationListItemComponent} from "./dashboard/medication-list-item/medication-list-item.component";
-import { HttpClientModule} from "@angular/common/http";
 import {HTTP_INTERCEPTORS, HttpClientModule} from "@angular/common/http";
 import {LoginComponent} from "./login/login.component";
 import {AuthHttpInterceptor} from "./interceptors/auth-http-interceptor";
