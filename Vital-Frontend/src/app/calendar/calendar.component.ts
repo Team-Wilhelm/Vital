@@ -32,7 +32,6 @@ export class CalendarComponent implements OnInit{
     const clickedDate = arg.date;
     if(clickedDate > new Date()) return;
     try {
-      console.log('Clicked Date:', clickedDate);
       this.dataService.setClickedDate(clickedDate);
       await this.router.navigate(['/add-metric']);
     } catch (error) {
