@@ -61,6 +61,8 @@ public class CycleService : ICycleService
         
         return cycle;
     }
+    
+    
 
     public async Task<List<PredictedPeriodDayDto>> GetPredictedPeriod(Guid cycleId)
     {
