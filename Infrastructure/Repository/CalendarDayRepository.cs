@@ -23,6 +23,25 @@ public class CalendarDayRepository : ICalendarDayRepository
 
         return CreateCalendarDay(state!, sql, new { userId, date });
     }
+    
+    public async Task<List<CalendarDay>> GetByDateRange(Guid userId, DateTimeOffset from, DateTimeOffset to)
+    {
+        var sql = @"SELECT ""State"" FROM ""CalendarDay"" WHERE ""UserId"" = @userId AND CAST(""Date"" AS DATE) >= CAST(@from AS DATE) AND CAST(""Date"" AS DATE) <= CAST(@to AS DATE)";
+        var states = await _db.QueryAsync<string>(sql, new { userId, from, to });
+
+        sql = @"SELECT * FROM ""CalendarDay"" WHERE ""UserId"" = @userId AND CAST(""Date"" AS DATE) >= CAST(@from AS DATE) AND CAST(""Date"" AS DATE) <= CAST(@to AS DATE)";
+
+        var parameters = new { userId, from, to };
+        var calendarDays = new List<CalendarDay>();
+
+        foreach (var state in states)
+        {
+            var calendarDay = CreateCalendarDay(state!, sql, parameters);
+            calendarDays.Add(calendarDay);
+        }
+
+        return calendarDays;
+    }
 
     public async Task<CalendarDay?> GetById(Guid calendarDayId)
     {

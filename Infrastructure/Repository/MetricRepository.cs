@@ -1,7 +1,10 @@
-﻿using System.Data;
+﻿using System.Collections;
+using System.Data;
 using Dapper;
 using Infrastructure.Repository.Interface;
+using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using Models;
+using Models.Days;
 using Models.Dto.Metrics;
 using Models.Util;
 
@@ -18,19 +21,58 @@ public class MetricRepository : IMetricRepository
         _calendarDayRepository = calendarDayRepository;
     }
 
+    public async Task<List<Metrics>> GetAllMetrics()
+    {
+        var sql = @"SELECT M.*, MV.* 
+                    FROM ""Metrics"" M
+                    LEFT JOIN public.""MetricValue"" MV on M.""Id"" = MV.""MetricsId""";
+        var list = await _db.QueryAsync<Metrics, MetricValue, Metrics>(sql,
+            (metrics, value) =>
+            {
+                metrics.Values.Add(value);
+                return metrics;
+            });
+        return list.GroupBy(m => m.Id).Select(g =>
+        {
+            var groupedMetric = g.First();
+            groupedMetric.Values = g.Select(p => p.Values.FirstOrDefault()).Where(p => p != null).ToList() ?? new List<MetricValue>();
+            return groupedMetric;
+        }).ToList();
+    }
+    
+    public async Task<IEnumerable<CalendarDay>> GetMetricsForCalendarDays(Guid userId, DateTimeOffset fromDate, DateTimeOffset toDate)
+    {
+        var sql = @"SELECT * FROM ""CalendarDay""
+                LEFT JOIN ""CalendarDayMetric"" CDM on ""CalendarDay"".""Id"" = CDM.""CalendarDayId""
+                LEFT JOIN ""MetricValue"" MV on CDM.""MetricValueId"" = MV.""Id""
+                LEFT JOIN ""Metrics"" M on M.""Id"" = CDM.""MetricsId""
+        WHERE CAST(""Date"" AS DATE) >= @from AND CAST(""Date"" AS DATE) <= @to
+                AND ""UserId"" = @userId";
+
+        var result = await _db.QueryAsync<CalendarDay, CalendarDayMetric, MetricValue, Metrics, CalendarDay>(
+            sql,
+            (calendarDay, calendarDayMetric, metricValue, metrics) =>
+            {
+                // I'm assuming these relationships exist in your models, adapt accordingly if not
+                calendarDayMetric.MetricValue = metricValue;
+                calendarDayMetric.Metrics = metrics;
+                calendarDay.SelectedMetrics.Add(calendarDayMetric);
+                return calendarDay;
+            },
+            new { from = fromDate.Date, to = toDate.Date, userId },
+            // Specify the columns at which the returned rows should be split up into different objects
+            splitOn: "CalendarDayId,MetricValueId,Id");
+
+        return result;
+    }
+    
     public async Task<ICollection<CalendarDayMetric>> Get(Guid userId, DateTimeOffset date)
     {
         var calendarDay = await _calendarDayRepository.GetByDate(userId, date);
         var sql = $@"SELECT
-                CDM.""Id"" as {nameof(CalendarDayMetric.Id)},
-                CDM.""CalendarDayId"" as {nameof(CalendarDayMetric.CalendarDayId)},
-                CDM.""MetricsId"" as {nameof(CalendarDayMetric.MetricsId)},
-                CDM.""MetricValueId"" as {nameof(CalendarDayMetric.MetricValueId)},
-                ""Metrics"".""Id"" as {nameof(CalendarDayMetric.Metrics.Id)},
-                ""Metrics"".""Name"" as {nameof(CalendarDayMetric.Metrics.Name)},
-                MV.""Id"" as {nameof(CalendarDayMetric.MetricValue.Id)},
-                MV.""Name"" as {nameof(CalendarDayMetric.MetricValue.Name)},
-                MV.""MetricsId"" as {nameof(CalendarDayMetric.MetricValue.MetricsId)}
+                CDM.*,
+                ""Metrics"".*,
+                MV.*
                 FROM ""CalendarDayMetric"" CDM
                     INNER JOIN ""MetricValue"" MV ON CDM.""MetricValueId"" = MV.""Id""
                     INNER JOIN ""Metrics"" on ""Metrics"".""Id"" = CDM.""MetricsId""    
@@ -54,6 +96,8 @@ public class MetricRepository : IMetricRepository
             param: new { calendarDayId = calendarDay.Id });
         return metrics.ToList();
     }
+    
+    
 
     public async Task UploadMetricForADay(Guid calendarDayId, List<MetricRegisterMetricDto> metrics)
     {
