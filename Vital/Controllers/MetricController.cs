@@ -12,7 +12,6 @@ namespace Vital.Controllers;
 [Authorize]
 public class MetricController : BaseController
 {
-    // TODO? Add interface
     private readonly IMetricService _metricService;
     private readonly CurrentContext _currentContext;
     private readonly IMapper _mapper;
@@ -53,13 +52,12 @@ public class MetricController : BaseController
     /// <param name="date"></param>
     [HttpGet("{date}")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ICollection<CalendarDayMetric>))]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> GetAsync([FromRoute] string date)
+    public async Task<IActionResult> GetAsync([FromRoute] DateTimeOffset date)
     {
-        var parsedDate = DateTimeOffset.Parse(date);
         var userId = _currentContext.UserId!.Value;
-
-        var list = await _metricService.Get(userId, parsedDate);
+        var list = await _metricService.Get(userId, date);
         return Ok(list);
     }
 
@@ -70,6 +68,7 @@ public class MetricController : BaseController
     /// <param name="dateTimeOffsetString"></param>
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(CalendarDayDto))]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> UploadMetricForADayAsync([FromBody] List<MetricRegisterMetricDto> metrics, [FromQuery] string dateTimeOffsetString)
     {

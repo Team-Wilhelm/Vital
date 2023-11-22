@@ -21,7 +21,7 @@ public class CalendarDayRepository : ICalendarDayRepository
 
         sql = @"SELECT * FROM ""CalendarDay"" WHERE ""UserId""=@userId AND CAST(""Date"" AS DATE) = CAST(@date AS DATE)";
 
-        return CreateCalendarDay(state!, sql, new { userId, date });
+        return state is null ? null : CreateCalendarDay(state, sql, new { userId, date });
     }
     
     public async Task<List<CalendarDay>> GetByDateRange(Guid userId, DateTimeOffset from, DateTimeOffset to)
@@ -49,7 +49,7 @@ public class CalendarDayRepository : ICalendarDayRepository
         var state = await _db.QuerySingleOrDefaultAsync<string>(sql, new { calendarDayId });
 
         sql = @"SELECT * FROM ""CalendarDay"" WHERE ""Id""=@calendarDayId";
-        return CreateCalendarDay(state!, sql, new { calendarDayId });
+        return state is null ? null : CreateCalendarDay(state!, sql, new { calendarDayId });
     }
 
     private CalendarDay? CreateCalendarDay(string state, string sql, object param)
@@ -57,7 +57,7 @@ public class CalendarDayRepository : ICalendarDayRepository
         return state switch
         {
             "CycleDay" => _db.QuerySingleOrDefault<CycleDay>(sql, param),
-            _ => throw new InvalidOperationException("Invalid state")
+            _ => throw new InvalidOperationException($"There was an issue while creating a calendar day. Invalid state, {state}")
         };
     }
 }

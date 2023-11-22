@@ -12,7 +12,6 @@ namespace Vital.Core.Services;
 
 public class MetricService : IMetricService
 {
-    //TODO: Add interface
     private readonly IMetricRepository _metricRepository;
     private readonly ICalendarDayRepository _calendarDayRepository;
     private readonly IMapper _mapper;
