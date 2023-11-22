@@ -22,4 +22,10 @@ public static class Utilities
             client.DefaultRequestHeaders.Add("Authorization", $"Bearer {authResponse.Token}");
         }
     }
+    
+    public static Task ClearToken(HttpClient client)
+    {
+        client.DefaultRequestHeaders.Remove("Authorization");
+        return Task.CompletedTask;
+    }
 }
