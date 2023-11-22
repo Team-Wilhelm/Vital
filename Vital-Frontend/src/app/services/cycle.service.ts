@@ -10,23 +10,15 @@ import {environment} from "../../../environments/environment";
 
 export class CycleService {
   currentCycle: Cycle | undefined;
+  predictedPeriod: Date[] = [];
 
   constructor(private httpClient: HttpClient) {
-    this.getCurrentCycleFromApi();
+    this.getPredictedPeriod();
+
   }
 
-  async getCurrentCycleFromApi() {
-    this.currentCycle = await firstValueFrom(this.httpClient.get<Cycle>(environment.baseUrl + '/cycle/current-cycle'));
-
-    if (this.currentCycle) {
-      this.currentCycle.cycleDays.forEach((cycleDay: CycleDay) => {
-        cycleDay.date = new Date(cycleDay.date);
-      });
-    }
-
-    // Find out what's the last saved day of the current cycle
-    const lastDay = this.currentCycle.cycleDays.reduce((prev, current) => (prev.date > current.date) ? prev : current);
-
-
+  async getPredictedPeriod() {
+    this.predictedPeriod = await firstValueFrom(this.httpClient.get<Date[]>(environment.baseUrl + '/cycle/predicted-period'));
+    this.predictedPeriod = this.predictedPeriod.map(date => new Date(date));
   }
 }

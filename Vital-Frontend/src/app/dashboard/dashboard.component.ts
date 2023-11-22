@@ -1,5 +1,4 @@
 import {Component} from '@angular/core';
-import {CycleDay} from "../interfaces/Models";
 import {CycleService} from "../services/cycle.service";
 
 @Component({
@@ -9,25 +8,23 @@ import {CycleService} from "../services/cycle.service";
 
 export class DashboardComponent {
   title = 'dashboard';
-  currentCycleDays: CycleDay[] = [];
+  nextPeriodInDays: number = 0;
 
-  constructor(private cycleService: CycleService) {
-    this.initCurrentCycleDays();
+  constructor(public cycleService: CycleService) {
+    cycleService.getPredictedPeriod().then(() => {
+      this.nextPeriodInDays = this.calculateNextPeriodInDays();
+    });
   }
 
-  async initCurrentCycleDays() {
-   /* const days = await this.cycleService.getCurrentCycleDays();
-    this.currentCycleDays = days.filter(day => {
-      const today = new Date();
-      today.setHours(0, 0, 0, 0); // remove time part
-      const dayDate = new Date(day.date);
-      dayDate.setHours(0, 0, 0, 0); // remove time part
-
-      const threeDaysBefore = new Date(today.getTime() - 3 * 24 * 60 * 60 * 1000);
-      const threeDaysAfter = new Date(today.getTime() + 3 * 24 * 60 * 60 * 1000);
-
-      return dayDate >= threeDaysBefore && dayDate <= threeDaysAfter;
-    });
-    console.log(this.currentCycleDays);*/
+  private calculateNextPeriodInDays() {
+    this.cycleService.predictedPeriod.sort((a, b) => a.getTime() - b.getTime());
+    const today = new Date();
+    let nextPeriodIndex = this.cycleService.predictedPeriod.findIndex(date => date.getTime() > today.getTime());
+    if (nextPeriodIndex === -1) {
+      nextPeriodIndex = 0;
+    }
+    const nextPeriod = this.cycleService.predictedPeriod[nextPeriodIndex];
+    const diffTime = Math.abs(nextPeriod.getTime() - today.getTime());
+    return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
   }
 }
