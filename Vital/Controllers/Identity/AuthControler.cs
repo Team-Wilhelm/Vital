@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 using Models.Dto.Identity;
 using Models.Identity;
 using Models.Responses;
 using Vital.Core.Services.Interfaces;
+using Vital.Models.Exception;
 
 namespace Vital.Controllers.Identity;
 
@@ -38,18 +38,18 @@ public class AuthController : BaseController
         var user = await _userManager.FindByEmailAsync(request.Email);
         if (user == null)
         {
-            throw new Exception("Wrong username or password");
+            throw new AuthException("Wrong username or password");
         }
 
         var result = await _userManager.CheckPasswordAsync(user, request.Password);
         if (!result)
         {
-            throw new Exception("Wrong username or password");
+            throw new AuthException("Wrong username or password");
         }
 
         if (!user.EmailConfirmed)
         {
-            throw new Exception("Email is not confirmed");
+            throw new AuthException("Email is not confirmed");
         }
 
         var roles = await _userManager.GetRolesAsync(user);
@@ -87,7 +87,7 @@ public class AuthController : BaseController
         var result = await _userManager.CreateAsync(user, requestDto.Password);
         if (!result.Succeeded)
         {
-            throw new Exception("Cannot create user");
+            throw new AuthException("Cannot create user");
         }
 
         var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
