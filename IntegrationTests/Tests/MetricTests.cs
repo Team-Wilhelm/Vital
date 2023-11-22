@@ -1,8 +1,6 @@
-﻿using System.Data;
-using System.Globalization;
+﻿using System.Globalization;
 using System.Net;
 using System.Net.Http.Json;
-using Dapper;
 using FluentAssertions;
 using Infrastructure.Data;
 using IntegrationTests.Setup;
@@ -64,28 +62,11 @@ public class MetricTests
             .Where(cdm => cdm.CalendarDay.Date == utcDate
                           && cdm.CalendarDay.UserId == user.Id)
             .ToList();
-
-        var loginRequestDto = new LoginRequestDto()
-        {
-            Email = user.Email,
-            Password = "P@ssw0rd.+"
-        };
-
-        var response = await _client.PostAsJsonAsync("/identity/auth/login", loginRequestDto);
-        var authResponse = await response.Content.ReadFromJsonAsync<AuthResponse>();
         
-        if (authResponse != null)
-        {
-            _client.DefaultRequestHeaders.Add("Authorization", $"Bearer {authResponse.Token}");
-        }
+        await Utilities.AuthorizeUserAndSetHeaderAsync(_client, user.Email);
         
-
         // Act
-        response = await _client.GetAsync($"/Metric/{date}");
-        
-        // print response
-        var content = await response.Content.ReadAsStringAsync();
-        _testOutputHelper.WriteLine(JsonConvert.SerializeObject(content, Formatting.Indented));
+        var response = await _client.GetAsync($"/Metric/{date}");
         var actual = await response.Content.ReadFromJsonAsync<ICollection<CalendarDayMetric>>();
         
         // Assert
