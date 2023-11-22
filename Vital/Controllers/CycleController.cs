@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Models;
 using Models.Dto.Cycle;
 using Models.Pagination;
+using Vital.Core.Context;
 using Vital.Core.Services.Interfaces;
 using Vital.Extension.Mapping;
 using Vital.Models.Exception;
@@ -18,11 +19,13 @@ public class CycleController : BaseController
 {
     private readonly ICycleService _cycleService;
     private readonly IMapper _mapper;
+    private readonly CurrentContext _currentContext;
 
-    public CycleController(ICycleService cycleService, IMapper mapper)
+    public CycleController(ICycleService cycleService, IMapper mapper, CurrentContext currentContext)
     {
         _cycleService = cycleService;
         _mapper = mapper;
+        _currentContext = currentContext;
     }
 
     /// <summary>
@@ -95,5 +98,13 @@ public class CycleController : BaseController
     {
         var predictedPeriodDays = await _cycleService.GetPredictedPeriod(cycleId);
         return Ok(predictedPeriodDays);
+    }
+    
+    [HttpGet("current-cycle")]
+    public async Task<IActionResult> GetCurrentCycle()
+    {
+        var userId = _currentContext.UserId!.Value;
+        var cycle = await _cycleService.GetCurrentCycle(userId);
+        return Ok(cycle);
     }
 }

@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Infrastructure.Repository.Interface;
 using Models;
+using Models.Days;
 using Models.Dto.Cycle;
 using Models.Pagination;
 using Vital.Core.Context;
@@ -14,10 +15,13 @@ public class CycleService : ICycleService
     private readonly ICycleRepository _cycleRepository;
     private readonly IMapper _mapper;
     private readonly CurrentContext _currentContext;
+    private readonly ICalendarDayRepository _calendarDayRepository;
 
-    public CycleService(ICycleRepository cycleRepository, IMapper mapper, CurrentContext currentContext)
+    public CycleService(ICycleRepository cycleRepository, ICalendarDayRepository calendarDayRepository, IMapper mapper,
+        CurrentContext currentContext)
     {
         _cycleRepository = cycleRepository;
+        _calendarDayRepository = calendarDayRepository;
         _mapper = mapper;
         _currentContext = currentContext;
     }
@@ -42,11 +46,6 @@ public class CycleService : ICycleService
         return cycle;
     }
 
-    public async Task<Cycle> CreateUponRegister(Cycle cycle)
-    {
-        return await _cycleRepository.Create(cycle);
-    }
-
     public async Task<Cycle> Update(Guid id, UpdateCycleDto dto)
     {
         var cycle = await _cycleRepository.GetById(id);
@@ -61,8 +60,6 @@ public class CycleService : ICycleService
         return cycle;
     }
 
-
-
     public async Task<List<PredictedPeriodDayDto>> GetPredictedPeriod(Guid cycleId)
     {
         var cycle = await _cycleRepository.GetById(cycleId);
@@ -73,5 +70,21 @@ public class CycleService : ICycleService
 
         // TODO: change
         return new List<PredictedPeriodDayDto>();
+    }
+
+    public async Task<Cycle?> GetCurrentCycle(Guid userId)
+    {
+        var cycle = await _cycleRepository.GetCurrentCycle(userId);
+        if (cycle is null)
+        {
+            throw new NotFoundException("No current cycle found.");
+        }
+
+        var cycleDays =
+            (List<CycleDay>)await _calendarDayRepository.GetCycleDaysForSpecifiedPeriodAsync(userId, cycle.StartDate,
+                DateTimeOffset.UtcNow);
+        cycle.CycleDays = cycleDays;
+
+        return cycle;
     }
 }

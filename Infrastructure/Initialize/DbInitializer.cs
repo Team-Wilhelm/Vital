@@ -50,7 +50,6 @@ public class DbInitializer
             Id = Guid.Parse("2AF6BC6C-B3C0-4E77-97D9-9FA6D36C4A0A"),
             UserId = Guid.Parse("ADFEAD4C-823B-41E5-9C7E-C84AA04192A4"),
             StartDate = DateTimeOffset.UtcNow.AddDays(-10),
-            EndDate = DateTimeOffset.UtcNow.AddDays(10)
         });
 
         // Add metrics

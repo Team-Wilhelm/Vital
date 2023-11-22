@@ -1,6 +1,7 @@
 ﻿using System.Data;
 using Dapper;
 using Infrastructure.Repository.Interface;
+using Models;
 using Models.Days;
 
 namespace Infrastructure.Repository;
@@ -31,6 +32,14 @@ public class CalendarDayRepository : ICalendarDayRepository
 
         sql = @"SELECT * FROM ""CalendarDay"" WHERE ""Id""=@calendarDayId";
         return CreateCalendarDay(state!, sql, new { calendarDayId });
+    }
+
+
+    public async Task<IEnumerable<CycleDay>> GetCycleDaysForSpecifiedPeriodAsync(Guid userId, DateTimeOffset startDate, DateTimeOffset endDate)
+    {
+        var sql = @"SELECT COUNT(*) FROM ""CalendarDay"" WHERE ""Date"" BETWEEN @startDate AND @endDate AND ""UserId""=@userId";
+        var calendarDays = await _db.QueryAsync<CycleDay>(sql, new { startDate, endDate, userId });
+        return calendarDays;
     }
 
     private CalendarDay? CreateCalendarDay(string state, string sql, object param)
