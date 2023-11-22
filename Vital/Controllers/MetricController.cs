@@ -26,11 +26,11 @@ public class MetricController : BaseController
     /// <param name="date"></param>
     [HttpGet("{date}")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ICollection<CalendarDayMetric>))]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetAsync([FromRoute] DateTimeOffset date)
     {
         var userId = _currentContext.UserId!.Value;
-
         var list = await _metricService.Get(userId, date);
         return Ok(list);
     }
@@ -42,6 +42,7 @@ public class MetricController : BaseController
     /// <param name="dateTimeOffsetString"></param>
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(CalendarDayDto))]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> UploadMetricForADayAsync([FromBody] List<MetricRegisterMetricDto> metrics, [FromQuery] string dateTimeOffsetString)
     {
