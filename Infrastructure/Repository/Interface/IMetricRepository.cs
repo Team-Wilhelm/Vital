@@ -1,8 +1,4 @@
-﻿using Models;
-using Models.Days;
-using Models.Dto.Cycle;
-using Models.Dto.Metrics;
-using Models.Pagination;
+﻿using Models.Dto.Metrics;
 using Models.Util;
 
 namespace Infrastructure.Repository.Interface;

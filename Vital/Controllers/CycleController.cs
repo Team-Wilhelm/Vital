@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Models;
-using Models.Dto;
 using Models.Dto.Cycle;
 using Models.Pagination;
 using Vital.Core.Services.Interfaces;
@@ -56,7 +55,7 @@ public class CycleController : BaseController
 
         return Ok(cycle);
     }
-    
+
     /// <summary>
     /// Creates a new Cycle object with the specified details.
     /// </summary>
@@ -84,7 +83,7 @@ public class CycleController : BaseController
 
         return Ok(cycle);
     }
-    
+
     /// <summary>
     /// Retrieves a list of predicted period days for a Cycle object.
     /// </summary>

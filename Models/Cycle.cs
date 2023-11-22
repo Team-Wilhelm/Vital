@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using Models.Days;
+﻿using Models.Days;
 using Models.Identity;
 
 namespace Models;

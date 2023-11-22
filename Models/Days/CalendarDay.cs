@@ -10,6 +10,6 @@ public abstract class CalendarDay
     public Guid UserId { get; set; }
     public ApplicationUser User { get; set; }
     public string State { get; set; }   //public string State { get; set; } = "Period"; // Period, Pregnancy, Menopause
-    
+
     public ICollection<CalendarDayMetric> SelectedMetrics { get; set; }
 }

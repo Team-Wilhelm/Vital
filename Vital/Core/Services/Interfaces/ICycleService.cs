@@ -1,5 +1,4 @@
 ﻿using Models;
-using Models.Dto;
 using Models.Dto.Cycle;
 using Models.Pagination;
 
@@ -25,7 +24,7 @@ public interface ICycleService
     /// <returns>A task that represents the asynchronous operation. 
     /// The task result contains a Cycle object, or null if no objects were found with the provided ID.</returns>
     Task<Cycle?> GetById(Guid id);
-    
+
     /// <summary>
     /// Creates a new Cycle object with the specified details.
     /// </summary>

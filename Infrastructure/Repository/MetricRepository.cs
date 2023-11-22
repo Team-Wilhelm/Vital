@@ -1,12 +1,8 @@
 ﻿using System.Data;
-using System.Runtime.InteropServices.JavaScript;
 using Dapper;
 using Infrastructure.Repository.Interface;
 using Models;
-using Models.Days;
-using Models.Dto.Cycle;
 using Models.Dto.Metrics;
-using Models.Pagination;
 using Models.Util;
 
 namespace Infrastructure.Repository;
@@ -21,7 +17,7 @@ public class MetricRepository : IMetricRepository
         _db = db;
         _calendarDayRepository = calendarDayRepository;
     }
-    
+
     public async Task<ICollection<CalendarDayMetric>> Get(Guid userId, DateTimeOffset date)
     {
         var calendarDay = await _calendarDayRepository.GetByDate(userId, date);
@@ -43,18 +39,18 @@ public class MetricRepository : IMetricRepository
         {
             return new List<CalendarDayMetric>();
         }
-        
+
         // The result: Id, CalendarDayId, MetricsId, MetricValueId, Id, Name, Id, Name, MetricsId
         var metrics = await _db.QueryAsync<CalendarDayMetric, Metrics, MetricValue, CalendarDayMetric>(
             sql,
             (calendarDayMetrics, metrics, metricValue) =>
             {
-                metrics.Values = new List<MetricValue>(){metricValue};
+                metrics.Values = new List<MetricValue>() { metricValue };
                 calendarDayMetrics.Metrics = metrics;
                 calendarDayMetrics.MetricValue = metricValue;
                 return calendarDayMetrics;
-            }, splitOn: "Id, Id", 
-            
+            }, splitOn: "Id, Id",
+
             param: new { calendarDayId = calendarDay.Id });
         return metrics.ToList();
     }
@@ -64,7 +60,7 @@ public class MetricRepository : IMetricRepository
         // Delete all metrics for the day, if there are any
         var sql = @"DELETE FROM ""CalendarDayMetric"" WHERE ""CalendarDayId""=@calendarDayId";
         await _db.ExecuteAsync(sql, new { calendarDayId });
-        
+
         // Insert new metrics for the day
         sql = @"INSERT INTO ""CalendarDayMetric"" (""Id"",""CalendarDayId"", ""MetricsId"", ""MetricValueId"") VALUES (@Id, @calendarDayId, @metricsId, @metricValueId)";
         foreach (var metricsDto in metrics)

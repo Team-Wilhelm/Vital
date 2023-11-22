@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Npgsql;
@@ -26,10 +25,10 @@ public class VitalApiFactory : WebApplicationFactory<IApiAssemblyMarker>, IAsync
             .WithUsername("root")
             .WithPassword("password")
             .Build();
-    
+
     public HttpClient Client { get; private set; } = null!;
     public ApplicationDbContext DbContext { get; set; } = null!;
-    
+
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         builder.ConfigureTestServices(services =>
@@ -54,23 +53,23 @@ public class VitalApiFactory : WebApplicationFactory<IApiAssemblyMarker>, IAsync
                 x.UseNpgsql(connectionString));
         });
     }
-    
+
     public async Task InitializeAsync()
     {
         await _dbContainer.StartAsync();
         Client = CreateClient();
         _dbConnection = new NpgsqlConnection(_dbContainer.GetConnectionString());
         await _dbConnection.OpenAsync();
-        
+
         using var scope = Services.CreateScope();
         DbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-        
+
         await DbContext.Database.EnsureCreatedAsync();
-        
+
         _respawner = await Respawner.CreateAsync(_dbConnection, new RespawnerOptions
         {
             DbAdapter = DbAdapter.Postgres,
-            SchemasToInclude = new []{ "public" }
+            SchemasToInclude = new[] { "public" }
         });
     }
 

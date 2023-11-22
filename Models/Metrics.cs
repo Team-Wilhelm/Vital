@@ -1,6 +1,4 @@
-﻿using Models.Days;
-
-namespace Models;
+﻿namespace Models;
 
 public class Metrics
 {

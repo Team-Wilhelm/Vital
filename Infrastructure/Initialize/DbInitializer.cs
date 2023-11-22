@@ -1,6 +1,5 @@
 ﻿using Infrastructure.Data;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Models;
 using Models.Days;
 using Models.Identity;
@@ -53,14 +52,14 @@ public class DbInitializer
             StartDate = DateTimeOffset.UtcNow.AddDays(-10),
             EndDate = DateTimeOffset.UtcNow.AddDays(10)
         });
-        
+
         // Add metrics
         await _context.Metrics.AddRangeAsync(
             new Metrics()
-        {
-            Id = Guid.Parse("d56807fe-05ca-4901-a564-68f14e31b241"),
-            Name = "Flow",
-            Values = new List<MetricValue>()
+            {
+                Id = Guid.Parse("d56807fe-05ca-4901-a564-68f14e31b241"),
+                Name = "Flow",
+                Values = new List<MetricValue>()
             {
                 new()
                 {
@@ -87,7 +86,7 @@ public class DbInitializer
                     MetricsId = Guid.Parse("d56807fe-05ca-4901-a564-68f14e31b241")
                 }
             },
-        }, new Metrics()
+            }, new Metrics()
             {
                 Id = Guid.Parse("51DA609D-4477-47B8-B1B5-E4298A729D03"),
                 Name = "Cramps",
@@ -117,7 +116,7 @@ public class DbInitializer
                         Name = "Severe",
                         MetricsId = Guid.Parse("51DA609D-4477-47B8-B1B5-E4298A729D03")
                     }
-                    
+
                 }
             }
             );
@@ -188,11 +187,11 @@ public class DbInitializer
             CycleId = Guid.Parse("2AF6BC6C-B3C0-4E77-97D9-9FA6D36C4A0A"),
             IsPeriodDay = false
         });
-        
+
         // Link cycle to user's current cycle
         user.CurrentCycleId = Guid.Parse("2AF6BC6C-B3C0-4E77-97D9-9FA6D36C4A0A");
         await _userManager.UpdateAsync(user);
-        
+
         await _context.SaveChangesAsync();
     }
 }

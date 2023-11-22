@@ -37,7 +37,7 @@ public class ExceptionFilter : IAsyncExceptionFilter
                     errorMessage = notFoundException.Message;
                     context.HttpContext.Response.StatusCode = StatusCodes.Status404NotFound;
                     break;
-                
+
                 case AuthException authenticationException:
                     errorCode = "Authentication Problem";
                     statusCode = StatusCodes.Status400BadRequest;

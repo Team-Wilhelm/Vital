@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using Infrastructure.Repository.Interface;
 using Models;
-using Models.Dto;
 using Models.Dto.Cycle;
 using Models.Pagination;
 using Vital.Core.Context;
@@ -39,7 +38,7 @@ public class CycleService : ICycleService
         cycle.Id = Guid.NewGuid();
         cycle.UserId = _currentContext.UserId!.Value;
         await _cycleRepository.Create(cycle);
-        
+
         return cycle;
     }
 
@@ -55,14 +54,14 @@ public class CycleService : ICycleService
         {
             throw new NotFoundException();
         }
-        
+
         _mapper.Map(dto, cycle);
         await _cycleRepository.Update(cycle);
-        
+
         return cycle;
     }
-    
-    
+
+
 
     public async Task<List<PredictedPeriodDayDto>> GetPredictedPeriod(Guid cycleId)
     {

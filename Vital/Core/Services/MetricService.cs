@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using Infrastructure.Repository.Interface;
-using Models;
 using Models.Dto.Cycle;
 using Models.Dto.Metrics;
 using Models.Util;
@@ -15,7 +14,7 @@ public class MetricService : IMetricService
     private readonly IMetricRepository _metricRepository;
     private readonly ICalendarDayRepository _calendarDayRepository;
     private readonly IMapper _mapper;
-    
+
     public MetricService(IMetricRepository metricRepository, ICalendarDayRepository calendarDayRepository, IMapper mapper)
     {
         _metricRepository = metricRepository;
@@ -37,7 +36,7 @@ public class MetricService : IMetricService
         {
             throw new NotFoundException();
         }
-        
+
         await _metricRepository.UploadMetricForADay(calendarDay.Id, metrics);
         calendarDay = await _calendarDayRepository.GetById(calendarDay.Id); //TODO: Include a list of selected metrics
         return _mapper.Map<CalendarDayDto>(calendarDay);

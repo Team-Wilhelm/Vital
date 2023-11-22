@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Models;
 using Models.Dto.Identity;
 using Models.Identity;
 using Models.Responses;
@@ -17,7 +16,8 @@ public class AuthController : BaseController
     private readonly ICycleService _cycleService;
     private readonly IEmailService _emailService;
 
-    public AuthController(UserManager<ApplicationUser> userManager, IJwtService jwtService, ICycleService cycleService, IEmailService emailService){
+    public AuthController(UserManager<ApplicationUser> userManager, IJwtService jwtService, ICycleService cycleService, IEmailService emailService)
+    {
         _userManager = userManager;
         _jwtService = jwtService;
         _cycleService = cycleService;
@@ -78,7 +78,7 @@ public class AuthController : BaseController
         {
             return BadRequest(ModelState);
         }
-        
+
         var user = new ApplicationUser()
         {
             Email = requestDto.Email,
