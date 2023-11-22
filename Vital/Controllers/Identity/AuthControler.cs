@@ -30,6 +30,7 @@ public class AuthController : BaseController
     /// <param name="request"></param>
     /// <returns></returns>
     [HttpPost("Login")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(AuthResponse))]
     public async Task<IActionResult> Login([FromBody] LoginRequestDto request)
     {
         if (!ModelState.IsValid)

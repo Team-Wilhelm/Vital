@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
 using Infrastructure.Repository.Interface;
+using Models;
+using Models.Days;
 using Models.Dto.Cycle;
 using Models.Dto.Metrics;
 using Models.Util;
@@ -10,7 +12,6 @@ namespace Vital.Core.Services;
 
 public class MetricService : IMetricService
 {
-    //TODO: Add interface
     private readonly IMetricRepository _metricRepository;
     private readonly ICalendarDayRepository _calendarDayRepository;
     private readonly IMapper _mapper;
@@ -20,6 +21,16 @@ public class MetricService : IMetricService
         _metricRepository = metricRepository;
         _calendarDayRepository = calendarDayRepository;
         _mapper = mapper;
+    }
+
+    public async Task<List<Metrics>> GetAllMetrics()
+    {
+        return await _metricRepository.GetAllMetrics();
+    }
+    
+    public async Task<IEnumerable<CalendarDay>> GetMetricsForCalendarDays(Guid userId, DateTimeOffset fromDate, DateTimeOffset toDate)
+    {
+        return await _metricRepository.GetMetricsForCalendarDays(userId, fromDate, toDate);
     }
 
     public async Task<ICollection<CalendarDayMetric>> Get(Guid userId, DateTimeOffset date)
