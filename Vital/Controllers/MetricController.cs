@@ -11,7 +11,6 @@ namespace Vital.Controllers;
 [Authorize]
 public class MetricController : BaseController
 {
-    // TODO? Add interface
     private readonly IMetricService _metricService;
     private readonly CurrentContext _currentContext;
 
@@ -28,12 +27,11 @@ public class MetricController : BaseController
     [HttpGet("{date}")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ICollection<CalendarDayMetric>))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> GetAsync([FromRoute] string date)
+    public async Task<IActionResult> GetAsync([FromRoute] DateTimeOffset date)
     {
-        var parsedDate = DateTimeOffset.Parse(date);
         var userId = _currentContext.UserId!.Value;
 
-        var list = await _metricService.Get(userId, parsedDate);
+        var list = await _metricService.Get(userId, date);
         return Ok(list);
     }
 
