@@ -35,14 +35,18 @@ public class ExceptionFilter : IAsyncExceptionFilter
                     errorCode = "NotFound";
                     statusCode = StatusCodes.Status404NotFound;
                     errorMessage = notFoundException.Message;
-                    context.HttpContext.Response.StatusCode = StatusCodes.Status404NotFound;
                     break;
 
                 case AuthException authenticationException:
-                    errorCode = "Authentication Problem";
+                    errorCode = "AuthenticationProblem";
                     statusCode = StatusCodes.Status400BadRequest;
                     errorMessage = authenticationException.Message;
-                    context.HttpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
+                    break;
+                
+                case ResetPasswordException resetPasswordException:
+                    errorCode = "CouldNotResetPassword";
+                    statusCode = StatusCodes.Status400BadRequest;
+                    errorMessage = resetPasswordException.Message;
                     break;
 
                 // This should never happen in production
