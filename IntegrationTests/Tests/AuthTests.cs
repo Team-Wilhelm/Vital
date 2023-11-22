@@ -34,15 +34,15 @@ public class AuthTests
             Email = "userapp",
             Password = "P@ssw0rd.+"
         };
-        
+
         var response = await _client.PostAsync("/Identity/Auth/Register", JsonContent.Create(registerRequest));
 
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-        
+
         _dbContext.Users.FirstOrDefault(u => u.UserName == registerRequest.Email)
             .Should().BeNull();
     }
-    
+
     [Fact]
     public async Task Register_with_insufficient_password_length_less_than_6()
     {
@@ -51,15 +51,15 @@ public class AuthTests
             Email = "user@app",
             Password = "P@5sw"
         };
-        
+
         var response = await _client.PostAsync("/Identity/Auth/Register", JsonContent.Create(registerRequest));
-        
-        response.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
-        
+
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+
         _dbContext.Users.FirstOrDefault(u => u.UserName == registerRequest.Email)
             .Should().BeNull();
     }
-    
+
     [Fact]
     public async Task Register_with_insufficient_password_no_uppercase()
     {
@@ -68,15 +68,15 @@ public class AuthTests
             Email = "user@app",
             Password = "p@ssw0rd.+"
         };
-        
+
         var response = await _client.PostAsync("/Identity/Auth/Register", JsonContent.Create(registerRequest));
-        
-        response.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
-        
+
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+
         _dbContext.Users.FirstOrDefault(u => u.UserName == registerRequest.Email)
             .Should().BeNull();
     }
-    
+
     [Fact]
     public async Task Register_with_insufficient_password_no_symbol()
     {
@@ -85,15 +85,15 @@ public class AuthTests
             Email = "user@app",
             Password = "Passw0rd"
         };
-        
+
         var response = await _client.PostAsync("/Identity/Auth/Register", JsonContent.Create(registerRequest));
-        
-        response.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
-        
+
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+
         _dbContext.Users.FirstOrDefault(u => u.UserName == registerRequest.Email)
             .Should().BeNull();
     }
-    
+
     [Fact]
     public async Task Register_with_insufficient_password_no_number()
     {
@@ -102,15 +102,15 @@ public class AuthTests
             Email = "user@app",
             Password = "P@ssword.+"
         };
-        
+
         var response = await _client.PostAsync("/Identity/Auth/Register", JsonContent.Create(registerRequest));
-        
-        response.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
-        
+
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+
         _dbContext.Users.FirstOrDefault(u => u.UserName == registerRequest.Email)
             .Should().BeNull();
     }
-    
+
     [Fact]
     public async Task Successful_register()
     {
@@ -119,15 +119,15 @@ public class AuthTests
             Email = "user@app.com",
             Password = "P@ssw0rd.+"
         };
-        
+
         var response = await _client.PostAsync("/Identity/Auth/Register", JsonContent.Create(registerRequest));
-        
+
         response.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
-        
+
         _dbContext.Users.FirstOrDefault(u => u.UserName == registerRequest.Email)
             .Should().NotBeNull();
     }
-    
+
     [Fact]
     public async Task Failed_login_user_not_found()
     {
@@ -136,15 +136,15 @@ public class AuthTests
             Email = "not-found@app.com",
             Password = "P@ssw0rd.+"
         };
-        
+
         var response = await _client.PostAsync("/Identity/Auth/Login", JsonContent.Create(loginRequest));
-        
-        response.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
-        
+
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+
         _dbContext.Users.FirstOrDefault(u => u.UserName == loginRequest.Email)
             .Should().BeNull();
     }
-    
+
     [Fact]
     public async Task Failed_login_user_not_confirmed()
     {
@@ -161,15 +161,15 @@ public class AuthTests
             EmailConfirmed = false
         };
         await _userManager.CreateAsync(user, loginRequest.Password);
-        
+
         _dbContext.Users.FirstOrDefault(u => u.UserName == loginRequest.Email)
             .Should().NotBeNull();
-        
+
         var response = await _client.PostAsync("/Identity/Auth/Login", JsonContent.Create(loginRequest));
-        
-        response.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
+
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
-    
+
     [Fact]
     public async Task Successful_login_user()
     {
@@ -186,12 +186,12 @@ public class AuthTests
             EmailConfirmed = true
         };
         await _userManager.CreateAsync(user, loginRequest.Password);
-        
+
         _dbContext.Users.FirstOrDefault(u => u.UserName == loginRequest.Email)
             .Should().NotBeNull();
-        
+
         var response = await _client.PostAsync("/Identity/Auth/Login", JsonContent.Create(loginRequest));
-        
+
         response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
 }

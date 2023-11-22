@@ -38,6 +38,13 @@ public class ExceptionFilter : IAsyncExceptionFilter
                     context.HttpContext.Response.StatusCode = StatusCodes.Status404NotFound;
                     break;
 
+                case AuthException authenticationException:
+                    errorCode = "Authentication Problem";
+                    statusCode = StatusCodes.Status400BadRequest;
+                    errorMessage = authenticationException.Message;
+                    context.HttpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
+                    break;
+
                 // This should never happen in production
                 default:
                     errorCode = "AppExceptionNotHandled";

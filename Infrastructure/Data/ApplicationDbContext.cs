@@ -15,6 +15,9 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
     public DbSet<MenopauseDay> MenopauseDays { get; set; }
     public DbSet<PregnancyDay> PregnancyDays { get; set; }
 
+    public DbSet<Metrics> Metrics { get; set; }
+
+
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
         : base(options)
     {

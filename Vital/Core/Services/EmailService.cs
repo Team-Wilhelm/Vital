@@ -1,4 +1,4 @@
-using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.Options;
 using Models.Identity;
 using Vital.Configuration;
 using Vital.Core.Services.Interfaces;
@@ -13,14 +13,14 @@ public class EmailService(IEmailDeliveryService emailDeliveryService, IOptions<G
         var subject = "Verify Email";
 
         var verifyMessageContent = $"Hello, {user.UserName}, to verify your email click: {globalSettings.Value.FrontEndUrl}/email-verify?userId={user.Id}&token={token} <br/> If you did not request this email, please ignore it.";
-        
+
         var message = CreateDefaultMessage(verifyMessageContent);
 
         await SendEmailAsync(recipients, subject, message, cancellationToken);
     }
 
     #region Private methods
-    
+
     private async Task SendEmailAsync(List<string> recipients, string subject, string message, CancellationToken ct = default)
     {
         await emailDeliveryService.SendAsync(recipients, subject, message, ct);
@@ -33,6 +33,6 @@ public class EmailService(IEmailDeliveryService emailDeliveryService, IOptions<G
         return defaultTemplate.Replace("{{PartialBlock}}", content)
             .Replace("{{CurrentYear}}", DateTime.Now.Year.ToString());
     }
-    
+
     #endregion
 }

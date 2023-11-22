@@ -16,7 +16,7 @@ public class BrevoEmailDeliveryService : IEmailDeliveryService
 
     public async Task<bool> SendAsync(List<string> recipients, string subject, string message, CancellationToken ct = default)
     {
-        
+
         var brevoRecipients = recipients.Select(recipient => new Recipient(recipient.Split("@")[0], recipient)).ToList();
 
         if (_brevoSettings.ApiKey is null or "")

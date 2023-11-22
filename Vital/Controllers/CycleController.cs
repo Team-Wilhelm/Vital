@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Models;
-using Models.Dto;
 using Models.Dto.Cycle;
 using Models.Pagination;
 using Vital.Core.Services.Interfaces;
@@ -31,7 +30,7 @@ public class CycleController : BaseController
     /// </summary>
     /// <param name="paginator">An object of type Paginator which contains parameters for pagination.</param>
     [HttpGet]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(PaginatedList<Cycle>))]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(PaginatedList<CycleDto>))]
     public async Task<IActionResult> GetAll([FromQuery] Paginator paginator)
     {
         var list = await _cycleService.Get(paginator);
@@ -44,7 +43,7 @@ public class CycleController : BaseController
     /// </summary>
     /// <param name="id">The unique Guid identifier of the Cycle object.</param>
     [HttpGet("{id:guid}")]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Cycle))]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(CycleDto))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetById(Guid id)
     {
@@ -56,13 +55,13 @@ public class CycleController : BaseController
 
         return Ok(cycle);
     }
-    
+
     /// <summary>
     /// Creates a new Cycle object with the specified details.
     /// </summary>
     /// <param name="dto">A CreateCycleDto object containing the details for the new Cycle object.</param>
     [HttpPost]
-    [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(Cycle))]
+    [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(CycleDto))]
     public async Task<IActionResult> Create([FromBody] CreateCycleDto dto)
     {
         var cycle = await _cycleService.Create(dto);
@@ -76,7 +75,7 @@ public class CycleController : BaseController
     /// <param name="id">The unique identifier of the Cycle object to be updated.</param>
     /// <param name="dto">A UpdateCycleDto object containing the updated values.</param>
     [HttpPut("{id:guid}")]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Cycle))]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(CycleDto))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Update(Guid id, [FromBody] UpdateCycleDto dto)
     {
@@ -84,5 +83,17 @@ public class CycleController : BaseController
 
         return Ok(cycle);
     }
-    
+
+    /// <summary>
+    /// Retrieves a list of predicted period days for a Cycle object.
+    /// </summary>
+    /// <param name="cycleId">The ID of the predicted cycle.</param>
+    [HttpGet("predicted-period/{cycleId:guid}")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<PredictedPeriodDayDto>))]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetPredictedPeriod(Guid cycleId)
+    {
+        var predictedPeriodDays = await _cycleService.GetPredictedPeriod(cycleId);
+        return Ok(predictedPeriodDays);
+    }
 }

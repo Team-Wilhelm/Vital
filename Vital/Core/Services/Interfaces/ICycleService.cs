@@ -1,5 +1,4 @@
 ﻿using Models;
-using Models.Dto;
 using Models.Dto.Cycle;
 using Models.Pagination;
 
@@ -25,7 +24,7 @@ public interface ICycleService
     /// <returns>A task that represents the asynchronous operation. 
     /// The task result contains a Cycle object, or null if no objects were found with the provided ID.</returns>
     Task<Cycle?> GetById(Guid id);
-    
+
     /// <summary>
     /// Creates a new Cycle object with the specified details.
     /// </summary>
@@ -42,4 +41,20 @@ public interface ICycleService
     /// <returns>A task that represents the asynchronous operation. 
     /// The task result contains the updated Cycle object.</returns>
     Task<Cycle> Update(Guid id, UpdateCycleDto dto);
+
+    /// <summary>
+    /// Gets a list of predicted period days for the specified cycle.
+    /// </summary>
+    /// <param name="cycleId">The unique ID of the specified cycle.</param>
+    /// <returns>A task that represents the asynchronous operation. 
+    /// The task result contains a list of PredictedPeriodDayDtos.</returns>
+    Task<List<PredictedPeriodDayDto>> GetPredictedPeriod(Guid cycleId);
+
+    /// <summary>
+    /// Creates a new Cycle object with the specified details when the user registers, in order to create a default cycle
+    /// and tie it to the user. 
+    /// </summary>
+    /// <param name="cycle"></param>
+    /// <returns></returns>
+    Task<Cycle> CreateUponRegister(Cycle cycle);
 }

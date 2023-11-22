@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using Infrastructure.Repository.Interface;
 using Models;
-using Models.Dto;
 using Models.Dto.Cycle;
 using Models.Pagination;
 using Vital.Core.Context;
@@ -39,8 +38,13 @@ public class CycleService : ICycleService
         cycle.Id = Guid.NewGuid();
         cycle.UserId = _currentContext.UserId!.Value;
         await _cycleRepository.Create(cycle);
-        
+
         return cycle;
+    }
+
+    public async Task<Cycle> CreateUponRegister(Cycle cycle)
+    {
+        return await _cycleRepository.Create(cycle);
     }
 
     public async Task<Cycle> Update(Guid id, UpdateCycleDto dto)
@@ -50,10 +54,24 @@ public class CycleService : ICycleService
         {
             throw new NotFoundException();
         }
-        
+
         _mapper.Map(dto, cycle);
         await _cycleRepository.Update(cycle);
-        
+
         return cycle;
+    }
+
+
+
+    public async Task<List<PredictedPeriodDayDto>> GetPredictedPeriod(Guid cycleId)
+    {
+        var cycle = await _cycleRepository.GetById(cycleId);
+        if (cycle is null)
+        {
+            throw new NotFoundException();
+        }
+
+        // TODO: change
+        return new List<PredictedPeriodDayDto>();
     }
 }

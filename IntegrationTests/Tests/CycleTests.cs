@@ -1,12 +1,9 @@
-using System.Net;
+﻿using System.Net;
 using System.Net.Http.Json;
 using FluentAssertions;
 using Infrastructure.Data;
 using IntegrationTests.Setup;
-using Models;
-using Models.Dto;
 using Models.Dto.Cycle;
-using Models.Pagination;
 
 namespace IntegrationTests.Tests;
 
@@ -20,7 +17,7 @@ public class CycleTests
         _client = waf.Client;
         _dbContext = waf.DbContext;
     }
-    
+
     [Fact]
     public async Task Get_Should_be_unauthorized()
     {
@@ -37,7 +34,7 @@ public class CycleTests
 
         response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }
-    
+
     [Fact]
     public async Task Create_Should_be_unauthorized()
     {
@@ -50,7 +47,7 @@ public class CycleTests
 
         response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }
-    
+
     [Fact]
     public async Task Update_Should_be_unauthorized()
     {

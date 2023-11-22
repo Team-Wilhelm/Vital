@@ -1,4 +1,4 @@
-namespace Vital.Configuration;
+﻿namespace Vital.Configuration;
 
 public class GlobalSettings
 {

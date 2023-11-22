@@ -14,6 +14,8 @@ public static class ServicesAndRepositoryExtension
         #region Repository
 
         services.AddScoped<ICycleRepository, CycleRepository>();
+        services.AddScoped<IMetricRepository, MetricRepository>();
+        services.AddScoped<ICalendarDayRepository, CalendarDayRepository>();
 
         #endregion
 
@@ -21,6 +23,7 @@ public static class ServicesAndRepositoryExtension
 
         services.AddTransient<ICycleService, CycleService>();
         services.AddTransient<IJwtService, JwtService>();
+        services.AddScoped<IMetricService, MetricService>();
         services.AddTransient<IEmailDeliveryService, BrevoEmailDeliveryService>();
         services.AddTransient<IEmailService, EmailService>();
 

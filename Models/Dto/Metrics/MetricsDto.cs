@@ -1,6 +1,6 @@
-﻿namespace Models;
+﻿namespace Models.Dto.Metrics;
 
-public class Metrics
+public class MetricsDto
 {
     public Guid Id { get; set; }
     public required string Name { get; set; }

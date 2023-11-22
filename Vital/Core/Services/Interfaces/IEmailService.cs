@@ -1,4 +1,4 @@
-using Models.Identity;
+﻿using Models.Identity;
 
 namespace Vital.Core.Services.Interfaces;
 
