@@ -37,7 +37,7 @@ public class CalendarDayRepository : ICalendarDayRepository
 
     public async Task<IEnumerable<CycleDay>> GetCycleDaysForSpecifiedPeriodAsync(Guid userId, DateTimeOffset startDate, DateTimeOffset endDate)
     {
-        var sql = @"SELECT COUNT(*) FROM ""CalendarDay"" WHERE ""Date"" BETWEEN @startDate AND @endDate AND ""UserId""=@userId";
+        var sql = @"SELECT * FROM ""CalendarDay"" WHERE ""Date"" BETWEEN @startDate AND @endDate AND ""UserId""=@userId";
         var calendarDays = await _db.QueryAsync<CycleDay>(sql, new { startDate, endDate, userId });
         return calendarDays;
     }
