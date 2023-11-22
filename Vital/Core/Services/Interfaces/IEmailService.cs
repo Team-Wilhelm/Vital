@@ -5,4 +5,5 @@ namespace Vital.Core.Services.Interfaces;
 public interface IEmailService
 {
     Task SendVerifyEmail(ApplicationUser user, string token, CancellationToken cancellationToken);
+    Task SendForgotPasswordEmailAsync(ApplicationUser user, string token, CancellationToken cancellationToken);
 }
