@@ -2,6 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import {DataService} from "../services/data.service";
 import {MetricService} from "../services/metric.service";
+import {Metric, MetricDto} from "../interfaces/metric";
 
 @Component({
   selector: 'add-metric',

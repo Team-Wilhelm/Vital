@@ -19,15 +19,14 @@ const routes: Routes = [
         component: AnalyticsComponent,
         canActivate: [authGuard]
     },
-    {path: 'login', component: LoginComponent},
-    {path: 'register', component: RegisterComponent},
-    {path: '**', redirectTo: 'dashboard'},
     {
       path: 'add-metric',
       component: AddMetricPageComponent,
-      pathMatch: 'full',
-      canActivate: [authGuard]},
-
+      pathMatch: 'full'
+    },
+    {path: 'login', component: LoginComponent},
+    {path: 'register', component: RegisterComponent},
+    {path: '**', redirectTo: 'dashboard'},
 ];
 
 @NgModule({

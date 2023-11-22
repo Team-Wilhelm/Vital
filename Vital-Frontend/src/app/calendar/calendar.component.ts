@@ -39,6 +39,7 @@ export class CalendarComponent implements OnInit{
     }
   }
 
+  //TODO create event based on real data
   createEvent() {
     this.newEvent = {
       title: 'Period',
@@ -48,6 +49,7 @@ export class CalendarComponent implements OnInit{
       editable: true,
       color: 'red',
       textColor: 'white',
+      duration: {days: 1},
       extendedProps: {
         value: 'Heavy Flow',
       }

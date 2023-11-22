@@ -1,13 +1,14 @@
 import {HttpClient} from '@angular/common/http';
 import {Injectable} from "@angular/core";
-import {Metric, MetricDto} from "../add-metric-page/add-metric-page.component";
+import {Metric, MetricDto} from "../interfaces/metric";
 import {firstValueFrom} from "rxjs";
+import {environment} from "../../../environments/environment";
 
 @Injectable({
   providedIn: 'root'
 })
 export class MetricService {
-  private apiUrl = 'something/metrics'; //TODO: Add API URL
+  private apiUrl = environment.baseUrl + '/metrics';
   constructor(private http: HttpClient) {
   }
 
