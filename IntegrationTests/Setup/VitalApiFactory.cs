@@ -1,4 +1,5 @@
-﻿using System.Data.Common;
+﻿using System.Data;
+using System.Data.Common;
 using Infrastructure.Data;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -31,20 +32,26 @@ public class VitalApiFactory : WebApplicationFactory<IApiAssemblyMarker>, IAsync
     
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
-        builder.ConfigureAppConfiguration((context, configBuilder) =>
-        {
-            // Add --db-init as argument
-            var initDbArg = new [] {"--db-init"};
-            configBuilder.AddCommandLine(initDbArg);
-        });
-
         builder.ConfigureTestServices(services =>
         {
+            // Remove all available DbContextOptions<ApplicationDbContext> services
             services.RemoveAll<DbContextOptions<ApplicationDbContext>>();
             services.RemoveAll<ApplicationDbContext>();
-            
+
+            // Get connection string from your container
+            var connectionString = _dbContainer.GetConnectionString();
+
+            // Add IDbConnection to dependency injection
+            services.AddScoped<IDbConnection>(container =>
+            {
+                var connection = new NpgsqlConnection(connectionString ?? throw new Exception("Connection string cannot be null"));
+                connection.Open();
+                return connection;
+            });
+
+            // Add new ApplicationDbContext service with UseNpgsql
             services.AddDbContext<ApplicationDbContext>(x =>
-                x.UseNpgsql(_dbContainer.GetConnectionString()));
+                x.UseNpgsql(connectionString));
         });
     }
     
