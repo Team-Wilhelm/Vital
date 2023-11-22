@@ -3,6 +3,9 @@ module.exports = {
   content: [
     "./src/**/*.{html,ts}",
   ],
+  daisyui: {
+    themes: ["cupcake"],
+  },
   theme: {
     extend: {
       colors: {

@@ -9,5 +9,4 @@ public class CycleDto
     public DateTimeOffset EndDate { get; set; }
     public Guid UserId { get; set; }
     public List<CycleDay> CycleDays { get; set; }
-    public Period Period { get; set; }
 }
