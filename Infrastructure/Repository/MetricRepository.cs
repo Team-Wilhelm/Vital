@@ -1,9 +1,11 @@
 ﻿using System.Data;
 using Dapper;
 using Infrastructure.Repository.Interface;
+using Microsoft.AspNetCore.Http;
 using Models;
 using Models.Dto.Metrics;
 using Models.Util;
+using Vital.Models.Exception;
 
 namespace Infrastructure.Repository;
 
@@ -60,6 +62,24 @@ public class MetricRepository : IMetricRepository
         // Delete all metrics for the day, if there are any
         var sql = @"DELETE FROM ""CalendarDayMetric"" WHERE ""CalendarDayId""=@calendarDayId";
         await _db.ExecuteAsync(sql, new { calendarDayId });
+        
+        // Check if the metric passed is valid
+        var metricsIds = metrics.Select(m => m.MetricsId).Distinct().ToList();
+        sql = @"SELECT ""Id"" FROM ""Metrics"" WHERE ""Id"" = ANY(@metricsIds)";
+        var validMetricsIds = await _db.QueryAsync<Guid>(sql, new { metricsIds });
+        if (validMetricsIds.Count() != metricsIds.Count)
+        {
+            throw new BadRequestException("The metric you are trying to log does not exist.");
+        }
+        
+        // Check if the metric value passed is valid
+        var metricValuesIds = metrics.Select(m => m.MetricValueId).Distinct().ToList();
+        sql = @"SELECT ""Id"" FROM ""MetricValue"" WHERE ""Id"" = ANY(@metricValuesIds)";
+        var validMetricValuesIds = await _db.QueryAsync<Guid>(sql, new { metricValuesIds });
+        if (validMetricValuesIds.Count() != metricValuesIds.Count)
+        {
+            throw new BadRequestException("The metric value you are trying to log does not exist.");
+        }
 
         // Insert new metrics for the day
         sql = @"INSERT INTO ""CalendarDayMetric"" (""Id"",""CalendarDayId"", ""MetricsId"", ""MetricValueId"") VALUES (@Id, @calendarDayId, @metricsId, @metricValueId)";

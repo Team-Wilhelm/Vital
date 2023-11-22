@@ -44,6 +44,13 @@ public class ExceptionFilter : IAsyncExceptionFilter
                     errorMessage = authenticationException.Message;
                     context.HttpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
                     break;
+                
+                case BadRequestException badRequestException:
+                    errorCode = "Bad Request";
+                    statusCode = StatusCodes.Status400BadRequest;
+                    errorMessage = badRequestException.Message;
+                    context.HttpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
+                    break;
 
                 // This should never happen in production
                 default:
