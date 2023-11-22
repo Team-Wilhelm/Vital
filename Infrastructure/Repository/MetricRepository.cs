@@ -1,7 +1,6 @@
 ﻿using System.Data;
 using Dapper;
 using Infrastructure.Repository.Interface;
-using Microsoft.AspNetCore.Http;
 using Models;
 using Models.Dto.Metrics;
 using Models.Util;
