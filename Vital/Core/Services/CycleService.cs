@@ -78,12 +78,14 @@ public class CycleService : ICycleService
             {
                 var predictedPeriodDay = new PredictedPeriodDayDto
                 {
-                    Date = currentCycle.CycleDays.Last().Date.AddDays(i + 1),
+                    Date = DateTimeOffset.Now.AddDays(i + 1),
                     CycleId = currentCycle.Id
                 };
                 predictedPeriodDays.Add(predictedPeriodDay);
             }
+            return predictedPeriodDays;
         }
+        
         
         // Otherwise the predicted period is calculated based on the average cycle length after the last period started.
         // The average cycle length is calculated based on the last 3 cycles.
