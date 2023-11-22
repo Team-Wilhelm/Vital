@@ -79,11 +79,12 @@ public class AuthController : BaseController
             return BadRequest(ModelState);
         }
         
-
         var user = new ApplicationUser()
         {
             Email = requestDto.Email,
-            UserName = requestDto.Email
+            UserName = requestDto.Email,
+            CycleLength = requestDto.CycleLength,
+            PeriodLength = requestDto.PeriodLength
         };
 
         var result = await _userManager.CreateAsync(user, requestDto.Password);

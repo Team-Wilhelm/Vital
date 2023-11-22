@@ -32,10 +32,7 @@ public class AuthTests
         var registerRequest = new RegisterRequestDto()
         {
             Email = "userapp",
-            Password = "P@ssw0rd.+",
-            CycleLength = 28,
-            PeriodLength = 5,
-            LastPeriodStart = DateTimeOffset.Now
+            Password = "P@ssw0rd.+"
         };
         
         var response = await _client.PostAsync("/Identity/Auth/Register", JsonContent.Create(registerRequest));
@@ -52,10 +49,7 @@ public class AuthTests
         var registerRequest = new RegisterRequestDto()
         {
             Email = "user@app",
-            Password = "P@5sw",
-            CycleLength = 28,
-            PeriodLength = 5,
-            LastPeriodStart = DateTimeOffset.Now
+            Password = "P@5sw"
         };
         
         var response = await _client.PostAsync("/Identity/Auth/Register", JsonContent.Create(registerRequest));
@@ -72,10 +66,7 @@ public class AuthTests
         var registerRequest = new RegisterRequestDto()
         {
             Email = "user@app",
-            Password = "p@ssw0rd.+",
-            CycleLength = 28,
-            PeriodLength = 5,
-            LastPeriodStart = DateTimeOffset.Now
+            Password = "p@ssw0rd.+"
         };
         
         var response = await _client.PostAsync("/Identity/Auth/Register", JsonContent.Create(registerRequest));
@@ -92,10 +83,7 @@ public class AuthTests
         var registerRequest = new RegisterRequestDto()
         {
             Email = "user@app",
-            Password = "Passw0rd",
-            CycleLength = 28,
-            PeriodLength = 5,
-            LastPeriodStart = DateTimeOffset.Now
+            Password = "Passw0rd"
         };
         
         var response = await _client.PostAsync("/Identity/Auth/Register", JsonContent.Create(registerRequest));
@@ -112,10 +100,7 @@ public class AuthTests
         var registerRequest = new RegisterRequestDto()
         {
             Email = "user@app",
-            Password = "P@ssword.+",
-            CycleLength = 28,
-            PeriodLength = 5,
-            LastPeriodStart = DateTimeOffset.Now
+            Password = "P@ssword.+"
         };
         
         var response = await _client.PostAsync("/Identity/Auth/Register", JsonContent.Create(registerRequest));
@@ -132,10 +117,7 @@ public class AuthTests
         var registerRequest = new RegisterRequestDto()
         {
             Email = "user@app.com",
-            Password = "P@ssw0rd.+",
-            CycleLength = 28,
-            PeriodLength = 5,
-            LastPeriodStart = DateTimeOffset.Now
+            Password = "P@ssw0rd.+"
         };
         
         var response = await _client.PostAsync("/Identity/Auth/Register", JsonContent.Create(registerRequest));

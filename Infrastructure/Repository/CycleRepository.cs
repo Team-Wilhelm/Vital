@@ -50,7 +50,6 @@ public class CycleRepository : ICycleRepository
                 VALUES (@Id, @StartDate, @EndDate, @UserId)";
 
         await _db.ExecuteAsync(sql, cycle);
-    
         return cycle;
     }
 
