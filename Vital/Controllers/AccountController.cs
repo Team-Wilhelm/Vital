@@ -8,7 +8,7 @@ using Vital.Models.Exception;
 
 namespace Vital.Controllers;
 
-[Microsoft.AspNetCore.Components.Route("/Identity/[controller]")]
+[Route("/Identity/[controller]")]
 public class AccountController : BaseController
 {
     private readonly UserManager<ApplicationUser> _userManager;
@@ -52,6 +52,11 @@ public class AccountController : BaseController
     [HttpPost("Reset-Password")]
     public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto dto)
     {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+        
         var user = await _userManager.FindByIdAsync(dto.UserId.ToString());
 
         if (user is not null)

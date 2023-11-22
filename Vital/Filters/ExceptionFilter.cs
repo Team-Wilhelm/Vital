@@ -48,6 +48,12 @@ public class ExceptionFilter : IAsyncExceptionFilter
                     statusCode = StatusCodes.Status400BadRequest;
                     errorMessage = resetPasswordException.Message;
                     break;
+                
+                case EmailVerifyException emailVerifyException:
+                    errorCode = "CouldNotVerify";
+                    statusCode = StatusCodes.Status400BadRequest;
+                    errorMessage = emailVerifyException.Message;
+                    break;
 
                 // This should never happen in production
                 default:
