@@ -1,44 +1,49 @@
-import {Component, OnInit} from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import {DataService} from "../services/data.service";
-import {MetricService} from "../services/metric.service";
-import {Metric, MetricDto} from "../interfaces/metric";
+import { Component, OnInit } from '@angular/core';
+import { DataService } from '../services/data.service';
+import { MetricService } from '../services/metric.service';
+import { MetricRegisterMetricDto, MetricValueViewDto, MetricViewDto, CalendarDayMetricDto } from '../interfaces/dtos/metric.dto.interface';
 
 @Component({
   selector: 'add-metric',
   templateUrl: './add-metric-page.component.html',
 })
-export class AddMetricPageComponent implements OnInit{
-  public allMetrics: Metric[] = [];
-  public selectedMetrics: Metric[] = [];
+export class AddMetricPageComponent implements OnInit {
+  public allMetrics: MetricViewDto[] = [];
+  public selectedMetrics: MetricRegisterMetricDto[] = [];
   public clickedDate: string | undefined;
+  public metricSelectionMap: Map<string, { selectedValue: string }> = new Map();
 
   constructor(private dataService: DataService, private metricService: MetricService) {
     this.getMetrics().then();
   }
 
   ngOnInit(): void {
-    this.dataService.clickedDate$.subscribe(clickedDate => {
+    this.dataService.clickedDate$.subscribe((clickedDate) => {
       this.clickedDate = clickedDate?.toISOString();
+      // When the date changes, update the selected metrics for the new date
+      this.getSelectedMetricsForDay().then(() => {
+        this.updateSelectedMetrics();
+      });
     });
   }
 
-  onCheckboxChange(metric: Metric) {
-    // Toggle the metric's selected state
-    metric.isSelected = !metric.isSelected;
-
-    // Reset the selected value if the metric is being deselected
-    if (!metric.isSelected) {
-      metric.selectedValue = null;
+  onCheckboxChange(metric: MetricViewDto) {
+    // Toggle the selected state
+    if (!this.metricSelectionMap.has(metric.id)) {
+      // If no value is selected for this metric, select the first one
+      const firstValue = metric.values && metric.values.length > 0 ? metric.values[0].name : null;
+      this.metricSelectionMap.set(metric.id, { selectedValue: firstValue || '' });
+    } else {
+      // If a value is already selected, remove it
+      this.metricSelectionMap.delete(metric.id);
     }
 
-    // Update the selectedMetrics array
     this.updateSelectedMetrics();
   }
 
-  onRadioChange(metric: Metric, selectedValue: string) {
+  onRadioChange(metric: MetricViewDto, selectedValue: string) {
     // Update the selected value directly in the metric
-    metric.selectedValue = selectedValue;
+    this.metricSelectionMap.set(metric.id, { selectedValue });
 
     // Update the selectedMetrics array
     this.updateSelectedMetrics();
@@ -50,26 +55,32 @@ export class AddMetricPageComponent implements OnInit{
 
     // Add selected metrics to the selectedMetrics array
     this.allMetrics.forEach((metric) => {
-      if (metric.isSelected) {
-        this.selectedMetrics.push({ ...metric }); // Create a copy to avoid reference issues
+      const selection = this.metricSelectionMap.get(metric.id);
+      if (selection) {
+        this.selectedMetrics.push({
+          metricsId: metric.id,
+          metricValueId: selection.selectedValue,
+        });
       }
     });
   }
 
   public async saveMetrics() {
-    const metricDtos: MetricDto[] = [];
-    this.selectedMetrics.forEach((metric) => {
-      metricDtos.push({
-        id: metric.name,
-        value: metric.selectedValue!,
-      });
-    });
-    await this.metricService.addMetricsForDay(this.clickedDate!, metricDtos);
+    await this.metricService.addMetricsForDay(this.clickedDate!, this.selectedMetrics);
   }
 
   public async getMetrics() {
+    // Fetch metrics from your service and populate allMetrics
+    // For example:
     this.allMetrics = await this.metricService.getAllMetricsWithValues();
   }
 
+  public async getSelectedMetricsForDay() {
+    // Fetch selected metrics for the day from your service and update metricSelectionMap
+    // For example:
+    const metrics = await this.metricService.getMetricsForDay(this.clickedDate!);
+    metrics.forEach((metric) => {
+      this.metricSelectionMap.set(metric.metricsId, { selectedValue: metric.metricValueId });
+    });
+  }
 }
-

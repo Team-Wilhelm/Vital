@@ -5,25 +5,23 @@
 
     <div *ngFor="let metric of allMetrics" class="mb-4">
       <div class="flex items-center">
-        <input type="checkbox" id="{{ metric.name }}" [(ngModel)]="metric.isSelected" (click)="onCheckboxChange(metric)"
+        <input type="checkbox" id="{{ metric.id }}" [ngModel]="metricSelectionMap.get(metric.id) && metricSelectionMap.get(metric.id)?.selectedValue" (click)="onCheckboxChange(metric)"
                class="hidden">
-        <label for="{{ metric.name }}"
-               [ngClass]="{'bg-button-selected text-white': metric.isSelected, 'bg-button-unselected text-black': !metric.isSelected}"
+        <label for="{{ metric.id }}"
+               [ngClass]="{'bg-button-selected text-white': metricSelectionMap.get(metric.id)?.selectedValue, 'bg-button-unselected text-black': !metricSelectionMap.get(metric.id)?.selectedValue}"
                class="px-4 py-2 border rounded-full cursor-pointer transition duration-300 ease-in-out hover:badge-warning">
           {{ metric.name }}
         </label>
       </div>
 
-      <div *ngIf="metric.isSelected" class="mt-2">
+      <div class="mt-2">
         <div *ngFor="let value of metric.values" class="flex items-center">
-          <input type="radio" [name]="metric.name" [value]="value" [(ngModel)]="metric.selectedValue"
-                 (change)="onRadioChange(metric, value)" class="mr-2">
-          <span>{{ value }}</span>
+          <input type="radio" [name]="metric.id" [value]="value.name" [ngModel]="metricSelectionMap.get(metric.id) && metricSelectionMap.get(metric.id)?.selectedValue"
+                 (change)="onRadioChange(metric, value.name)" class="mr-2">
+          <span>{{ value.name }}</span>
         </div>
       </div>
     </div>
-<button (click)="updateSelectedMetrics()"></button>
+    <button (click)="updateSelectedMetrics()">Update Selected Metrics</button>
   </div>
 </div>
-
-

@@ -1,27 +1,31 @@
 import {HttpClient} from '@angular/common/http';
 import {Injectable} from "@angular/core";
-import {Metric, MetricDto} from "../interfaces/metric";
 import {firstValueFrom} from "rxjs";
 import {environment} from "../../../environments/environment";
+import {
+  CalendarDayMetricDto, CalendarDayMetricViewDto,
+  MetricRegisterMetricDto,
+  MetricValueViewDto, MetricViewDto
+} from "../interfaces/dtos/metric.dto.interface";
 
 @Injectable({
   providedIn: 'root'
 })
 export class MetricService {
-  private apiUrl = environment.baseUrl + '/metrics';
+  private apiUrl = environment.baseUrl + '/metrics'; //TODO check this is correct url
   constructor(private http: HttpClient) {
   }
 
-  public async getAllMetricsWithValues(): Promise<Metric[]> {
-    const call = this.http.get<Metric[]>(`${this.apiUrl}`);
+  public async getAllMetricsWithValues(): Promise<MetricViewDto[]> {
+    const call = this.http.get<MetricViewDto[]>(`${this.apiUrl}`);
     return await firstValueFrom(call);
   }
 
-  public async getMetricsForDay(date: string): Promise<Metric[]> {
-    const call = this.http.get<Metric[]>(`${this.apiUrl}/${date}`);
+  public async getMetricsForDay(date: string): Promise<CalendarDayMetricViewDto[]> {
+    const call = this.http.get<CalendarDayMetricViewDto[]>(`${this.apiUrl}/${date}`);
     return await firstValueFrom(call);
   }
-  public async addMetricsForDay(date: string, metrics: MetricDto[]){
+  public async addMetricsForDay(date: string, metrics: MetricRegisterMetricDto[]){
     const call = this.http.post(`${this.apiUrl}/metrics/${date}`, metrics);
     return await firstValueFrom(call);
   }
