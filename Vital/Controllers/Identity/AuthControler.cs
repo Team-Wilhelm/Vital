@@ -17,7 +17,7 @@ public class AuthController : BaseController
     private readonly ICycleService _cycleService;
     private readonly IEmailService _emailService;
 
-    public AuthController(UserManager<ApplicationUser> userManager, IJwtService jwtService, ICycleService cycleService, IEmailDeliveryService emailDeliveryService){
+    public AuthController(UserManager<ApplicationUser> userManager, IJwtService jwtService, ICycleService cycleService, IEmailService emailService){
         _userManager = userManager;
         _jwtService = jwtService;
         _cycleService = cycleService;
@@ -72,7 +72,7 @@ public class AuthController : BaseController
     /// <returns></returns>
     /// <exception cref="Exception"></exception>
     [HttpPost("Register")]
-    public async Task<IActionResult> Register([FromBody] RegisterRequestDto requestDto)
+    public async Task<IActionResult> Register([FromBody] RegisterRequestDto requestDto, CancellationToken cancellationToken)
     {
         if (!ModelState.IsValid)
         {
@@ -91,6 +91,9 @@ public class AuthController : BaseController
         {
             throw new Exception("Cannot create user");
         }
+
+        var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+        await _emailService.SendVerifyEmail(user, token, cancellationToken);
 
         return Ok();
     }
