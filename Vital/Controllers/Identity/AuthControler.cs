@@ -82,9 +82,7 @@ public class AuthController : BaseController
         var user = new ApplicationUser()
         {
             Email = requestDto.Email,
-            UserName = requestDto.Email,
-            CycleLength = requestDto.CycleLength,
-            PeriodLength = requestDto.PeriodLength
+            UserName = requestDto.Email
         };
 
         var result = await _userManager.CreateAsync(user, requestDto.Password);
