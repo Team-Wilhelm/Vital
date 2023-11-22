@@ -12,7 +12,7 @@ public class HealthCheckTests
     {
         _client = waf.Client;
     }
-    
+
     /// <summary>
     /// Test if the health check endpoint is working
     /// </summary>

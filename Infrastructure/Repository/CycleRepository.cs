@@ -32,7 +32,7 @@ public class CycleRepository : ICycleRepository
         {
             cycle.CycleDays = GetCycleDaysForCycleAsync(cycle.Id).Result.ToList();
         });
-        
+
         return await PaginatedList<Cycle>.CreateAsync(enumerable, paginator.Page, paginator.ItemsPerPage, count);
     }
 
@@ -50,25 +50,24 @@ public class CycleRepository : ICycleRepository
                 VALUES (@Id, @StartDate, @EndDate, @UserId)";
 
         await _db.ExecuteAsync(sql, cycle);
-    
         return cycle;
     }
 
     public async Task<Cycle> Update(Cycle cycle)
     {
         var sql = @"UPDATE ""Cycles"" SET ""StartDate""=@StartDate, ""EndDate""=@EndDate WHERE ""Id""=@Id";
-        
+
         await _db.ExecuteAsync(sql, new
         {
             cycle.Id,
             cycle.StartDate,
             cycle.EndDate
         });
-        
+
         return cycle;
     }
 
-    public async Task<IEnumerable<CycleDay>> GetCycleDaysForCycleAsync(Guid cycleId)
+    private async Task<IEnumerable<CycleDay>> GetCycleDaysForCycleAsync(Guid cycleId)
     {
         var sql = @"SELECT * FROM ""CalendarDay"" WHERE ""CycleId""=@CycleId";
         var cycleDays = await _db.QueryAsync<CycleDay>(sql, new { CycleId = cycleId });

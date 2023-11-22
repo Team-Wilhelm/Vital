@@ -13,12 +13,14 @@ public class AuthController : BaseController
 {
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IJwtService _jwtService;
+    private readonly ICycleService _cycleService;
     private readonly IEmailService _emailService;
-    
-    public AuthController(UserManager<ApplicationUser> userManager, IJwtService jwtService, IEmailService emailService)
+
+    public AuthController(UserManager<ApplicationUser> userManager, IJwtService jwtService, ICycleService cycleService, IEmailService emailService)
     {
         _userManager = userManager;
         _jwtService = jwtService;
+        _cycleService = cycleService;
         _emailService = emailService;
     }
 
@@ -76,7 +78,6 @@ public class AuthController : BaseController
         {
             return BadRequest(ModelState);
         }
-        
 
         var user = new ApplicationUser()
         {
