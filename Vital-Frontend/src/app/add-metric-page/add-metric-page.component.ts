@@ -63,7 +63,7 @@ export class AddMetricPageComponent implements OnInit{
         value: metric.selectedValue!,
       });
     });
-    await this.metricService.AddMetricsForDay(this.clickedDate!, metricDtos);
+    await this.metricService.addMetricsForDay(this.clickedDate!, metricDtos);
   }
 
   public async getMetrics() {
@@ -72,16 +72,3 @@ export class AddMetricPageComponent implements OnInit{
 
 }
 
-
-//TODO move to interfaces directory and update them
-export interface Metric {
-  name: string;
-  isSelected: boolean;
-  selectedValue: string | null;
-  values: string[];
-}
-
-export interface MetricDto {
-  id: string;
-  value: string;
-}

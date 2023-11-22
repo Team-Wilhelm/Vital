@@ -15,7 +15,12 @@ export class MetricService {
     const call = this.http.get<Metric[]>(`${this.apiUrl}`);
     return await firstValueFrom(call);
   }
-  public async AddMetricsForDay(date: string, metrics: MetricDto[]){
+
+  public async getMetricsForDay(date: string): Promise<Metric[]> {
+    const call = this.http.get<Metric[]>(`${this.apiUrl}/${date}`);
+    return await firstValueFrom(call);
+  }
+  public async addMetricsForDay(date: string, metrics: MetricDto[]){
     const call = this.http.post(`${this.apiUrl}/metrics/${date}`, metrics);
     return await firstValueFrom(call);
   }
