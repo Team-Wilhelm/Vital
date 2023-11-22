@@ -54,7 +54,7 @@ public class AuthTests
         
         var response = await _client.PostAsync("/Identity/Auth/Register", JsonContent.Create(registerRequest));
         
-        response.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         
         _dbContext.Users.FirstOrDefault(u => u.UserName == registerRequest.Email)
             .Should().BeNull();
@@ -71,7 +71,7 @@ public class AuthTests
         
         var response = await _client.PostAsync("/Identity/Auth/Register", JsonContent.Create(registerRequest));
         
-        response.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         
         _dbContext.Users.FirstOrDefault(u => u.UserName == registerRequest.Email)
             .Should().BeNull();
@@ -88,7 +88,7 @@ public class AuthTests
         
         var response = await _client.PostAsync("/Identity/Auth/Register", JsonContent.Create(registerRequest));
         
-        response.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         
         _dbContext.Users.FirstOrDefault(u => u.UserName == registerRequest.Email)
             .Should().BeNull();
@@ -105,7 +105,7 @@ public class AuthTests
         
         var response = await _client.PostAsync("/Identity/Auth/Register", JsonContent.Create(registerRequest));
         
-        response.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         
         _dbContext.Users.FirstOrDefault(u => u.UserName == registerRequest.Email)
             .Should().BeNull();
@@ -139,7 +139,7 @@ public class AuthTests
         
         var response = await _client.PostAsync("/Identity/Auth/Login", JsonContent.Create(loginRequest));
         
-        response.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         
         _dbContext.Users.FirstOrDefault(u => u.UserName == loginRequest.Email)
             .Should().BeNull();
@@ -167,7 +167,7 @@ public class AuthTests
         
         var response = await _client.PostAsync("/Identity/Auth/Login", JsonContent.Create(loginRequest));
         
-        response.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
     
     [Fact]
