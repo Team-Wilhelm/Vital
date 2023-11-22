@@ -25,6 +25,7 @@ public static class ServicesAndRepositoryExtension
         services.AddTransient<IJwtService, JwtService>();
         services.AddScoped<IMetricService, MetricService>();
         services.AddTransient<IEmailDeliveryService, BrevoEmailDeliveryService>();
+        services.AddTransient<IEmailService, EmailService>();
 
         #endregion
 

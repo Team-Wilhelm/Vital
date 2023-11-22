@@ -15,14 +15,13 @@ public class AuthController : BaseController
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IJwtService _jwtService;
     private readonly ICycleService _cycleService;
+    private readonly IEmailService _emailService;
 
-    public AuthController(UserManager<ApplicationUser> userManager, IJwtService jwtService,
-        ICycleService cycleService
-        )
-    {
+    public AuthController(UserManager<ApplicationUser> userManager, IJwtService jwtService, ICycleService cycleService, IEmailDeliveryService emailDeliveryService){
         _userManager = userManager;
         _jwtService = jwtService;
         _cycleService = cycleService;
+        _emailService = emailService;
     }
 
     /// <summary>
@@ -80,12 +79,11 @@ public class AuthController : BaseController
             return BadRequest(ModelState);
         }
         
+
         var user = new ApplicationUser()
         {
             Email = requestDto.Email,
-            UserName = requestDto.Email,
-            CycleLength = requestDto.CycleLength,
-            PeriodLength = requestDto.PeriodLength
+            UserName = requestDto.Email
         };
 
         var result = await _userManager.CreateAsync(user, requestDto.Password);
@@ -93,20 +91,7 @@ public class AuthController : BaseController
         {
             throw new Exception("Cannot create user");
         }
-        
-        // TODO: Set start date as the first date of last period
-        var currentCycle = new Cycle()
-        {
-            Id = Guid.NewGuid(),
-            StartDate = requestDto.LastPeriodStart,
-            EndDate = requestDto.LastPeriodStart.AddDays(requestDto.CycleLength),
-            UserId = user.Id
-        };
-        
-        var cycle = await _cycleService.CreateUponRegister(currentCycle);
-        user.CurrentCycleId = cycle.Id;
-        await _userManager.UpdateAsync(user);
-        
+
         return Ok();
     }
 }
