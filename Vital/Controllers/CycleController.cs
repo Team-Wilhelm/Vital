@@ -91,16 +91,19 @@ public class CycleController : BaseController
     /// Retrieves a list of predicted period days for a Cycle object.
     /// </summary>
     /// <param name="cycleId">The ID of the predicted cycle.</param>
-    [HttpGet("predicted-period/{cycleId:guid}")]
+    [HttpGet("predicted-period")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<PredictedPeriodDayDto>))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> GetPredictedPeriod(Guid cycleId)
+    public async Task<IActionResult> GetPredictedPeriod()
     {
-        var predictedPeriodDays = await _cycleService.GetPredictedPeriod(cycleId);
+        var userId = _currentContext.UserId!.Value;
+        var predictedPeriodDays = await _cycleService.GetPredictedPeriod(userId);
         return Ok(predictedPeriodDays);
     }
     
     [HttpGet("current-cycle")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Cycle))]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetCurrentCycle()
     {
         var userId = _currentContext.UserId!.Value;

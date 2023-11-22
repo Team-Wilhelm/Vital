@@ -60,16 +60,46 @@ public class CycleService : ICycleService
         return cycle;
     }
 
-    public async Task<List<PredictedPeriodDayDto>> GetPredictedPeriod(Guid cycleId)
+    public async Task<List<PredictedPeriodDayDto>> GetPredictedPeriod(Guid userId)
     {
-        var cycle = await _cycleRepository.GetById(cycleId);
-        if (cycle is null)
+        var currentCycle = await GetCurrentCycle(userId);
+        if (currentCycle is null)
         {
-            throw new NotFoundException();
+            throw new NotFoundException("No current cycle found.");
+        }
+        
+        var predictedPeriodDays = new List<PredictedPeriodDayDto>();
+        
+        // Check if the user is on period and predicted when it should end based on the average period length.
+        var periodDaysPassed = currentCycle.CycleDays.Count(day => day.IsPeriod); 
+        if (periodDaysPassed is < 5 and >= 1) //TODO: Change hardcoded value
+        {
+            for (var i = 0; i < 5 - periodDaysPassed; i++)
+            {
+                var predictedPeriodDay = new PredictedPeriodDayDto
+                {
+                    Date = currentCycle.CycleDays.Last().Date.AddDays(i + 1),
+                    CycleId = currentCycle.Id
+                };
+                predictedPeriodDays.Add(predictedPeriodDay);
+            }
+        }
+        
+        // Otherwise the predicted period is calculated based on the average cycle length after the last period started.
+        // The average cycle length is calculated based on the last 3 cycles.
+        currentCycle.CycleDays = currentCycle.CycleDays.OrderBy(x => x.Date).ToList();
+        for (var i = -2; i < 3; i++)
+        {
+            var predictedPeriodDay = new PredictedPeriodDayDto
+            {
+                Date = currentCycle.CycleDays.Last().Date.AddDays(28 + i),
+                CycleId = currentCycle.Id
+            };
+            predictedPeriodDays.Add(predictedPeriodDay);
         }
 
         // TODO: change
-        return new List<PredictedPeriodDayDto>();
+        return predictedPeriodDays;
     }
 
     public async Task<Cycle?> GetCurrentCycle(Guid userId)

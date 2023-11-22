@@ -35,21 +35,41 @@ public class DbInitializer
             });
         }
 
-        var user = new ApplicationUser()
+        // User 1 with a finished period
+        var user1 = new ApplicationUser()
         {
             Id = Guid.Parse("ADFEAD4C-823B-41E5-9C7E-C84AA04192A4"),
             UserName = "user@app",
             Email = "user@app",
             EmailConfirmed = true,
         };
-        await _userManager.CreateAsync(user, "P@ssw0rd.+");
-        await _userManager.AddToRoleAsync(user, "User");
+        await _userManager.CreateAsync(user1, "P@ssw0rd.+");
+        await _userManager.AddToRoleAsync(user1, "User");
 
         await _context.Cycles.AddAsync(new Cycle()
         {
             Id = Guid.Parse("2AF6BC6C-B3C0-4E77-97D9-9FA6D36C4A0A"),
             UserId = Guid.Parse("ADFEAD4C-823B-41E5-9C7E-C84AA04192A4"),
             StartDate = DateTimeOffset.UtcNow.AddDays(-10),
+        });
+        
+        // User 2 with a current period
+        var user2 = new ApplicationUser()
+        {
+            Id = Guid.Parse("B1F0B1F0-B1F0-B1F0-B1F0-B1F0B1F0B1F0"),
+            UserName = "user2@app",
+            Email = "user2@app",
+            EmailConfirmed = true,
+        };
+        
+        await _userManager.CreateAsync(user2, "P@ssw0rd.+");
+        await _userManager.AddToRoleAsync(user2, "User");
+        
+        await _context.Cycles.AddAsync(new Cycle()
+        {
+            Id = Guid.Parse("EA2DCAC0-47C5-4406-BA1C-FA870EE5577E"),
+            UserId = Guid.Parse("B1F0B1F0-B1F0-B1F0-B1F0-B1F0B1F0B1F0"),
+            StartDate = DateTimeOffset.UtcNow.AddDays(-2),
         });
 
         // Add metrics
@@ -120,28 +140,73 @@ public class DbInitializer
             }
             );
 
-        // Add cycle days
-        await _context.CycleDays.AddAsync(new CycleDay()
-        {
-            Id = Guid.NewGuid(),
-            UserId = Guid.Parse("ADFEAD4C-823B-41E5-9C7E-C84AA04192A4"),
-            Date = DateTimeOffset.UtcNow,
-            CycleId = Guid.Parse("2AF6BC6C-B3C0-4E77-97D9-9FA6D36C4A0A")
-        });
+        // Add cycle days for user 1
         await _context.CycleDays.AddAsync(new CycleDay()
         {
             Id = Guid.Parse("0029A2AF-4FC7-497F-BFEC-6E32CDC12623"),
             UserId = Guid.Parse("ADFEAD4C-823B-41E5-9C7E-C84AA04192A4"),
-            Date = DateTimeOffset.UtcNow.AddDays(-1),
+            Date = DateTimeOffset.UtcNow.AddDays(-5),
             CycleId = Guid.Parse("2AF6BC6C-B3C0-4E77-97D9-9FA6D36C4A0A"),
-            IsPeriodDay = true,
+            IsPeriod = true,
             SelectedMetrics = new List<CalendarDayMetric>()
             {
                 new()
                 {
                     CalendarDayId = Guid.Parse("0029A2AF-4FC7-497F-BFEC-6E32CDC12623"),
-                    MetricsId = Guid.Parse("d56807fe-05ca-4901-a564-68f14e31b241"),
-                    MetricValueId = Guid.Parse("b5bf508b-9cd5-4c9c-aa64-63bc9cbafe3b")
+                    MetricsId = Guid.Parse("d56807fe-05ca-4901-a564-68f14e31b241"), // Flow
+                    MetricValueId = Guid.Parse("b5bf508b-9cd5-4c9c-aa64-63bc9cbafe3b") // Heavy
+                }
+            }
+        });
+        await _context.CycleDays.AddAsync(new CycleDay()
+        {
+            Id = Guid.Parse("E429A2AF-4FC7-497F-BFEC-6E32CDC12623"),
+            UserId = Guid.Parse("ADFEAD4C-823B-41E5-9C7E-C84AA04192A4"),
+            Date = DateTimeOffset.UtcNow.AddDays(-4),
+            CycleId = Guid.Parse("2AF6BC6C-B3C0-4E77-97D9-9FA6D36C4A0A"),
+            IsPeriod = true,
+            SelectedMetrics = new List<CalendarDayMetric>()
+            {
+                new()
+                {
+                    CalendarDayId = Guid.Parse("E429A2AF-4FC7-497F-BFEC-6E32CDC12623"),
+                    MetricsId = Guid.Parse("d56807fe-05ca-4901-a564-68f14e31b241"), // Flow
+                    MetricValueId = Guid.Parse("b5bf508b-9cd5-4c9c-aa64-63bc9cbafe3b") // Heavy
+                }
+            }
+        });
+        await _context.CycleDays.AddAsync(new CycleDay()
+        {
+            Id = Guid.Parse("9B294EA6-0440-427F-84D1-8058AEDB3B12"),
+            UserId = Guid.Parse("ADFEAD4C-823B-41E5-9C7E-C84AA04192A4"),
+            Date = DateTimeOffset.UtcNow.AddDays(-3),
+            CycleId = Guid.Parse("2AF6BC6C-B3C0-4E77-97D9-9FA6D36C4A0A"),
+            IsPeriod = true,
+            SelectedMetrics = new List<CalendarDayMetric>()
+            {
+                new()
+                {
+                    CalendarDayId = Guid.Parse("9B294EA6-0440-427F-84D1-8058AEDB3B12"),
+                    MetricsId = Guid.Parse("d56807fe-05ca-4901-a564-68f14e31b241"), // Flow
+                    MetricValueId = Guid.Parse("b5bf508b-9cd5-4c9c-aa64-63bc9cbafe3b") // Heavy
+                }
+            }
+
+        });
+        await _context.CycleDays.AddAsync(new CycleDay()
+        {
+            Id = Guid.Parse("388725C0-63AD-4EC8-A5E5-E760ACFCB0F0"),
+            UserId = Guid.Parse("ADFEAD4C-823B-41E5-9C7E-C84AA04192A4"),
+            Date = DateTimeOffset.UtcNow.AddDays(-2),
+            IsPeriod = true,
+            CycleId = Guid.Parse("2AF6BC6C-B3C0-4E77-97D9-9FA6D36C4A0A"),
+            SelectedMetrics = new List<CalendarDayMetric>()
+            {
+                new()
+                {
+                    CalendarDayId = Guid.Parse("388725C0-63AD-4EC8-A5E5-E760ACFCB0F0"),
+                    MetricsId = Guid.Parse("d56807fe-05ca-4901-a564-68f14e31b241"), // Flow
+                    MetricValueId = Guid.Parse("24d4c8aa-614d-467f-9afb-9e2f744cf151") // Moderate
                 }
             }
         });
@@ -149,47 +214,72 @@ public class DbInitializer
         {
             Id = Guid.NewGuid(),
             UserId = Guid.Parse("ADFEAD4C-823B-41E5-9C7E-C84AA04192A4"),
-            Date = DateTimeOffset.UtcNow.AddDays(-2),
+            Date = DateTimeOffset.UtcNow.AddDays(-1),
             CycleId = Guid.Parse("2AF6BC6C-B3C0-4E77-97D9-9FA6D36C4A0A"),
-            IsPeriodDay = true
+            IsPeriod = false,
+            SelectedMetrics = new List<CalendarDayMetric>()
+            {
+                new()
+                {
+                    CalendarDayId = Guid.Parse("388725C0-63AD-4EC8-A5E5-E760ACFCB0F0"),
+                    MetricsId = Guid.Parse("d56807fe-05ca-4901-a564-68f14e31b241"), // Flow
+                    MetricValueId = Guid.Parse("abe0a53d-bc66-417d-a99a-4490a7bd0640") // None
+                }
+            }
         });
         await _context.CycleDays.AddAsync(new CycleDay()
-        {
-            Id = Guid.NewGuid(),
-            UserId = Guid.Parse("ADFEAD4C-823B-41E5-9C7E-C84AA04192A4"),
-            Date = DateTimeOffset.UtcNow.AddDays(-3),
-            CycleId = Guid.Parse("2AF6BC6C-B3C0-4E77-97D9-9FA6D36C4A0A"),
-            IsPeriodDay = true
-
+            {
+                Id = Guid.NewGuid(),
+                UserId = Guid.Parse("ADFEAD4C-823B-41E5-9C7E-C84AA04192A4"),
+                Date = DateTimeOffset.UtcNow,
+                IsPeriod = false,
+                CycleId = Guid.Parse("2AF6BC6C-B3C0-4E77-97D9-9FA6D36C4A0A")
         });
-        await _context.CycleDays.AddAsync(new CycleDay()
-        {
-            Id = Guid.NewGuid(),
-            UserId = Guid.Parse("ADFEAD4C-823B-41E5-9C7E-C84AA04192A4"),
-            Date = DateTimeOffset.UtcNow.AddDays(-4),
-            CycleId = Guid.Parse("2AF6BC6C-B3C0-4E77-97D9-9FA6D36C4A0A"),
-            IsPeriodDay = true
-        });
-        await _context.CycleDays.AddAsync(new CycleDay()
-        {
-            Id = Guid.NewGuid(),
-            UserId = Guid.Parse("ADFEAD4C-823B-41E5-9C7E-C84AA04192A4"),
-            Date = DateTimeOffset.UtcNow.AddDays(-5),
-            CycleId = Guid.Parse("2AF6BC6C-B3C0-4E77-97D9-9FA6D36C4A0A"),
-            IsPeriodDay = false
-        });
-        await _context.CycleDays.AddAsync(new CycleDay()
-        {
-            Id = Guid.NewGuid(),
-            UserId = Guid.Parse("ADFEAD4C-823B-41E5-9C7E-C84AA04192A4"),
-            Date = DateTimeOffset.UtcNow.AddDays(-6),
-            CycleId = Guid.Parse("2AF6BC6C-B3C0-4E77-97D9-9FA6D36C4A0A"),
-            IsPeriodDay = false
-        });
-
+       
         // Link cycle to user's current cycle
-        user.CurrentCycleId = Guid.Parse("2AF6BC6C-B3C0-4E77-97D9-9FA6D36C4A0A");
-        await _userManager.UpdateAsync(user);
+        user1.CurrentCycleId = Guid.Parse("2AF6BC6C-B3C0-4E77-97D9-9FA6D36C4A0A");
+        await _userManager.UpdateAsync(user1);
+        
+        // Add cycle days for user 2
+        await _context.CycleDays.AddAsync(new CycleDay()
+        {
+            Id = Guid.Parse("EFE6886A-374D-48E2-A3E7-16637865ED74"),
+            UserId = Guid.Parse("B1F0B1F0-B1F0-B1F0-B1F0-B1F0B1F0B1F0"),
+            Date = DateTimeOffset.UtcNow.AddDays(-1),
+            CycleId = Guid.Parse("EA2DCAC0-47C5-4406-BA1C-FA870EE5577E"),
+            IsPeriod = true,
+            SelectedMetrics = new List<CalendarDayMetric>()
+            {
+                new()
+                {
+                    CalendarDayId =  Guid.Parse("EFE6886A-374D-48E2-A3E7-16637865ED74"),
+                    MetricsId = Guid.Parse("d56807fe-05ca-4901-a564-68f14e31b241"), // Flow
+                    MetricValueId = Guid.Parse("24d4c8aa-614d-467f-9afb-9e2f744cf151") // Moderate
+                }
+            }
+        });
+        await _context.CycleDays.AddAsync(new CycleDay()
+        {
+            Id = Guid.Parse("F0121084-6054-4278-AA9A-246A7AEFD11A"),
+            UserId = Guid.Parse("ADFEAD4C-823B-41E5-9C7E-C84AA04192A4"),
+            Date = DateTimeOffset.UtcNow,
+            IsPeriod = true,
+            CycleId = Guid.Parse("EA2DCAC0-47C5-4406-BA1C-FA870EE5577E"),
+            SelectedMetrics = new List<CalendarDayMetric>()
+            {
+                new()
+                {
+                    CalendarDayId =  Guid.Parse("F0121084-6054-4278-AA9A-246A7AEFD11A"),
+                    MetricsId = Guid.Parse("d56807fe-05ca-4901-a564-68f14e31b241"), // Flow
+                    MetricValueId = Guid.Parse("24d4c8aa-614d-467f-9afb-9e2f744cf151") // Moderate
+                }
+            }
+        });
+        
+        // Link cycle to user's current cycle
+        user2.CurrentCycleId = Guid.Parse("EA2DCAC0-47C5-4406-BA1C-FA870EE5577E");
+        await _userManager.UpdateAsync(user2);
+        
 
         await _context.SaveChangesAsync();
     }

@@ -1,9 +1,8 @@
 ﻿export interface CalendarDay {
   id: string; //guid
   date: Date;
-  UserId: string; //guid
-  user: ApplicationUser;
-  metrics: Metrics[];
+  userId: string; //guid
+  selectedMetrics: Metrics[];
   state: string;
 }
 
@@ -24,19 +23,21 @@ export interface ApplicationUser {
 export interface Metrics {
   id: string; //guid
   name: string;
-  description?: string;
-  values: string[];
-  selectedValue: string;
+  values: MetricValue[];
+}
+
+export interface MetricValue {
+  id: string; //guid
+  name: number;
+  metricId: string; //guid
 }
 
 export interface Cycle {
   id: string; //guid
   startDate: Date;
-  endDate: Date;
+  endDate?: Date;
   userId: string; //guid
-  user: ApplicationUser;
   cycleDays: CycleDay[];
-  period?: Period; //
 }
 
 export interface Period {

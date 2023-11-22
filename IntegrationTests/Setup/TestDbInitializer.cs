@@ -130,7 +130,7 @@ public class TestDbInitializer
             UserId = Guid.Parse("ADFEAD4C-823B-41E5-9C7E-C84AA04192A4"),
             Date = DateTimeOffset.UtcNow.AddDays(-1),
             CycleId = Guid.Parse("2AF6BC6C-B3C0-4E77-97D9-9FA6D36C4A0A"),
-            IsPeriodDay = true,
+            IsPeriod = true,
             SelectedMetrics = new List<CalendarDayMetric>()
             {
                 new()
@@ -147,7 +147,7 @@ public class TestDbInitializer
             UserId = Guid.Parse("ADFEAD4C-823B-41E5-9C7E-C84AA04192A4"),
             Date = DateTimeOffset.UtcNow.AddDays(-2),
             CycleId = Guid.Parse("2AF6BC6C-B3C0-4E77-97D9-9FA6D36C4A0A"),
-            IsPeriodDay = true
+            IsPeriod = true
         });
         await _context.CycleDays.AddAsync(new CycleDay()
         {
@@ -155,7 +155,7 @@ public class TestDbInitializer
             UserId = Guid.Parse("ADFEAD4C-823B-41E5-9C7E-C84AA04192A4"),
             Date = DateTimeOffset.UtcNow.AddDays(-3),
             CycleId = Guid.Parse("2AF6BC6C-B3C0-4E77-97D9-9FA6D36C4A0A"),
-            IsPeriodDay = true
+            IsPeriod = true
 
         });
         await _context.CycleDays.AddAsync(new CycleDay()
@@ -164,7 +164,7 @@ public class TestDbInitializer
             UserId = Guid.Parse("ADFEAD4C-823B-41E5-9C7E-C84AA04192A4"),
             Date = DateTimeOffset.UtcNow.AddDays(-4),
             CycleId = Guid.Parse("2AF6BC6C-B3C0-4E77-97D9-9FA6D36C4A0A"),
-            IsPeriodDay = true
+            IsPeriod = true
         });
         await _context.CycleDays.AddAsync(new CycleDay()
         {
@@ -172,7 +172,7 @@ public class TestDbInitializer
             UserId = Guid.Parse("ADFEAD4C-823B-41E5-9C7E-C84AA04192A4"),
             Date = DateTimeOffset.UtcNow.AddDays(-5),
             CycleId = Guid.Parse("2AF6BC6C-B3C0-4E77-97D9-9FA6D36C4A0A"),
-            IsPeriodDay = false
+            IsPeriod = false
         });
         await _context.CycleDays.AddAsync(new CycleDay()
         {
@@ -180,7 +180,7 @@ public class TestDbInitializer
             UserId = Guid.Parse("ADFEAD4C-823B-41E5-9C7E-C84AA04192A4"),
             Date = DateTimeOffset.UtcNow.AddDays(-6),
             CycleId = Guid.Parse("2AF6BC6C-B3C0-4E77-97D9-9FA6D36C4A0A"),
-            IsPeriodDay = false
+            IsPeriod = false
         });
 
         // Link cycle to user's current cycle

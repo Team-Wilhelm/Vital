@@ -21,8 +21,6 @@ export class CurrentCycleComponent {
   }
 
   get dateString(): string {
-    return this.date.toLocaleDateString().substring(0, 6); //TODO: look into local dates that start with year
+    return this.date.toLocaleDateString().substring(0, 5); //TODO: look into local dates that start with year
   }
-
-
 }

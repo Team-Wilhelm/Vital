@@ -11,5 +11,5 @@ public abstract class CalendarDay
     public ApplicationUser User { get; set; }
     public string State { get; set; }   //public string State { get; set; } = "Period"; // Period, Pregnancy, Menopause
 
-    public ICollection<CalendarDayMetric> SelectedMetrics { get; set; }
+    public ICollection<CalendarDayMetric> SelectedMetrics { get; set; } = new List<CalendarDayMetric>();
 }

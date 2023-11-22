@@ -1,6 +1,6 @@
 import {Component} from '@angular/core';
-import {CycleService} from "../services/cycle-service";
 import {CycleDay} from "../interfaces/Models";
+import {CycleService} from "../services/cycle.service";
 
 @Component({
   selector: 'app-dashboard',
@@ -16,7 +16,7 @@ export class DashboardComponent {
   }
 
   async initCurrentCycleDays() {
-    const days = await this.cycleService.getCurrentCycleDays();
+   /* const days = await this.cycleService.getCurrentCycleDays();
     this.currentCycleDays = days.filter(day => {
       const today = new Date();
       today.setHours(0, 0, 0, 0); // remove time part
@@ -28,6 +28,6 @@ export class DashboardComponent {
 
       return dayDate >= threeDaysBefore && dayDate <= threeDaysAfter;
     });
-    console.log(this.currentCycleDays);
+    console.log(this.currentCycleDays);*/
   }
 }
