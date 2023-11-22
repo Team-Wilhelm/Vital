@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Vital.Models.Exception;
@@ -54,6 +54,12 @@ public class ExceptionFilter : IAsyncExceptionFilter
                     statusCode = StatusCodes.Status400BadRequest;
                     errorMessage = badRequestException.Message;
                     context.HttpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
+                    break;
+                    
+                case EmailVerifyException emailVerifyException:
+                    errorCode = "CouldNotVerify";
+                    statusCode = StatusCodes.Status400BadRequest;
+                    errorMessage = emailVerifyException.Message;
                     break;
 
                 // This should never happen in production
