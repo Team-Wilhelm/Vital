@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, ViewChild} from '@angular/core';
 import {CycleService} from "../services/cycle.service";
 
 @Component({
@@ -9,6 +9,7 @@ import {CycleService} from "../services/cycle.service";
 export class DashboardComponent {
   title = 'dashboard';
   nextPeriodInDays: number = 0;
+  @ViewChild('hasYourPeriodStartedModal') hasYourPeriodStartedModal!: ElementRef;
 
   constructor(public cycleService: CycleService) {
     cycleService.getPredictedPeriod().then(() => {
@@ -26,5 +27,14 @@ export class DashboardComponent {
     const nextPeriod = this.cycleService.predictedPeriod[nextPeriodIndex];
     const diffTime = Math.abs(nextPeriod.getTime() - today.getTime());
     return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  }
+
+  public displayHasYourPeriodStartedDialog() : void {
+    this.hasYourPeriodStartedModal.nativeElement.showModal();
+    // Focus on yes button
+    setTimeout(() => {
+      const yesButton = document.getElementById('yes-button');
+      yesButton?.focus();
+    }, 100);
   }
 }

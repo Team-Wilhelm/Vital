@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {Router} from "@angular/router";
 
 @Component({
@@ -8,9 +8,9 @@ import {Router} from "@angular/router";
       <div class="card-body">
         <div class="flex justify-between w-full">
           <h2 class="card-title text-2xl lg:text-3xl">{{cardTitle}}</h2>
-          <svg class="cursor-pointer" [ngClass]="getPlusVisibility()" (click)="onClickPlus()"
-               height="32px" id="Layer_1" style="enable-background:new 0 0 32 32;"
-               viewBox="0 0 32 32" width="32px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg">
+          <svg class="cursor-pointer" [ngClass]="getPlusVisibility()" (click)="onClickPlusButton()"
+               height="32px" id="Layer_1"
+               viewBox="0 0 32 32" width="32px" xmlns="http://www.w3.org/2000/svg">
             <path
               d="M28,14H18V4c0-1.104-0.896-2-2-2s-2,0.896-2,2v10H4c-1.104,0-2,0.896-2,2s0.896,2,2,2h10v10c0,1.104,0.896,2,2,2  s2-0.896,2-2V18h10c1.104,0,2-0.896,2-2S29.104,14,28,14z"/>
           </svg>
@@ -30,6 +30,8 @@ export class CardComponent implements OnInit {
   @Input() compact: boolean = false;
   @Input() hoverable: boolean = true;
   @Input() hasPlusButton: boolean = false;
+  @Input() onClickPlusButton: () => void = () => {this.plusButtonClicked.emit()};
+  @Output() plusButtonClicked = new EventEmitter<void>();
 
   classList: string[] = [];
 
@@ -77,9 +79,5 @@ export class CardComponent implements OnInit {
       return 'hidden';
     }
     return '';
-  }
-
-  onClickPlus() : void {
-    console.log('plus clicked');
   }
 }

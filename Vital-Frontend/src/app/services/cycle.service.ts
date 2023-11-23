@@ -21,4 +21,8 @@ export class CycleService {
     this.predictedPeriod = await firstValueFrom(this.httpClient.get<Date[]>(environment.baseUrl + '/cycle/predicted-period'));
     this.predictedPeriod = this.predictedPeriod.map(date => new Date(date));
   }
+
+  startNewCycle() {
+
+  }
 }
