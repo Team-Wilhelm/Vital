@@ -60,7 +60,7 @@ public class CycleService : ICycleService
         return cycle;
     }
 
-    public async Task<List<PredictedPeriodDayDto>> GetPredictedPeriod(Guid userId)
+    public async Task<List<DateTimeOffset>> GetPredictedPeriod(Guid userId)
     {
         var currentCycle = await GetCurrentCycle(userId);
         if (currentCycle is null)
@@ -68,7 +68,7 @@ public class CycleService : ICycleService
             throw new NotFoundException("No current cycle found.");
         }
         
-        var predictedPeriodDays = new List<PredictedPeriodDayDto>();
+        var predictedPeriodDays = new List<DateTimeOffset>();
         
         // Check if the user is on period and predicted when it should end based on the average period length.
         var periodDaysPassed = currentCycle.CycleDays.Count(day => day.IsPeriod); 
@@ -76,12 +76,7 @@ public class CycleService : ICycleService
         {
             for (var i = 0; i < 5 - periodDaysPassed; i++)
             {
-                var predictedPeriodDay = new PredictedPeriodDayDto
-                {
-                    Date = DateTimeOffset.Now.AddDays(i + 1),
-                    CycleId = currentCycle.Id
-                };
-                predictedPeriodDays.Add(predictedPeriodDay);
+                predictedPeriodDays.Add(DateTimeOffset.Now.AddDays(i + 1));
             }
             return predictedPeriodDays;
         }
@@ -92,12 +87,7 @@ public class CycleService : ICycleService
         currentCycle.CycleDays = currentCycle.CycleDays.OrderBy(x => x.Date).ToList();
         for (var i = -2; i < 3; i++)
         {
-            var predictedPeriodDay = new PredictedPeriodDayDto
-            {
-                Date = currentCycle.CycleDays.Last().Date.AddDays(28 + i),
-                CycleId = currentCycle.Id
-            };
-            predictedPeriodDays.Add(predictedPeriodDay);
+            predictedPeriodDays.Add(currentCycle.CycleDays.Last().Date.AddDays(28 + i));
         }
 
         // TODO: change

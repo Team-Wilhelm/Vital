@@ -48,7 +48,7 @@ public interface ICycleService
     /// <param name="cycleId">The unique ID of the specified cycle.</param>
     /// <returns>A task that represents the asynchronous operation. 
     /// The task result contains a list of PredictedPeriodDayDtos.</returns>
-    Task<List<PredictedPeriodDayDto>> GetPredictedPeriod(Guid userId);
+    Task<List<DateTimeOffset>> GetPredictedPeriod(Guid userId);
     
     /// <summary>
     /// Retrieves the current cycle for the specified user.

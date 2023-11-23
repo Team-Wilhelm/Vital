@@ -4,9 +4,17 @@ import {Router} from "@angular/router";
 @Component({
   selector: 'app-card',
   template: `
-    <div [ngClass]="getClassList()" (click)="onClick()">
+    <div [ngClass]="getClassList()" (click)="onClickCard()">
       <div class="card-body">
-        <h2 class="card-title text-2xl lg:text-3xl">{{cardTitle}}</h2>
+        <div class="flex justify-between w-full">
+          <h2 class="card-title text-2xl lg:text-3xl">{{cardTitle}}</h2>
+          <svg class="cursor-pointer" [ngClass]="getPlusVisibility()" (click)="onClickPlus()"
+               height="32px" id="Layer_1" style="enable-background:new 0 0 32 32;"
+               viewBox="0 0 32 32" width="32px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg">
+            <path
+              d="M28,14H18V4c0-1.104-0.896-2-2-2s-2,0.896-2,2v10H4c-1.104,0-2,0.896-2,2s0.896,2,2,2h10v10c0,1.104,0.896,2,2,2  s2-0.896,2-2V18h10c1.104,0,2-0.896,2-2S29.104,14,28,14z"/>
+          </svg>
+        </div>
         <ng-content></ng-content>
       </div>
     </div>
@@ -21,6 +29,7 @@ export class CardComponent implements OnInit {
   @Input() redirectLink: string = '';
   @Input() compact: boolean = false;
   @Input() hoverable: boolean = true;
+  @Input() hasPlusButton: boolean = false;
 
   classList: string[] = [];
 
@@ -58,8 +67,19 @@ export class CardComponent implements OnInit {
     return this.classList.join(' ');
   }
 
-  onClick(){
+  onClickCard() :void {
     if (this.redirectLink === '') return;
     this.router.navigate([this.redirectLink]);
+  }
+
+  getPlusVisibility() : string {
+    if (!this.hasPlusButton) {
+      return 'hidden';
+    }
+    return '';
+  }
+
+  onClickPlus() : void {
+    console.log('plus clicked');
   }
 }

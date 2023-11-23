@@ -48,10 +48,10 @@ min-h-[calc(100vh-10rem)]
   </app-card>
 
   <!-- Current cycle -->
-  <app-card cardTitle="Current cycle"
+  <app-card cardTitle="Week overview"
             class="lg:col-span-4 lg:row-span-1 order-1 lg:order-none
             max-h-64 overflow-x-scroll"
-            [redirectLink]="'/analytics'"
+            [hasPlusButton]="true"
   >
     <div class="flex h-full justify-between items-center">
       <app-current-cycle *ngFor="let day of cycleService.predictedPeriod"
