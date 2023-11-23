@@ -39,5 +39,5 @@ export interface MetricValueViewDto {
 
 export interface MetricRegisterMetricDto {
   metricsId: string; //guid
-  metricValueId: string | null; //guid
+  metricValueId: string; //guid
 }

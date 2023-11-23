@@ -16,12 +16,12 @@
 
       <div class="mt-2">
         <div *ngFor="let value of metric.values" class="flex items-center">
-          <input type="radio" [name]="metric.id" [value]="value.name" [ngModel]="metricSelectionMap.get(metric.id) && metricSelectionMap.get(metric.id)?.selectedValue"
-                 (change)="onRadioChange(metric, value.name)" class="mr-2">
+          <input type="radio" [name]="metric.id" [value]="value.id" [ngModel]="metricSelectionMap.get(metric.id) && metricSelectionMap.get(metric.id)?.selectedValue"
+                 (change)="onRadioChange(metric, value.id)" class="mr-2">
           <span>{{ value.name }}</span>
         </div>
       </div>
     </div>
-    <button (click)="updateSelectedMetrics()">Update Selected Metrics</button>
+    <button (click)="saveMetrics()">Update Selected Metrics</button>
   </div>
 </div>

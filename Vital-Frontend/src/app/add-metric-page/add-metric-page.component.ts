@@ -18,8 +18,8 @@ export class AddMetricPageComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.dataService.clickedDate$.subscribe((clickedDate) => {
-      this.clickedDate = clickedDate?.toISOString();
+      this.dataService.clickedDate$.subscribe((clickedDate) => {
+      this.clickedDate = clickedDate ? clickedDate.toISOString() : new Date().toISOString();
       // When the date changes, update the selected metrics for the new date
       this.getSelectedMetricsForDay().then(() => {
         this.updateSelectedMetrics();

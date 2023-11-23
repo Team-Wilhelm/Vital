@@ -12,12 +12,12 @@ import {
   providedIn: 'root'
 })
 export class MetricService {
-  private apiUrl = environment.baseUrl + '/metrics'; //TODO check this is correct url
+  private apiUrl = environment.baseUrl + '/metric';
   constructor(private http: HttpClient) {
   }
 
   public async getAllMetricsWithValues(): Promise<MetricViewDto[]> {
-    const call = this.http.get<MetricViewDto[]>(`${this.apiUrl}`);
+    const call = this.http.get<MetricViewDto[]>(`${this.apiUrl}/values`);
     return await firstValueFrom(call);
   }
 
@@ -26,7 +26,7 @@ export class MetricService {
     return await firstValueFrom(call);
   }
   public async addMetricsForDay(date: string, metrics: MetricRegisterMetricDto[]){
-    const call = this.http.post(`${this.apiUrl}/metrics/${date}`, metrics);
+    const call = this.http.post(`${this.apiUrl}?dateTimeOffsetString=${date}`, metrics);
     return await firstValueFrom(call);
   }
 }
