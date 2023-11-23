@@ -28,10 +28,9 @@ public interface ICycleService
     /// <summary>
     /// Creates a new Cycle object with the specified details.
     /// </summary>
-    /// <param name="dto">A CreateCycleDto object containing the details for the new Cycle object.</param>
     /// <returns>A task that represents the asynchronous operation. 
     /// The task result contains the Cycle object that was added.</returns>
-    Task<Cycle> Create(CreateCycleDto dto);
+    Task<Cycle> Create();
 
     /// <summary>
     /// Updates an existing Cycle object with new values.

@@ -1,7 +1,7 @@
 ﻿using System.Data;
 using Dapper;
+using Infrastructure.Data;
 using Infrastructure.Repository.Interface;
-using Models;
 using Models.Days;
 
 namespace Infrastructure.Repository;
@@ -9,10 +9,12 @@ namespace Infrastructure.Repository;
 public class CalendarDayRepository : ICalendarDayRepository
 {
     private readonly IDbConnection _db;
+    private readonly ApplicationDbContext _applicationDbContext;
 
-    public CalendarDayRepository(IDbConnection db)
+    public CalendarDayRepository(IDbConnection db, ApplicationDbContext applicationDbContext)
     {
         _db = db;
+        _applicationDbContext = applicationDbContext;
     }
 
     public async Task<CalendarDay?> GetByDate(Guid userId, DateTimeOffset date)
@@ -22,7 +24,7 @@ public class CalendarDayRepository : ICalendarDayRepository
 
         sql = @"SELECT * FROM ""CalendarDay"" WHERE ""UserId""=@userId AND CAST(""Date"" AS DATE) = CAST(@date AS DATE)";
 
-        return state is null ? null : CreateCalendarDay(state, sql, new { userId, date });
+        return state is null ? null : BuildCalendarDay(state, sql, new { userId, date });
     }
     
     public async Task<List<CalendarDay>> GetByDateRange(Guid userId, DateTimeOffset from, DateTimeOffset to)
@@ -37,7 +39,7 @@ public class CalendarDayRepository : ICalendarDayRepository
 
         foreach (var state in states)
         {
-            var calendarDay = CreateCalendarDay(state!, sql, parameters);
+            var calendarDay = BuildCalendarDay(state!, sql, parameters);
             calendarDays.Add(calendarDay);
         }
 
@@ -50,8 +52,35 @@ public class CalendarDayRepository : ICalendarDayRepository
         var state = await _db.QuerySingleOrDefaultAsync<string>(sql, new { calendarDayId });
 
         sql = @"SELECT * FROM ""CalendarDay"" WHERE ""Id""=@calendarDayId";
-        return state is null ? null : CreateCalendarDay(state!, sql, new { calendarDayId });
+        return state is null ? null : BuildCalendarDay(state!, sql, new { calendarDayId });
     }
+
+    public async Task<CalendarDay> CreteCycleDay(Guid UserId, DateTimeOffset dateTime)
+    {
+        var lastCycle = _applicationDbContext.Cycles.Where(c => c.UserId == UserId)
+            .OrderByDescending(c => c.StartDate)
+            .FirstOrDefault();
+        if (lastCycle is null)
+        {
+            throw new Exception("User had no cycle yet");
+        }
+
+        var cycleDay = new CycleDay()
+                {
+                    CycleId = lastCycle.Id,
+                    UserId = UserId,
+                    Date = dateTime
+                };
+
+                // TODO: please rework me into Dapper
+                await _applicationDbContext.CycleDays.AddAsync(cycleDay);
+
+                await _applicationDbContext.SaveChangesAsync();
+
+                return cycleDay;
+                }
+
+
 
 
     public async Task<IEnumerable<CycleDay>> GetCycleDaysForSpecifiedPeriodAsync(Guid userId, DateTimeOffset startDate, DateTimeOffset endDate)
@@ -61,7 +90,9 @@ public class CalendarDayRepository : ICalendarDayRepository
         return calendarDays;
     }
 
-    private CalendarDay? CreateCalendarDay(string state, string sql, object param)
+
+
+    private CalendarDay? BuildCalendarDay(string state, string sql, object param)
     {
         return state switch
         {

@@ -65,9 +65,9 @@ public class CycleController : BaseController
     /// <param name="dto">A CreateCycleDto object containing the details for the new Cycle object.</param>
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(CycleDto))]
-    public async Task<IActionResult> Create([FromBody] CreateCycleDto dto)
+    public async Task<IActionResult> Create()
     {
-        var cycle = await _cycleService.Create(dto);
+        var cycle = await _cycleService.Create();
 
         return Created("", cycle);
     }
