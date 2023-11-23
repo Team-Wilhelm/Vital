@@ -60,12 +60,12 @@ public class MetricRepository : IMetricRepository
                 JOIN ""CalendarDayMetric"" CDM on ""CalendarDay"".""Id"" = CDM.""CalendarDayId""
                 JOIN ""MetricValue"" MV on CDM.""MetricValueId"" = MV.""Id""
                 JOIN ""Metrics"" M on M.""Id"" = CDM.""MetricsId""
-        WHERE CAST(""Date"" AS DATE) >= @from AND CAST(""Date"" AS DATE) <= @to
-                AND ""UserId"" = @userId";
+        WHERE CAST(""Date"" AS DATE) >= CAST(@fromDate AS DATE) AND CAST(""Date"" AS DATE) <= CAST(@toDate AS DATE) 
+          AND ""UserId"" = @userId";
 
         var result = await _db.QueryAsync<CalendarDayAdapter>(sql, new
         {
-            userId, from = fromDate, to = toDate
+            userId, fromDate, toDate
         });
         
         return result;
