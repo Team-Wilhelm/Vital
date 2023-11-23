@@ -8,77 +8,81 @@ justify-between
 min-h-[calc(100vh-10rem)]
 ">
 
-  <!-- Upcoming period -->
-  <app-card class="lg:col-span-1 lg:row-span-1 hidden lg:block lg:order-none"
-            [redirectLink]="'/analytics'"
-            [compact]="true"
-  >
-    <div class="flex justify-center items-center w-full rounded-full bg-green-accent aspect-square">
-      <div class="flex justify-center items-center w-4/5 rounded-full bg-green-light-accent text-center aspect-square">
-        <div class="flex-col">
-          <p class="lg:text-lg xl:text-xl 3xl:text-3xl">X days</p>
-          <p class="text-sm 3xl:text-lg hidden 2xl:block">Estimated next period</p>
+    <!-- Upcoming period -->
+    <app-card class="lg:col-span-1 lg:row-span-1 hidden lg:block lg:order-none"
+              [redirectLink]="'/analytics'"
+              [compact]="true"
+    >
+        <div class="flex justify-center items-center w-full rounded-full bg-green-accent aspect-square">
+            <div class="flex justify-center items-center w-4/5 rounded-full bg-green-light-accent text-center aspect-square">
+                <div class="flex-col">
+                    <p class="lg:text-lg xl:text-xl 3xl:text-3xl">X days</p>
+                    <p class="text-sm 3xl:text-lg hidden 2xl:block">Estimated next period</p>
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
-  </app-card>
+    </app-card>
 
-  <!-- Hot water bottle mascot -->
-  <app-card [isTextContent]="false" cardColor="bg-yellow-accent" [compact]="true" [hoverable]="false" class="hidden lg:block lg:order-none">
-    <figure><img src="assets/hot-water-bottle.png" alt="hot water bottle mascot"/></figure>
-  </app-card>
+    <!-- Hot water bottle mascot -->
+    <app-card [isTextContent]="false" cardColor="bg-yellow-accent" [compact]="true" [hoverable]="false"
+              class="hidden lg:block lg:order-none">
+        <figure><img src="assets/hot-water-bottle.png" alt="hot water bottle mascot"/></figure>
+    </app-card>
 
-  <!-- Metrics -->
-  <app-card cardTitle="Metrics"
-            class="lg:col-span-2 lg:row-span-2 order-4 lg:order-none">
-    <div *ngFor="let metric of selectedDayMetrics" class="flex justify-between items-center">
-      <div>
-        <p class="text-sm">{{metric.metrics.name}}</p>
-        <p class="text-2xl">{{metric.metricValue.name}}</p>
-      </div>
-    </div>
+    <!-- Metrics -->
+    <app-card cardTitle="Metrics"
+              class="lg:col-span-2 lg:row-span-2 order-4 lg:order-none h-full justify-between overflow-y-scroll">
+        <div *ngFor="let metric of selectedDayMetrics; index as i" class="flex justify-between items-center">
+            <metric-list-item [metricName]="metric.metrics.name" [metricValue]="metric.metricValue.name"
+                              [metricTime]="selectedDay.toLocaleTimeString().substring(0,5)"
+                              [listIndex]="i"
+                              class="w-full"
+            >
+            </metric-list-item>
+        </div>
 
-  </app-card>
+    </app-card>
 
-  <!-- Calendar -->
-  <app-card class="text-primary-content lg:col-span-2 lg:row-span-3 order-2 lg:order-none" cardTitle="Calendar">
-    <calendar></calendar>
-  </app-card>
+    <!-- Calendar -->
+    <app-card class="text-primary-content lg:col-span-2 lg:row-span-3 order-2 lg:order-none" cardTitle="Calendar">
+        <calendar></calendar>
+    </app-card>
 
-  <!-- Analytics -->
-  <app-card cardTitle="Analytics"
-            class="lg:col-span-2 lg:row-span-1 hidden lg:block lg:order-none"
-            [redirectLink]="'/analytics'"
-  >
-    <p>Click here for a detailed overview of your cycle.</p>
-  </app-card>
+    <!-- Analytics -->
+    <app-card cardTitle="Analytics"
+              class="lg:col-span-2 lg:row-span-1 hidden lg:block lg:order-none"
+              [redirectLink]="'/analytics'"
+    >
+        <p>Click here for a detailed overview of your cycle.</p>
+    </app-card>
 
-  <!-- Current cycle -->
-  <app-card cardTitle="Current cycle"
-            class="lg:col-span-4 lg:row-span-1 order-1 lg:order-none
+    <!-- Current cycle -->
+    <app-card cardTitle="Current cycle"
+              class="lg:col-span-4 lg:row-span-1 order-1 lg:order-none
             max-h-64 overflow-x-scroll"
-            [redirectLink]="'/analytics'"
-  >
-    <div class="flex h-full justify-between items-center">
-      <app-current-cycle *ngFor="let day of currentCycleDays"
-                         date="1">
-      </app-current-cycle>
+              [redirectLink]="'/analytics'"
+    >
+        <div class="flex h-full justify-between items-center">
+            <app-current-cycle *ngFor="let day of currentCycleDays"
+                               date="1">
+            </app-current-cycle>
+        </div>
+    </app-card>
+
+    <!-- Medications -->
+    <app-card cardTitle="Medication"
+              class="lg:col-span-4 lg:row-span-2 order-3 lg:order-none">
+
+        <div class="flex-col h-full justify-between max-h-[300px] overflow-y-scroll">
+            <medication-list-item *ngFor="let number of [1,2,3]" medicationName="Lexaurin" medicationDosage="{{number}}"
+                                  medicationTime="22:22" [listIndex]="number"/>
+        </div>
+    </app-card>
+
+    <!-- Slay T-rex
+    <div class="card bg-card hidden lg:block lg:col-span-2 lg:row-span-2 lg:order-none">
+      <figure><img src="assets/OIG.png" alt="Slay T-rex"/></figure>
     </div>
-  </app-card>
-
-  <!-- Medications -->
-  <app-card cardTitle="Medication"
-            class="lg:col-span-4 lg:row-span-2 order-3 lg:order-none">
-
-    <div class="flex-col h-full justify-between max-h-[300px] overflow-y-scroll">
-        <medication-list-item *ngFor="let number of [1,2,3]" medicationName="Lexaurin" medicationDosage="{{number}}" medicationTime="22:22" [listIndex]="number" />
-    </div>
-  </app-card>
-
-  <!-- Slay T-rex
-  <div class="card bg-card hidden lg:block lg:col-span-2 lg:row-span-2 lg:order-none">
-    <figure><img src="assets/OIG.png" alt="Slay T-rex"/></figure>
-  </div>
-  -->
+    -->
 
 </div>

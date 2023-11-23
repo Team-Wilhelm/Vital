@@ -3,11 +3,11 @@ import {Injectable} from "@angular/core";
 import {firstValueFrom} from "rxjs";
 import {environment} from "../../../environments/environment";
 import {
-  CalendarDayMetricDto, CalendarDayMetricViewDto,
+  CalendarDayMetricViewDto,
   MetricRegisterMetricDto,
-  MetricValueViewDto, MetricViewDto
+  MetricViewDto
 } from "../interfaces/dtos/metric.dto.interface";
-import {CalendarDay, CalendarDayMetric} from "../interfaces/day.interface";
+import {CalendarDay} from "../interfaces/day.interface";
 
 @Injectable({
   providedIn: 'root'
@@ -33,10 +33,9 @@ export class MetricService {
     return await firstValueFrom(call);
   }
 
-  public async getMetricsForCalendarDays(startDate: Date, endDate: Date): Promise<CalendarDayMetric[]> {
-    const call = this.http.get<CalendarDayMetric[]>(`${this.apiUrl}/calendar?startDate=${startDate.toISOString()}&endDate=${endDate.toISOString()}`);
-    const data = await firstValueFrom(call);
-    console.log(data);
-    return data;
+  //TODO: Look into casting the retrieved data into another type
+  public async getMetricsForCalendarDays(startDate: Date, endDate: Date): Promise<CalendarDay[]> {
+    const call = this.http.get<CalendarDay[]>(`${this.apiUrl}/calendar?fromDate=${startDate.toISOString()}&toDate=${endDate.toISOString()}`);
+    return await firstValueFrom(call);
   }
 }
