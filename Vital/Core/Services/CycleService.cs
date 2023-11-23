@@ -32,9 +32,13 @@ public class CycleService : ICycleService
         return await _cycleRepository.GetById(id);
     }
 
-    public async Task<Cycle> Create(CreateCycleDto dto)
+    public async Task<Cycle> Create()
     {
-        var cycle = _mapper.Map<Cycle>(dto);
+        var cycle = new Cycle()
+        {
+            StartDate = DateTimeOffset.Now,
+            EndDate = null
+        };
         cycle.Id = Guid.NewGuid();
         cycle.UserId = _currentContext.UserId!.Value;
         await _cycleRepository.Create(cycle);

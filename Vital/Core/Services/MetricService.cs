@@ -45,7 +45,7 @@ public class MetricService : IMetricService
         var calendarDay = await _calendarDayRepository.GetByDate(userId, dateTimeOffset);
         if (calendarDay is null)
         {
-            throw new NotFoundException();
+            calendarDay = await _calendarDayRepository.CreteCycleDay(userId, dateTimeOffset);
         }
 
         await _metricRepository.UploadMetricForADay(calendarDay.Id, metrics);
