@@ -25,5 +25,6 @@ public class MappingProfile : Profile
         CreateMap<Metrics, MetricsDto>();
         CreateMap<MetricValue, MetricValueDto>();
         CreateMap<CalendarDayMetric, CalendarDayMetricDto>();
+        CreateMap<MetricValue, ValueDto>();
     }
 }

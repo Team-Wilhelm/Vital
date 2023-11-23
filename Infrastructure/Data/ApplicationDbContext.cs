@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Models;
 using Models.Days;
 using Models.Identity;
+using Models.Util;
 
 namespace Infrastructure.Data;
 
@@ -16,7 +17,8 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
     public DbSet<PregnancyDay> PregnancyDays { get; set; }
 
     public DbSet<Metrics> Metrics { get; set; }
-
+    public DbSet<MetricValue> MetricValue { get; set; }
+    public DbSet<CalendarDayMetric> CalendarDayMetric { get; set; }
 
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
         : base(options)

@@ -51,6 +51,9 @@ public class VitalApiFactory : WebApplicationFactory<IApiAssemblyMarker>, IAsync
             // Add new ApplicationDbContext service with UseNpgsql
             services.AddDbContext<ApplicationDbContext>(x =>
                 x.UseNpgsql(connectionString));
+            
+            // Add TestDbInitializer
+            services.AddScoped<TestDbInitializer>();
         });
     }
 
@@ -71,6 +74,10 @@ public class VitalApiFactory : WebApplicationFactory<IApiAssemblyMarker>, IAsync
             DbAdapter = DbAdapter.Postgres,
             SchemasToInclude = new[] { "public" }
         });
+        
+        // Add TestDbInitializer
+        var testDbInitializer = scope.ServiceProvider.GetRequiredService<TestDbInitializer>();
+        await testDbInitializer.Init();
     }
 
     public async Task ResetDatabaseAsync()

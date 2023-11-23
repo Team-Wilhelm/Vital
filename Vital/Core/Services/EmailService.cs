@@ -18,6 +18,18 @@ public class EmailService(IEmailDeliveryService emailDeliveryService, IOptions<G
 
         await SendEmailAsync(recipients, subject, message, cancellationToken);
     }
+    
+    public async Task SendForgotPasswordEmailAsync(ApplicationUser user, string token, CancellationToken cancellationToken)
+    {
+        var recipients = new List<string>() { user.UserName! };
+        var subject = "Verify Email";
+
+        var verifyMessageContent = $"Hello, {user.UserName}, to verify your email click: {globalSettings.Value.FrontEndUrl}/reset-password?userId={user.Id}&token={token} <br/> If you did not request this email, please ignore it.";
+
+        var message = CreateDefaultMessage(verifyMessageContent);
+
+        await SendEmailAsync(recipients, subject, message, cancellationToken);
+    }
 
     #region Private methods
 

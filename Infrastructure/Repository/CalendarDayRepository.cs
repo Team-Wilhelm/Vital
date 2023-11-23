@@ -21,7 +21,26 @@ public class CalendarDayRepository : ICalendarDayRepository
 
         sql = @"SELECT * FROM ""CalendarDay"" WHERE ""UserId""=@userId AND CAST(""Date"" AS DATE) = CAST(@date AS DATE)";
 
-        return CreateCalendarDay(state!, sql, new { userId, date });
+        return state is null ? null : CreateCalendarDay(state, sql, new { userId, date });
+    }
+    
+    public async Task<List<CalendarDay>> GetByDateRange(Guid userId, DateTimeOffset from, DateTimeOffset to)
+    {
+        var sql = @"SELECT ""State"" FROM ""CalendarDay"" WHERE ""UserId"" = @userId AND CAST(""Date"" AS DATE) >= CAST(@from AS DATE) AND CAST(""Date"" AS DATE) <= CAST(@to AS DATE)";
+        var states = await _db.QueryAsync<string>(sql, new { userId, from, to });
+
+        sql = @"SELECT * FROM ""CalendarDay"" WHERE ""UserId"" = @userId AND CAST(""Date"" AS DATE) >= CAST(@from AS DATE) AND CAST(""Date"" AS DATE) <= CAST(@to AS DATE)";
+
+        var parameters = new { userId, from, to };
+        var calendarDays = new List<CalendarDay>();
+
+        foreach (var state in states)
+        {
+            var calendarDay = CreateCalendarDay(state!, sql, parameters);
+            calendarDays.Add(calendarDay);
+        }
+
+        return calendarDays;
     }
 
     public async Task<CalendarDay?> GetById(Guid calendarDayId)
@@ -30,7 +49,7 @@ public class CalendarDayRepository : ICalendarDayRepository
         var state = await _db.QuerySingleOrDefaultAsync<string>(sql, new { calendarDayId });
 
         sql = @"SELECT * FROM ""CalendarDay"" WHERE ""Id""=@calendarDayId";
-        return CreateCalendarDay(state!, sql, new { calendarDayId });
+        return state is null ? null : CreateCalendarDay(state!, sql, new { calendarDayId });
     }
 
     private CalendarDay? CreateCalendarDay(string state, string sql, object param)
@@ -38,7 +57,7 @@ public class CalendarDayRepository : ICalendarDayRepository
         return state switch
         {
             "CycleDay" => _db.QuerySingleOrDefault<CycleDay>(sql, param),
-            _ => throw new InvalidOperationException("Invalid state")
+            _ => throw new InvalidOperationException($"There was an issue while creating a calendar day. Invalid state, {state}")
         };
     }
 }
