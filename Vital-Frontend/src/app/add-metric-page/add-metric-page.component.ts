@@ -10,7 +10,7 @@ import { MetricRegisterMetricDto, MetricValueViewDto, MetricViewDto, CalendarDay
 export class AddMetricPageComponent implements OnInit {
   public allMetrics: MetricViewDto[] = [];
   public selectedMetrics: MetricRegisterMetricDto[] = [];
-  public clickedDate: string | undefined;
+  public clickedDate: Date = new Date();
   public metricSelectionMap: Map<string, { selectedValue: string }> = new Map();
 
   constructor(private dataService: DataService, private metricService: MetricService) {
@@ -19,7 +19,6 @@ export class AddMetricPageComponent implements OnInit {
 
   ngOnInit(): void {
       this.dataService.clickedDate$.subscribe((clickedDate) => {
-      this.clickedDate = clickedDate ? clickedDate.toISOString() : new Date().toISOString();
       // When the date changes, update the selected metrics for the new date
       this.getSelectedMetricsForDay().then(() => {
         this.updateSelectedMetrics();
@@ -66,7 +65,7 @@ export class AddMetricPageComponent implements OnInit {
   }
 
   public async saveMetrics() {
-    await this.metricService.addMetricsForDay(this.clickedDate!, this.selectedMetrics);
+    await this.metricService.addMetricsForDay(this.clickedDate.toISOString()!, this.selectedMetrics);
   }
 
   public async getMetrics() {

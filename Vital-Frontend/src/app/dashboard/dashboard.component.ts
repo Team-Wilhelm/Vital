@@ -1,6 +1,8 @@
 import {Component} from '@angular/core';
-import {CycleService} from "../services/cycle-service";
-import {CycleDay} from "../interfaces/Models";
+import {MetricService} from "../services/metric.service";
+import {CalendarDayMetric, CycleDay} from "../interfaces/day.interface";
+import {Metrics} from "../interfaces/metric.interface";
+import {CycleService} from "../services/cycle.service";
 
 @Component({
   selector: 'app-dashboard',
@@ -10,24 +12,22 @@ import {CycleDay} from "../interfaces/Models";
 export class DashboardComponent {
   title = 'dashboard';
   currentCycleDays: CycleDay[] = [];
+  selectedDay: Date = new Date();
+  selectedDayMetrics: CalendarDayMetric[] = [];
 
-  constructor(private cycleService: CycleService) {
-    this.initCurrentCycleDays();
+  constructor(private cycleService: CycleService, private metricService: MetricService) {
+    var d = new Date();
+    d.setDate(d.getDate() - 1);
+    this.getMetricsForDay(d).then(
+        (res => {
+            console.log(res);
+        })
+    );
   }
 
-  async initCurrentCycleDays() {
-    const days = await this.cycleService.getCurrentCycleDays();
-    this.currentCycleDays = days.filter(day => {
-      const today = new Date();
-      today.setHours(0, 0, 0, 0); // remove time part
-      const dayDate = new Date(day.date);
-      dayDate.setHours(0, 0, 0, 0); // remove time part
+  async getMetricsForDay(date: Date) {
+    this.selectedDay = date;
 
-      const threeDaysBefore = new Date(today.getTime() - 3 * 24 * 60 * 60 * 1000);
-      const threeDaysAfter = new Date(today.getTime() + 3 * 24 * 60 * 60 * 1000);
-
-      return dayDate >= threeDaysBefore && dayDate <= threeDaysAfter;
-    });
-    console.log(this.currentCycleDays);
+    this.selectedDayMetrics = await this.metricService.getMetricsForCalendarDays(date, date);
   }
 }

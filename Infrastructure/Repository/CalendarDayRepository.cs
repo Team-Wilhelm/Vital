@@ -80,12 +80,13 @@ public class CalendarDayRepository : ICalendarDayRepository
         return cycleDay;
     }
 
-    private CalendarDay? BuildCalendarDay(string state, string sql, object param)
+    public CalendarDay? BuildCalendarDay(string state, string sql, object param)
     {
         return state switch
         {
             "CycleDay" => _db.QuerySingleOrDefault<CycleDay>(sql, param),
-            _ => throw new InvalidOperationException($"There was an issue while creating a calendar day. Invalid state, {state}")
+            _ => throw new InvalidOperationException(
+                $"There was an issue while creating a calendar day. Invalid state, {state}")
         };
     }
 }

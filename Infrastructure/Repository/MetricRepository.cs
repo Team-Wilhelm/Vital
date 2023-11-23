@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Data;
 using Dapper;
+using Infrastructure.Adapters;
 using Infrastructure.Repository.Interface;
 using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using Models;
@@ -41,29 +42,32 @@ public class MetricRepository : IMetricRepository
         }).ToList();
     }
     
-    public async Task<IEnumerable<CalendarDay>> GetMetricsForCalendarDays(Guid userId, DateTimeOffset fromDate, DateTimeOffset toDate)
+    public async Task<IEnumerable<CalendarDayAdapter>> GetMetricsForCalendarDays(Guid userId, DateTimeOffset fromDate, DateTimeOffset toDate)
     {
-        var sql = @"SELECT * FROM ""CalendarDay""
-                LEFT JOIN ""CalendarDayMetric"" CDM on ""CalendarDay"".""Id"" = CDM.""CalendarDayId""
-                LEFT JOIN ""MetricValue"" MV on CDM.""MetricValueId"" = MV.""Id""
-                LEFT JOIN ""Metrics"" M on M.""Id"" = CDM.""MetricsId""
+        var sql = $@"SELECT 
+                ""CalendarDay"".""Id"" as {nameof(CalendarDayAdapter.CalendarDayId)},
+                ""CalendarDay"".""Date"" as {nameof(CalendarDayAdapter.Date)},
+                ""CalendarDay"".""UserId"" as {nameof(CalendarDayAdapter.UserId)},
+                ""CalendarDay"".""State"" as {nameof(CalendarDayAdapter.State)},
+                ""CalendarDay"".""CycleId"" as {nameof(CalendarDayAdapter.CycleId)},
+                ""CalendarDay"".""IsPeriodDay"" as {nameof(CalendarDayAdapter.IsPeriodDay)},
+                CDM.""Id"" as {nameof(CalendarDayAdapter.CalendarDayMetricId)},
+                M.""Id"" as {nameof(CalendarDayAdapter.MetricsId)},
+                M.""Name"" as {nameof(CalendarDayAdapter.MetricName)},
+                MV.""Id"" as {nameof(CalendarDayAdapter.MetricValueId)},
+                MV.""Name"" as {nameof(CalendarDayAdapter.MetricValueName)}        
+                FROM ""CalendarDay""
+                JOIN ""CalendarDayMetric"" CDM on ""CalendarDay"".""Id"" = CDM.""CalendarDayId""
+                JOIN ""MetricValue"" MV on CDM.""MetricValueId"" = MV.""Id""
+                JOIN ""Metrics"" M on M.""Id"" = CDM.""MetricsId""
         WHERE CAST(""Date"" AS DATE) >= @from AND CAST(""Date"" AS DATE) <= @to
                 AND ""UserId"" = @userId";
 
-        var result = await _db.QueryAsync<CalendarDay, CalendarDayMetric, MetricValue, Metrics, CalendarDay>(
-            sql,
-            (calendarDay, calendarDayMetric, metricValue, metrics) =>
-            {
-                // I'm assuming these relationships exist in your models, adapt accordingly if not
-                calendarDayMetric.MetricValue = metricValue;
-                calendarDayMetric.Metrics = metrics;
-                calendarDay.SelectedMetrics.Add(calendarDayMetric);
-                return calendarDay;
-            },
-            new { from = fromDate.Date, to = toDate.Date, userId },
-            // Specify the columns at which the returned rows should be split up into different objects
-            splitOn: "CalendarDayId,MetricValueId,Id");
-
+        var result = await _db.QueryAsync<CalendarDayAdapter>(sql, new
+        {
+            userId, from = fromDate, to = toDate
+        });
+        
         return result;
     }
     
@@ -88,6 +92,7 @@ public class MetricRepository : IMetricRepository
             sql,
             (calendarDayMetrics, metrics, metricValue) =>
             {
+                
                 metrics.Values = new List<MetricValue>() { metricValue };
                 calendarDayMetrics.Metrics = metrics;
                 calendarDayMetrics.MetricValue = metricValue;

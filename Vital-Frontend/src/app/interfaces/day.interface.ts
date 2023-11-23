@@ -26,3 +26,9 @@ export interface CalendarDayMetric {
   metricValueId: string; //guid
   metricValue: MetricValue;
 }
+
+export interface CycleDay extends CalendarDay {
+  cycleId: string; //guid
+  cycle: Cycle;
+  isPeriod: boolean;
+}
