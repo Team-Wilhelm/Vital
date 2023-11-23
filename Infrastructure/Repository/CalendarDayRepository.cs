@@ -66,19 +66,17 @@ public class CalendarDayRepository : ICalendarDayRepository
         }
 
         var cycleDay = new CycleDay()
-                {
-                    CycleId = lastCycle.Id,
-                    UserId = UserId,
-                    Date = dateTime
-                };
+        {
+            CycleId = lastCycle.Id,
+            UserId = UserId,
+            Date = dateTime
+        };
 
-                // TODO: please rework me into Dapper
-                await _applicationDbContext.CycleDays.AddAsync(cycleDay);
-
-                await _applicationDbContext.SaveChangesAsync();
-
-                return cycleDay;
-                }
+        // TODO: please rework me into Dapper
+        await _applicationDbContext.CycleDays.AddAsync(cycleDay);
+        await _applicationDbContext.SaveChangesAsync();
+        return cycleDay;
+    }
 
     public CalendarDay? BuildCalendarDay(string state, string sql, object param)
     {

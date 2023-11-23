@@ -32,7 +32,6 @@ export class CardComponent implements OnInit {
   @Input() hasPlusButton: boolean = false;
   @Input() onClickPlusButton: () => void = () => {this.plusButtonClicked.emit()};
   @Output() plusButtonClicked = new EventEmitter<void>();
-
   classList: string[] = [];
 
   constructor(private router: Router) {

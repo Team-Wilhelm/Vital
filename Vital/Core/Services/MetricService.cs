@@ -111,7 +111,7 @@ public class MetricService : IMetricService
                     UserId = calendarDayAdapter.UserId,
                     State = calendarDayAdapter.State,
                     SelectedMetrics = new List<CalendarDayMetric>(),
-                    IsPeriodDay = calendarDayAdapter.IsPeriodDay,
+                    IsPeriod = calendarDayAdapter.IsPeriodDay,
                 };
             default:
                 return null;

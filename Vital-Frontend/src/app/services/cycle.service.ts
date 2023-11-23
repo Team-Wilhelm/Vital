@@ -2,7 +2,6 @@
 import {HttpClient} from "@angular/common/http";
 import {firstValueFrom} from "rxjs";
 import {environment} from "../../../environments/environment";
-import {CycleDay} from "../interfaces/day.interface";
 import {Cycle} from "../interfaces/cycle.interface";
 
 @Injectable({
@@ -15,7 +14,6 @@ export class CycleService {
 
   constructor(private httpClient: HttpClient) {
     this.getPredictedPeriod();
-
   }
 
   async getPredictedPeriod() {
@@ -24,6 +22,6 @@ export class CycleService {
   }
 
   startNewCycle() {
-
+    return firstValueFrom(this.httpClient.post(environment.baseUrl + '/cycle', {}));
   }
 }

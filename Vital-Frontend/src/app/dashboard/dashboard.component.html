@@ -30,8 +30,10 @@ min-h-[calc(100vh-10rem)]
     </app-card>
 
     <!-- Metrics -->
-    <app-card cardTitle="Metrics"
-              class="lg:col-span-2 lg:row-span-2 order-4 lg:order-none h-full justify-between overflow-y-scroll">
+    <app-card cardTitle="Metrics" #metricsCard
+              class="lg:col-span-2 lg:row-span-2 order-4 lg:order-none h-full justify-between overflow-y-scroll"
+              [hasPlusButton]="true"
+              (plusButtonClicked)="redirectToMetrics()">
         <div *ngFor="let metric of selectedDayMetrics; index as i" class="flex justify-between items-center">
             <metric-list-item [metricName]="metric.metrics.name" [metricValue]="metric.metricValue.name"
                               [metricTime]="selectedDay.toLocaleTimeString().substring(0,5)"
@@ -40,7 +42,6 @@ min-h-[calc(100vh-10rem)]
             >
             </metric-list-item>
         </div>
-
     </app-card>
 
     <!-- Calendar -->
@@ -65,7 +66,7 @@ min-h-[calc(100vh-10rem)]
   >
     <div class="flex h-full justify-between items-center">
       <app-current-cycle *ngFor="let day of cycleService.predictedPeriod"
-                         [date]="day">
+                         [date]="day.toISOString()">
       </app-current-cycle>
     </div>
   </app-card>
@@ -80,11 +81,11 @@ min-h-[calc(100vh-10rem)]
         </div>
     </app-card>
 
-    <!-- Slay T-rex
-    <div class="card bg-card hidden lg:block lg:col-span-2 lg:row-span-2 lg:order-none">
-      <figure><img src="assets/OIG.png" alt="Slay T-rex"/></figure>
-    </div>
-    -->
+  <!-- Slay T-rex
+  <div class="card bg-card hidden lg:block lg:col-span-2 lg:row-span-2 lg:order-none">
+    <figure><img src="assets/OIG.png" alt="Slay T-rex"/></figure>
+  </div>
+  -->
 
   <!-- Your period has started dialog -->
   <dialog id="hasYourPeriodStartedModal" class="modal" #hasYourPeriodStartedModal>
