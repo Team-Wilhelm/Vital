@@ -66,19 +66,19 @@ public class CalendarDayRepository : ICalendarDayRepository
         }
 
         var cycleDay = new CycleDay()
-        {
-            CycleId = lastCycle.Id,
-            UserId = UserId,
-            Date = dateTime
-        };
-        
-        // TODO: please rework me into Dapper
-        await _applicationDbContext.CycleDays.AddAsync(cycleDay);
-        
-        await _applicationDbContext.SaveChangesAsync();
+                {
+                    CycleId = lastCycle.Id,
+                    UserId = UserId,
+                    Date = dateTime
+                };
 
-        return cycleDay;
-    }
+                // TODO: please rework me into Dapper
+                await _applicationDbContext.CycleDays.AddAsync(cycleDay);
+
+                await _applicationDbContext.SaveChangesAsync();
+
+                return cycleDay;
+                }
 
     public CalendarDay? BuildCalendarDay(string state, string sql, object param)
     {
@@ -89,4 +89,11 @@ public class CalendarDayRepository : ICalendarDayRepository
                 $"There was an issue while creating a calendar day. Invalid state, {state}")
         };
     }
+
+    public async Task<IEnumerable<CycleDay>> GetCycleDaysForSpecifiedPeriodAsync(Guid userId, DateTimeOffset startDate, DateTimeOffset endDate)
+        {
+            var sql = @"SELECT * FROM ""CalendarDay"" WHERE ""Date"" BETWEEN @startDate AND @endDate AND ""UserId""=@userId";
+            var calendarDays = await _db.QueryAsync<CycleDay>(sql, new { startDate, endDate, userId });
+            return calendarDays;
+        }
 }

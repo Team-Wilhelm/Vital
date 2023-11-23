@@ -73,4 +73,10 @@ public class CycleRepository : ICycleRepository
         var cycleDays = await _db.QueryAsync<CycleDay>(sql, new { CycleId = cycleId });
         return cycleDays;
     }
+
+    public Task<Cycle?> GetCurrentCycle(Guid userId)
+    {
+        var sql = @"SELECT * FROM ""Cycles"" WHERE ""UserId""=@UserId AND ""EndDate"" IS NULL";
+        return _db.QuerySingleOrDefaultAsync<Cycle>(sql, new { UserId = userId });
+    }
 }

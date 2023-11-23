@@ -47,13 +47,12 @@ public interface ICycleService
     /// <param name="cycleId">The unique ID of the specified cycle.</param>
     /// <returns>A task that represents the asynchronous operation. 
     /// The task result contains a list of PredictedPeriodDayDtos.</returns>
-    Task<List<PredictedPeriodDayDto>> GetPredictedPeriod(Guid cycleId);
-
+    Task<List<DateTimeOffset>> GetPredictedPeriod(Guid userId);
+    
     /// <summary>
-    /// Creates a new Cycle object with the specified details when the user registers, in order to create a default cycle
-    /// and tie it to the user. 
+    /// Retrieves the current cycle for the specified user.
     /// </summary>
-    /// <param name="cycle"></param>
+    /// <param name="userId"></param>
     /// <returns></returns>
-    Task<Cycle> CreateUponRegister(Cycle cycle);
+    Task<Cycle?> GetCurrentCycle(Guid userId);
 }

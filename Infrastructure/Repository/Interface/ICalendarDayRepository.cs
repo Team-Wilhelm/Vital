@@ -9,4 +9,5 @@ public interface ICalendarDayRepository
     Task<CalendarDay> CreteCycleDay(Guid UserId, DateTimeOffset dateTime);
     Task<CalendarDay?> GetById(Guid calendarDayId);
     CalendarDay? BuildCalendarDay(string state, string sql, object parameters);
+    Task<IEnumerable<CycleDay>> GetCycleDaysForSpecifiedPeriodAsync(Guid userId, DateTimeOffset startDate, DateTimeOffset endDate);
 }

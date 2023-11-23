@@ -39,4 +39,11 @@ public interface ICycleRepository
     /// <returns>A task that represents the asynchronous operation. 
     /// The task result contains the updated Cycle object.</returns>
     Task<Cycle> Update(Cycle cycle);
+
+    /// <summary>
+    /// Retrieves the current cycle for the specified user.
+    /// </summary>
+    /// <param name="userId"></param>
+    /// <returns></returns>
+    Task<Cycle?> GetCurrentCycle(Guid userId);
 }

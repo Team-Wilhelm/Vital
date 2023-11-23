@@ -10,12 +10,20 @@ import {Cycle} from "../interfaces/cycle.interface";
 })
 
 export class CycleService {
-  currentCycleDays: CycleDay[] = [];
-  lastThreeCycles: Cycle[] = [];
-  currentCycleWeek: CycleDay[] = []; // 3 days before and after current day
   currentCycle: Cycle | undefined;
+  predictedPeriod: Date[] = [];
 
   constructor(private httpClient: HttpClient) {
+    this.getPredictedPeriod();
+
+  }
+
+  async getPredictedPeriod() {
+    this.predictedPeriod = await firstValueFrom(this.httpClient.get<Date[]>(environment.baseUrl + '/cycle/predicted-period'));
+    this.predictedPeriod = this.predictedPeriod.map(date => new Date(date));
+  }
+
+  startNewCycle() {
 
   }
 }

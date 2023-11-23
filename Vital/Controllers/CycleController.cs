@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Models;
 using Models.Dto.Cycle;
 using Models.Pagination;
+using Vital.Core.Context;
 using Vital.Core.Services.Interfaces;
 using Vital.Extension.Mapping;
 using Vital.Models.Exception;
@@ -18,11 +19,13 @@ public class CycleController : BaseController
 {
     private readonly ICycleService _cycleService;
     private readonly IMapper _mapper;
+    private readonly CurrentContext _currentContext;
 
-    public CycleController(ICycleService cycleService, IMapper mapper)
+    public CycleController(ICycleService cycleService, IMapper mapper, CurrentContext currentContext)
     {
         _cycleService = cycleService;
         _mapper = mapper;
+        _currentContext = currentContext;
     }
 
     /// <summary>
@@ -88,12 +91,23 @@ public class CycleController : BaseController
     /// Retrieves a list of predicted period days for a Cycle object.
     /// </summary>
     /// <param name="cycleId">The ID of the predicted cycle.</param>
-    [HttpGet("predicted-period/{cycleId:guid}")]
+    [HttpGet("predicted-period")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<PredictedPeriodDayDto>))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> GetPredictedPeriod(Guid cycleId)
+    public async Task<IActionResult> GetPredictedPeriod()
     {
-        var predictedPeriodDays = await _cycleService.GetPredictedPeriod(cycleId);
+        var userId = _currentContext.UserId!.Value;
+        var predictedPeriodDays = await _cycleService.GetPredictedPeriod(userId);
         return Ok(predictedPeriodDays);
+    }
+    
+    [HttpGet("current-cycle")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Cycle))]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetCurrentCycle()
+    {
+        var userId = _currentContext.UserId!.Value;
+        var cycle = await _cycleService.GetCurrentCycle(userId);
+        return Ok(cycle);
     }
 }
