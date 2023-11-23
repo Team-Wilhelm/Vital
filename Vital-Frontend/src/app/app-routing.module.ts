@@ -5,6 +5,7 @@ import {AnalyticsComponent} from "./analytics/analytics.component";
 import {LoginComponent} from "./login/login.component";
 import {authGuard} from "./gurads/auth.guard";
 import {RegisterComponent} from "./register/register.component";
+import {AddMetricPageComponent} from "./add-metric-page/add-metric-page.component";
 
 const routes: Routes = [
     {path: '', redirectTo: 'dashboard', pathMatch: 'full'},
@@ -18,9 +19,14 @@ const routes: Routes = [
         component: AnalyticsComponent,
         canActivate: [authGuard]
     },
+    {
+      path: 'add-metric',
+      component: AddMetricPageComponent,
+      pathMatch: 'full'
+    },
     {path: 'login', component: LoginComponent},
     {path: 'register', component: RegisterComponent},
-    {path: '**', redirectTo: 'dashboard'}
+    {path: '**', redirectTo: 'dashboard'},
 ];
 
 @NgModule({

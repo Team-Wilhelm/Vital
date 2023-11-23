@@ -4,6 +4,8 @@ import {BrowserModule} from '@angular/platform-browser';
 import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './app.component';
 import {DashboardComponent} from './dashboard/dashboard.component';
+import { FullCalendarModule } from '@fullcalendar/angular';
+
 import {NgOptimizedImage} from "@angular/common";
 import {AnalyticsComponent} from './analytics/analytics.component';
 import {CardComponent} from "./card/card.component";
@@ -17,6 +19,9 @@ import {CycleService} from "./services/cycle.service";
 import {JWT_OPTIONS, JwtHelperService} from "@auth0/angular-jwt";
 import {ReactiveFormsModule} from "@angular/forms";
 import {RegisterComponent} from "./register/register.component";
+import { CalendarComponent } from './calendar/calendar.component';
+import { AddMetricPageComponent } from './add-metric-page/add-metric-page.component';
+import {FormsModule} from "@angular/forms";
 
 @NgModule({
   declarations: [
@@ -26,6 +31,8 @@ import {RegisterComponent} from "./register/register.component";
     CardComponent,
     CurrentCycleComponent,
     MedicationListItemComponent,
+    CalendarComponent,
+    AddMetricPageComponent,
     LoginComponent,
     RegisterComponent
   ],
@@ -35,6 +42,9 @@ import {RegisterComponent} from "./register/register.component";
         NgOptimizedImage,
         HttpClientModule,
         ReactiveFormsModule,
+        FullCalendarModule,
+        FormsModule,
+        NgOptimizedImage,
     ],
   providers: [
     TokenService,

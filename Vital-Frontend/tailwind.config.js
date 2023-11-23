@@ -15,6 +15,8 @@ module.exports = {
         'green-light-accent' : '#B8DACD',
         'card' : '#FAF7F5',
         'card-hover' : '#ffffff',
+        'button-selected': '#EEAF3A',
+        'button-unselected': '#B8DACD',
       },
     },
     container: {
