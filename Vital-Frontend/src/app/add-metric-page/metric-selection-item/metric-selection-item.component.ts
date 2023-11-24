@@ -5,8 +5,7 @@ import {MetricService} from "../../services/metric.service";
 @Component({
   selector: 'metric-selection-item',
   template: `
-      <label for="had-flow" class="label cursor-pointer"
-             (click)="toggleCheckbox($event)">
+      <label class="label cursor-pointer">
         <span class="label-text text-xl mr-10"> {{metric?.name}}</span>
         <div class="flex items-center">
 
@@ -25,6 +24,8 @@ import {MetricService} from "../../services/metric.service";
           -->
 
           <input type="checkbox" id="had-flow" class="checkbox checkbox-accent"  #checkbox
+                 [defaultChecked]="metric && metricService.isMetricSelected(metric.id)"
+                 (click)="metric && metricService.addOrRemoveMetric(metric)"
           />
         </div>
       </label>
@@ -37,13 +38,5 @@ export class MetricSelectionItemComponent {
 
   constructor(public metricService: MetricService) {
 
-  }
-
-  toggleCheckbox(event: MouseEvent) {
-    event.preventDefault();
-    if (this.metric) {
-      this.metricService.addOrRemoveMetric(this.metric);
-      this.checkbox!.nativeElement.checked = this.metricService.isMetricSelected(this.metric.id);
-    }
   }
 }

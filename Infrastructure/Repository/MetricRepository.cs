@@ -81,8 +81,8 @@ public class MetricRepository : IMetricRepository
                 ""Metrics"".*,
                 MV.*
                 FROM ""CalendarDayMetric"" CDM
-                    INNER JOIN ""MetricValue"" MV ON CDM.""MetricValueId"" = MV.""Id""
-                    INNER JOIN ""Metrics"" on ""Metrics"".""Id"" = CDM.""MetricsId""    
+                    LEFT JOIN ""MetricValue"" MV ON CDM.""MetricValueId"" = MV.""Id""
+                    LEFT JOIN ""Metrics"" on ""Metrics"".""Id"" = CDM.""MetricsId""    
                 WHERE CDM.""CalendarDayId""=@calendarDayId";
         if (calendarDay is null)
         {

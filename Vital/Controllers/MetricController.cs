@@ -65,17 +65,15 @@ public class MetricController : BaseController
     /// Deletes any existing metrics for the day and uploads the new metrics.
     /// </summary>
     /// <param name="metrics"></param>
-    /// <param name="dateTimeOffsetString"></param>
-    [AllowAnonymous]
+    /// <param name="date"></param>
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(CalendarDayDto))]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> SaveMetricsAsync([FromBody] List<MetricRegisterMetricDto> metrics, [FromQuery] string dateTimeOffsetString)
+    public async Task<IActionResult> SaveMetricsAsync([FromBody] List<MetricRegisterMetricDto> metrics, [FromQuery] string date)
     {
-        var dateTimeOffset = DateTimeOffset.Parse(dateTimeOffsetString);
-        //var userId = _currentContext.UserId!.Value; //TODO: Uncomment this line and enable authentication 
-        var userId = Guid.Parse("adfead4c-823b-41e5-9c7e-c84aa04192a4");
+        var dateTimeOffset = DateTimeOffset.Parse(date);
+        var userId = _currentContext.UserId!.Value;
         var calendarDayDto = await _metricService.SaveMetrics(userId, metrics, dateTimeOffset);
         return Ok(calendarDayDto);
     }

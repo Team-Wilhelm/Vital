@@ -21,6 +21,7 @@ export class MetricService {
 
   constructor(private http: HttpClient) {
     this.getAllMetricsWithValues();
+    this.getUsersMetric(new Date());
   }
 
   public async getAllMetricsWithValues(): Promise<MetricViewDto[]> {
@@ -30,9 +31,12 @@ export class MetricService {
     return this.allMetrics;
   }
 
-  public async getMetricsForDay(date: Date): Promise<CalendarDayMetricViewDto[]> {
-    const call = this.http.get<CalendarDayMetricViewDto[]>(`${this.apiUrl}/${date.toISOString()}`);
-    return await firstValueFrom(call);
+  public async getUsersMetric(date: Date): Promise<void> {
+    const  calendarDayArray =  await firstValueFrom(this.http.get<CalendarDayMetricViewDto[]>(`${this.apiUrl}/${date.toISOString()}`));
+    calendarDayArray.forEach((calendarDay) => {
+      this.metricSelectionMap.set(calendarDay.metricsId, calendarDay.metricValueId || null);
+    });
+    console.log(this.metricSelectionMap);
   }
 
   //TODO: Look into casting the retrieved data into another type
@@ -97,7 +101,7 @@ export class MetricService {
 
     console.log(this.selectedMetrics);
 
-    this.http.post(`${this.apiUrl}?dateTimeOffsetString=${date}`, this.selectedMetrics).subscribe((response) => {
+    this.http.post(`${this.apiUrl}?date=${date}`, this.selectedMetrics).subscribe((response) => {
       console.log(response);
     });
   }
