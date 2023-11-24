@@ -27,6 +27,20 @@ export class AddMetricPageComponent implements OnInit {
     });
   }
 
+  // TODO: Add option to deselect optional values
+  addOrRemoveMetric(metric: MetricViewDto, optionalValue: MetricValueViewDto | null,
+                    adding: boolean) {
+    if (adding) {
+      // Add the metric to the selected metrics
+      this.metricSelectionMap.set(metric.id, { selectedValue: optionalValue?.id || '' });
+    } else {
+      // Remove the metric from the selected metrics
+      this.metricSelectionMap.delete(metric.id);
+    }
+
+    console.log(this.metricSelectionMap);
+  }
+
   onCheckboxChange(metric: MetricViewDto) {
     // Toggle the selected state
     if (!this.metricSelectionMap.has(metric.id)) {

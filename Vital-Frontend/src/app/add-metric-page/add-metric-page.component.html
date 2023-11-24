@@ -14,42 +14,35 @@
           <span class="label-text text-xl mr-10">Had {{periodMetric?.name}}</span>
           <div class="flex items-center">
             <div class="dropdown dropdown-hover dropdown-left mr-5">
-              <label tabindex="0" class="btn m-1">Hover</label>
-              <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52" *ngFor="let value of periodMetric?.values">
-                <li>
+              <label tabindex="0" class="btn m-1">Optional</label>
+              <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
+                <li *ngFor="let value of periodMetric?.values">
                   <a>
                     {{value.name}}
                   </a>
                 </li>
               </ul>
             </div>
-            <input type="radio" name="had-flow" class="radio radio-accent"/>
+            <input type="checkbox" name="had-flow" class="checkbox checkbox-accent"
+                   (click)="periodMetric && addOrRemoveMetric(periodMetric, null, true)"
+            />
           </div>
         </label>
 
+        <!--
         <hr class="mx-1 my-1 border-accent">
-
-        <!-- Bottom Part - No Flow -->
+         Bottom Part - No Flow
         <label class="label cursor-pointer py-3">
           <span class="label-text text-xl">No {{periodMetric?.name}}</span>
           <input type="radio" name="no-flow" class="radio radio-accent"/>
         </label>
-      </div>
-
-    </div>
-    <div class="collapse collapse-arrow bg-base-200">
-      <input type="radio" name="metrics-accordion"/>
-      <div class="collapse-title text-xl font-medium">
-        Click to open this one and close others
-      </div>
-      <div class="collapse-content">
-        <p>hello</p>
+      -->
       </div>
     </div>
     <div class="collapse collapse-arrow bg-base-200">
       <input type="radio" name="metrics-accordion"/>
       <div class="collapse-title text-xl font-medium">
-        Click to open this one and close others
+        Other metrics
       </div>
       <div class="collapse-content">
         <p>hello</p>
