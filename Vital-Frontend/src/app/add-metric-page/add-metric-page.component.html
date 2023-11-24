@@ -1,14 +1,19 @@
 <div class="card bg-card">
   <div class="card-body">
 
+    <!-- Title -->
+    <div class="text-2xl font-medium mb-4 flex justify-between">
+      <p>Log Metrics</p>
+      <button class="btn btn-primary btn-sm" (click)="metricService.saveMetrics()">Save</button>
+    </div>
+
+    <!-- Period -->
     <div class="collapse collapse-arrow bg-orange-100">
       <input type="radio" name="metrics-accordion" checked="checked"/>
-
-      <!-- Period -->
       <div class="collapse-title text-xl font-medium bg-yellow-accent">
         Period
       </div>
-      <div class="collapse-content flex flex-col">
+      <div class="collapse-content">
         <metric-selection-item [metric]="metricService.periodMetric"></metric-selection-item>
       </div>
     </div>

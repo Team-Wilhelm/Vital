@@ -37,12 +37,14 @@ public class MetricRepository : IMetricRepository
         return list.GroupBy(m => m.Id).Select(g =>
         {
             var groupedMetric = g.First();
-            groupedMetric.Values = g.Select(p => p.Values.FirstOrDefault()).Where(p => p != null).ToList() ?? new List<MetricValue>();
+            groupedMetric.Values = g.Select(p => p.Values.FirstOrDefault()).Where(p => p != null).ToList() ??
+                                   new List<MetricValue>();
             return groupedMetric;
         }).ToList();
     }
-    
-    public async Task<IEnumerable<CalendarDayAdapter>> GetMetricsForCalendarDays(Guid userId, DateTimeOffset fromDate, DateTimeOffset toDate)
+
+    public async Task<IEnumerable<CalendarDayAdapter>> GetMetricsForCalendarDays(Guid userId, DateTimeOffset fromDate,
+        DateTimeOffset toDate)
     {
         var sql = $@"SELECT 
                 ""CalendarDay"".""Id"" as {nameof(CalendarDayAdapter.CalendarDayId)},
@@ -67,10 +69,10 @@ public class MetricRepository : IMetricRepository
         {
             userId, fromDate, toDate
         });
-        
+
         return result;
     }
-    
+
     public async Task<ICollection<CalendarDayMetric>> Get(Guid userId, DateTimeOffset date)
     {
         var calendarDay = await _calendarDayRepository.GetByDate(userId, date);
@@ -92,25 +94,22 @@ public class MetricRepository : IMetricRepository
             sql,
             (calendarDayMetrics, metrics, metricValue) =>
             {
-                
                 metrics.Values = new List<MetricValue>() { metricValue };
                 calendarDayMetrics.Metrics = metrics;
                 calendarDayMetrics.MetricValue = metricValue;
                 return calendarDayMetrics;
             }, splitOn: "Id, Id",
-
             param: new { calendarDayId = calendarDay.Id });
         return metrics.ToList();
     }
-    
-    
 
-    public async Task UploadMetricForADay(Guid calendarDayId, List<MetricRegisterMetricDto> metrics)
+
+    public async Task SaveMetrics(Guid calendarDayId, List<MetricRegisterMetricDto> metrics)
     {
         // Delete all metrics for the day, if there are any
         var sql = @"DELETE FROM ""CalendarDayMetric"" WHERE ""CalendarDayId""=@calendarDayId";
         await _db.ExecuteAsync(sql, new { calendarDayId });
-        
+
         // Check if the metric passed is valid
         var metricsIds = metrics.Select(m => m.MetricsId).Distinct().ToList();
         sql = @"SELECT ""Id"" FROM ""Metrics"" WHERE ""Id"" = ANY(@metricsIds)";
@@ -119,21 +118,31 @@ public class MetricRepository : IMetricRepository
         {
             throw new BadRequestException("The metric you are trying to log does not exist.");
         }
-        
+
         // Check if the metric value passed is valid
         var metricValuesIds = metrics.Select(m => m.MetricValueId).Distinct().ToList();
-        sql = @"SELECT ""Id"" FROM ""MetricValue"" WHERE ""Id"" = ANY(@metricValuesIds)";
-        var validMetricValuesIds = await _db.QueryAsync<Guid>(sql, new { metricValuesIds });
-        if (validMetricValuesIds.Count() != metricValuesIds.Count)
+        metricValuesIds.RemoveAll(m => m == null);
+        if (metricValuesIds.Count > 0)
         {
-            throw new BadRequestException("The metric value you are trying to log does not exist.");
+            sql = @"SELECT ""Id"" FROM ""MetricValue"" WHERE ""Id"" = ANY(@metricValuesIds)";
+            var validMetricValuesIds = await _db.QueryAsync<Guid>(sql, new { metricValuesIds });
+            if (validMetricValuesIds.Count() != metricValuesIds.Count)
+            {
+                throw new BadRequestException("The metric value you are trying to log does not exist.");
+            }
         }
 
         // Insert new metrics for the day
-        sql = @"INSERT INTO ""CalendarDayMetric"" (""Id"",""CalendarDayId"", ""MetricsId"", ""MetricValueId"") VALUES (@Id, @calendarDayId, @metricsId, @metricValueId)";
+        sql =
+            @"INSERT INTO ""CalendarDayMetric"" (""Id"",""CalendarDayId"", ""MetricsId"", ""MetricValueId"") VALUES (@Id, @calendarDayId, @metricsId, @metricValueId)";
         foreach (var metricsDto in metrics)
         {
-            await _db.ExecuteAsync(sql, new { Id = Guid.NewGuid(), calendarDayId, metricsId = metricsDto.MetricsId, metricValueId = metricsDto.MetricValueId });
+            await _db.ExecuteAsync(sql,
+                new
+                {
+                    Id = Guid.NewGuid(), calendarDayId, metricsId = metricsDto.MetricsId,
+                    metricValueId = metricsDto.MetricValueId ?? (object)DBNull.Value
+                });
         }
     }
 }

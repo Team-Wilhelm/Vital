@@ -1,4 +1,4 @@
-import {Component, Input} from "@angular/core";
+import {Component, ElementRef, Input, ViewChild} from "@angular/core";
 import {MetricViewDto} from "../../interfaces/dtos/metric.dto.interface";
 import {MetricService} from "../../services/metric.service";
 
@@ -6,8 +6,8 @@ import {MetricService} from "../../services/metric.service";
   selector: 'metric-selection-item',
   template: `
       <label for="had-flow" class="label cursor-pointer"
-             (click)="metric && metricService.addOrRemoveMetric(metric, !selected, $event)">
-        <span class="label-text text-xl mr-10">Had {{metric?.name}}</span>
+             (click)="toggleCheckbox($event)">
+        <span class="label-text text-xl mr-10"> {{metric?.name}}</span>
         <div class="flex items-center">
 
           <!-- Optional values
@@ -24,9 +24,7 @@ import {MetricService} from "../../services/metric.service";
           </div>
           -->
 
-          <!-- I am using mousedown, because the (click) of the list item in optional values interferes with the (click) of this one, and  (mousedown) is handled before click -->
-          <input type="checkbox" id="had-flow" class="checkbox checkbox-accent"
-                 [defaultChecked]="metric && metricService.isMetricSelected(metric.id)"
+          <input type="checkbox" id="had-flow" class="checkbox checkbox-accent"  #checkbox
           />
         </div>
       </label>
@@ -35,9 +33,17 @@ import {MetricService} from "../../services/metric.service";
 
 export class MetricSelectionItemComponent {
   @Input() metric: MetricViewDto | undefined;
-  @Input() selected: boolean = false;
+  @ViewChild('checkbox') checkbox: ElementRef<HTMLInputElement> | undefined;
 
   constructor(public metricService: MetricService) {
+
   }
 
+  toggleCheckbox(event: MouseEvent) {
+    event.preventDefault();
+    if (this.metric) {
+      this.metricService.addOrRemoveMetric(this.metric);
+      this.checkbox!.nativeElement.checked = this.metricService.isMetricSelected(this.metric.id);
+    }
+  }
 }
