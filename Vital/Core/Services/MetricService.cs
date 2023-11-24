@@ -85,6 +85,12 @@ public class MetricService : IMetricService
         var list = await _metricRepository.Get(userId, date);
         return list;
     }
+    
+    public async Task<IEnumerable<DateTimeOffset>> GetPeriodDays(Guid userId, DateTimeOffset fromDate, DateTimeOffset toDate)
+    {
+        var list = await _metricRepository.GetPeriodDays(userId, fromDate, toDate);
+        return list;
+    }
 
     public async Task<CalendarDayDto> SaveMetrics(Guid userId, List<MetricRegisterMetricDto> metrics,
         DateTimeOffset dateTimeOffset)

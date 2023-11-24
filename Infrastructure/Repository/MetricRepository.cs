@@ -52,7 +52,7 @@ public class MetricRepository : IMetricRepository
                 ""CalendarDay"".""UserId"" as {nameof(CalendarDayAdapter.UserId)},
                 ""CalendarDay"".""State"" as {nameof(CalendarDayAdapter.State)},
                 ""CalendarDay"".""CycleId"" as {nameof(CalendarDayAdapter.CycleId)},
-                ""CalendarDay"".""IsPeriodDay"" as {nameof(CalendarDayAdapter.IsPeriodDay)},
+                ""CalendarDay"".""IsPeriod"" as {nameof(CalendarDayAdapter.IsPeriodDay)},
                 CDM.""Id"" as {nameof(CalendarDayAdapter.CalendarDayMetricId)},
                 M.""Id"" as {nameof(CalendarDayAdapter.MetricsId)},
                 M.""Name"" as {nameof(CalendarDayAdapter.MetricName)},
@@ -69,10 +69,23 @@ public class MetricRepository : IMetricRepository
         {
             userId, fromDate, toDate
         });
-
         return result;
     }
 
+    //TODO parse date correctly
+    public async Task<IEnumerable<DateTimeOffset>> GetPeriodDays(Guid userId, DateTimeOffset fromDate, DateTimeOffset toDate)
+    {
+        var sql = $@"SELECT
+    CAST(CD.""Date"" AS TIMESTAMP WITH TIME ZONE) as ""Date""
+    FROM ""CalendarDay"" CD
+    WHERE CAST(""Date"" AS DATE) >= CAST(@fromDate AS DATE) AND CAST(""Date"" AS DATE) <= CAST(@toDate AS DATE)
+      AND ""UserId"" = @userId AND ""IsPeriod"" = true
+    ";
+        var result = await _db.QueryAsync<string>(sql, new { userId, fromDate, toDate });
+        var parsedDates = result.Select(dateString => DateTimeOffset.Parse(dateString));
+        return parsedDates;
+    }
+    
     public async Task<ICollection<CalendarDayMetric>> Get(Guid userId, DateTimeOffset date)
     {
         var calendarDay = await _calendarDayRepository.GetByDate(userId, date);
@@ -103,7 +116,6 @@ public class MetricRepository : IMetricRepository
         return metrics.ToList();
     }
 
-
     public async Task SaveMetrics(Guid calendarDayId, List<MetricRegisterMetricDto> metrics)
     {
         // Delete all metrics for the day, if there are any
@@ -133,8 +145,7 @@ public class MetricRepository : IMetricRepository
         }
 
         // Insert new metrics for the day
-        sql =
-            @"INSERT INTO ""CalendarDayMetric"" (""Id"",""CalendarDayId"", ""MetricsId"", ""MetricValueId"") VALUES (@Id, @calendarDayId, @metricsId, @metricValueId)";
+        sql = @"INSERT INTO ""CalendarDayMetric"" (""Id"",""CalendarDayId"", ""MetricsId"", ""MetricValueId"") VALUES (@Id, @calendarDayId, @metricsId, @metricValueId)";
         foreach (var metricsDto in metrics)
         {
             await _db.ExecuteAsync(sql,

@@ -1,22 +1,38 @@
-import {Component, OnInit} from '@angular/core';
-import {Calendar, CalendarOptions} from '@fullcalendar/core';
+import {AfterViewInit, Component, OnInit} from '@angular/core';
+import {Calendar, CalendarApi, CalendarOptions, EventSourceInput} from '@fullcalendar/core';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin, {DateClickArg} from '@fullcalendar/interaction';
 import timeGridPlugin from '@fullcalendar/timegrid';
-import {FullCalendarComponent} from "@fullcalendar/angular";
 import {Router} from "@angular/router";
-import {cw} from "@fullcalendar/core/internal-common";
 import {DataService} from "../services/data.service";
+import {MetricService} from "../services/metric.service";
+import {EventContainer} from "@fullcalendar/core/internal";
+
 @Component({
   selector: 'calendar',
   templateUrl: './calendar.component.html',
 })
-export class CalendarComponent implements OnInit{
+export class CalendarComponent implements OnInit, AfterViewInit{
 
-  constructor(private dataService: DataService, private router: Router) {}
-
+  calendarApi!: CalendarApi;
   private newEvent: any;
   private eventList: any[] = [];
+  private periodDays: Date[] = [];
+  clickedDate = new Date();
+  selectedDateElement: HTMLElement | null = null;
+  constructor(private dataService: DataService, private metricService: MetricService, private router: Router) {}
+
+  async ngOnInit() {
+    await this.getPeriodDays();
+  }
+
+  async ngAfterViewInit() {
+    for (const date of this.periodDays) {
+      const formattedDate = date.toISOString().split('T')[0];
+      this.createEvent(formattedDate);
+    }
+    this.calendarApi.refetchEvents();
+  }
 
   calendarOptions: CalendarOptions = {
     initialView: `dayGridMonth`,
@@ -26,40 +42,41 @@ export class CalendarComponent implements OnInit{
     weekNumberCalculation: 'ISO',
     height: 'auto',
     events: this.eventList,
+    datesSet: (info) => {
+      this.calendarApi = info.view.calendar;
+    }
   };
 
   async handleDateClick(arg: DateClickArg) {
-    const clickedDate = arg.date;
-    if(clickedDate > new Date()) return;
-    try {
-      this.dataService.setClickedDate(clickedDate);
-      await this.router.navigate(['/add-metric']);
-    } catch (error) {
-      console.error('Navigation error:', error);
+    this.clickedDate = arg.date;
+    if(this.clickedDate > new Date()) return;
+    this.dataService.setClickedDate(this.clickedDate);
+
+    if (this.selectedDateElement) {
+      this.selectedDateElement.classList.remove('bg-green-accent');
     }
+    // Add the custom class to the clicked date cell
+    this.selectedDateElement = arg.dayEl;
+    this.selectedDateElement.classList.add('bg-green-accent');
   }
 
-  //TODO create event based on real data
-  createEvent() {
+  async getPeriodDays() {
+    const previousMonthFirstDay = new Date(2023, 10, 1);
+    const thisMonthLastDay = new Date(2023, 11, 23);
+    this.periodDays = await this.metricService.getPeriodDays(previousMonthFirstDay, thisMonthLastDay);
+  }
+
+  createEvent(date: string){
     this.newEvent = {
       title: 'Period',
-      start: '2023-11-01',
-      id: '123',
+      start: date,
       allDay: true,
       editable: true,
       color: 'red',
       textColor: 'white',
       duration: {days: 1},
-      extendedProps: {
-        value: 'Heavy Flow',
-      }
     };
     this.eventList.push(this.newEvent);
-    this.calendarOptions.events = this.eventList;
-  }
-
-  ngOnInit() {
-    this.createEvent()
   }
 }
 

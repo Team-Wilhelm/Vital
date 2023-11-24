@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System.Runtime.InteropServices.JavaScript;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Models.Dto.Cycle;
@@ -77,4 +78,15 @@ public class MetricController : BaseController
         var calendarDayDto = await _metricService.SaveMetrics(userId, metrics, dateTimeOffset);
         return Ok(calendarDayDto);
     }
+
+    [HttpGet("period")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<DateTimeOffset>))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetPeriodDays([FromQuery] DateTimeOffset fromDate, [FromQuery]
+                                                               DateTimeOffset toDate)
+        {
+            var userId = _currentContext.UserId!.Value;
+            var periodDays = await _metricService.GetPeriodDays(userId, fromDate, toDate);
+            return Ok(periodDays);
+        }
 }

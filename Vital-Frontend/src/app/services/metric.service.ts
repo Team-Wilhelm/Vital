@@ -105,4 +105,9 @@ export class MetricService {
       console.log(response);
     });
   }
+
+  async getPeriodDays(previousMonthFirstDay: Date, thisMonthLastDay: Date) {
+    const call = this.http.get<Date[]>(`${this.apiUrl}/period?fromDate=${previousMonthFirstDay.toISOString()}&toDate=${thisMonthLastDay.toISOString()}`);
+    return await firstValueFrom(call);
+  }
 }

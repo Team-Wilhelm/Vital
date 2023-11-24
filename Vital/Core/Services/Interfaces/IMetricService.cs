@@ -13,4 +13,5 @@ public interface IMetricService
         DateTimeOffset toDate);
     Task<ICollection<CalendarDayMetric>> Get(Guid userId, DateTimeOffset date);
     Task<CalendarDayDto> SaveMetrics(Guid userId, List<MetricRegisterMetricDto> metricsDto, DateTimeOffset dateTimeOffset);
+    Task<IEnumerable<DateTimeOffset>> GetPeriodDays(Guid userId, DateTimeOffset fromDate, DateTimeOffset toDate);
 }
