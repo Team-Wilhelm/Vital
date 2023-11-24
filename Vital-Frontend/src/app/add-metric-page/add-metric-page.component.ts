@@ -1,7 +1,7 @@
-import { Component, OnInit } from '@angular/core';
-import { DataService } from '../services/data.service';
-import { MetricService } from '../services/metric.service';
-import { MetricRegisterMetricDto, MetricViewDto, CalendarDayMetricDto } from '../interfaces/dtos/metric.dto.interface';
+import {Component, OnInit} from '@angular/core';
+import {DataService} from '../services/data.service';
+import {MetricService} from '../services/metric.service';
+import {MetricRegisterMetricDto, MetricViewDto, CalendarDayMetricDto} from '../interfaces/dtos/metric.dto.interface';
 
 @Component({
   selector: 'add-metric',
@@ -18,8 +18,11 @@ export class AddMetricPageComponent implements OnInit {
   }
 
   ngOnInit(): void {
-      this.dataService.clickedDate$.subscribe((clickedDate) => {
+    this.dataService.clickedDate$.subscribe((clickedDate) => {
       // When the date changes, update the selected metrics for the new date
+      if (clickedDate) {
+        this.clickedDate = clickedDate;
+      }
       this.getSelectedMetricsForDay().then(() => {
         this.updateSelectedMetrics();
       });
@@ -31,7 +34,7 @@ export class AddMetricPageComponent implements OnInit {
     if (!this.metricSelectionMap.has(metric.id)) {
       // If no value is selected for this metric, select the first one
       const firstValue = metric.values && metric.values.length > 0 ? metric.values[0].name : null;
-      this.metricSelectionMap.set(metric.id, { selectedValue: firstValue || '' });
+      this.metricSelectionMap.set(metric.id, {selectedValue: firstValue || ''});
     } else {
       // If a value is already selected, remove it
       this.metricSelectionMap.delete(metric.id);
@@ -42,7 +45,7 @@ export class AddMetricPageComponent implements OnInit {
 
   onRadioChange(metric: MetricViewDto, selectedValue: string) {
     // Update the selected value directly in the metric
-    this.metricSelectionMap.set(metric.id, { selectedValue });
+    this.metricSelectionMap.set(metric.id, {selectedValue});
 
     // Update the selectedMetrics array
     this.updateSelectedMetrics();
@@ -79,7 +82,7 @@ export class AddMetricPageComponent implements OnInit {
   public async getSelectedMetricsForDay() {
     const metrics = await this.metricService.getMetricsForDay(this.clickedDate!);
     metrics.forEach((metric) => {
-      this.metricSelectionMap.set(metric.metricsId, { selectedValue: metric.metricValueId });
+      this.metricSelectionMap.set(metric.metricsId, {selectedValue: metric.metricValueId});
     });
   }
 }
