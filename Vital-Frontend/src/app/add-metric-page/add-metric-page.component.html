@@ -1,11 +1,66 @@
 <div class="card bg-card">
   <div class="card-body">
 
+    <div class="collapse collapse-arrow bg-orange-100">
+      <input type="radio" name="metrics-accordion" checked="checked"/>
+
+      <!-- Period -->
+      <!-- Top Part - Had Flow -->
+      <div class="collapse-title text-xl font-medium bg-yellow-accent">
+        Period
+      </div>
+      <div class="collapse-content flex flex-col">
+        <label class="label cursor-pointer">
+          <span class="label-text text-xl mr-10">Had Flow</span>
+          <div class="flex items-center">
+            <div class="dropdown dropdown-hover dropdown-left mr-5">
+              <label tabindex="0" class="btn m-1">Hover</label>
+              <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
+                <li><a>Light</a></li>
+                <li><a>Medium</a></li>
+                <li><a>Heavy</a></li>
+              </ul>
+            </div>
+            <input type="radio" name="had-flow" class="radio radio-accent"/>
+          </div>
+        </label>
+
+        <hr class="mx-1 my-1 border-accent">
+
+        <!-- Bottom Part - No Flow -->
+        <label class="label cursor-pointer py-3">
+          <span class="label-text text-xl">No Flow</span>
+          <input type="radio" name="no-flow" class="radio radio-accent"/>
+        </label>
+      </div>
+
+    </div>
+    <div class="collapse collapse-arrow bg-base-200">
+      <input type="radio" name="metrics-accordion"/>
+      <div class="collapse-title text-xl font-medium">
+        Click to open this one and close others
+      </div>
+      <div class="collapse-content">
+        <p>hello</p>
+      </div>
+    </div>
+    <div class="collapse collapse-arrow bg-base-200">
+      <input type="radio" name="metrics-accordion"/>
+      <div class="collapse-title text-xl font-medium">
+        Click to open this one and close others
+      </div>
+      <div class="collapse-content">
+        <p>hello</p>
+      </div>
+    </div>
+
     <h1 class="text-lg font-semibold mb-4">Select one or more:</h1>
 
     <div *ngFor="let metric of allMetrics" class="mb-4">
       <div class="flex items-center">
-        <input type="checkbox" id="{{ metric.id }}" [ngModel]="metricSelectionMap.get(metric.id) && metricSelectionMap.get(metric.id)?.selectedValue" (click)="onCheckboxChange(metric)"
+        <input type="checkbox" id="{{ metric.id }}"
+               [ngModel]="metricSelectionMap.get(metric.id) && metricSelectionMap.get(metric.id)?.selectedValue"
+               (click)="onCheckboxChange(metric)"
                class="hidden">
         <label for="{{ metric.id }}"
                [ngClass]="{'bg-button-selected text-white': metricSelectionMap.get(metric.id)?.selectedValue, 'bg-button-unselected text-black': !metricSelectionMap.get(metric.id)?.selectedValue}"
@@ -16,7 +71,8 @@
 
       <div class="mt-2">
         <div *ngFor="let value of metric.values" class="flex items-center">
-          <input type="radio" [name]="metric.id" [value]="value.id" [ngModel]="metricSelectionMap.get(metric.id) && metricSelectionMap.get(metric.id)?.selectedValue"
+          <input type="radio" [name]="metric.id" [value]="value.id"
+                 [ngModel]="metricSelectionMap.get(metric.id) && metricSelectionMap.get(metric.id)?.selectedValue"
                  (change)="onRadioChange(metric, value.id)" class="mr-2">
           <span>{{ value.name }}</span>
         </div>
