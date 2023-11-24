@@ -5,38 +5,32 @@
       <input type="radio" name="metrics-accordion" checked="checked"/>
 
       <!-- Period -->
-      <!-- Top Part - Had Flow -->
       <div class="collapse-title text-xl font-medium bg-yellow-accent">
         Period
       </div>
       <div class="collapse-content flex flex-col">
-        <label class="label cursor-pointer">
+        <label for="had-flow" class="label cursor-pointer">
           <span class="label-text text-xl mr-10">Had {{periodMetric?.name}}</span>
           <div class="flex items-center">
             <div class="dropdown dropdown-hover dropdown-left mr-5">
-              <label tabindex="0" class="btn m-1">Optional</label>
+              <label tabindex="0" class="btn m-1">{{periodMetric&& getSelectedOptionalValue(periodMetric.id)}}</label>
               <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
-                <li *ngFor="let value of periodMetric?.values">
+                <li *ngFor="let value of periodMetric?.values"
+                    (click)="periodMetric && selectOptionalValue(periodMetric.id, value.id)">
                   <a>
                     {{value.name}}
                   </a>
                 </li>
               </ul>
             </div>
-            <input type="checkbox" name="had-flow" class="checkbox checkbox-accent"
-                   (click)="periodMetric && addOrRemoveMetric(periodMetric, null, true)"
+
+            <!-- I am using mousedown, because the (click) of the list item in optional values interferes with the (click) of this one, and  (mousedown) is handled before click -->
+            <input type="checkbox" id="had-flow" class="checkbox checkbox-accent"
+                   (mousedown)="periodMetric && addOrRemoveMetric(periodMetric, true, $event)"
+                    [defaultChecked]="periodMetric && isMetricSelected(periodMetric.id)"
             />
           </div>
         </label>
-
-        <!--
-        <hr class="mx-1 my-1 border-accent">
-         Bottom Part - No Flow
-        <label class="label cursor-pointer py-3">
-          <span class="label-text text-xl">No {{periodMetric?.name}}</span>
-          <input type="radio" name="no-flow" class="radio radio-accent"/>
-        </label>
-      -->
       </div>
     </div>
     <div class="collapse collapse-arrow bg-base-200">

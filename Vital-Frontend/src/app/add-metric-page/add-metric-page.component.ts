@@ -1,7 +1,12 @@
-import { Component, OnInit } from '@angular/core';
-import { DataService } from '../services/data.service';
-import { MetricService } from '../services/metric.service';
-import { MetricRegisterMetricDto, MetricValueViewDto, MetricViewDto, CalendarDayMetricDto } from '../interfaces/dtos/metric.dto.interface';
+import {Component, OnInit} from '@angular/core';
+import {DataService} from '../services/data.service';
+import {MetricService} from '../services/metric.service';
+import {
+  MetricRegisterMetricDto,
+  MetricValueViewDto,
+  MetricViewDto,
+  CalendarDayMetricDto
+} from '../interfaces/dtos/metric.dto.interface';
 
 @Component({
   selector: 'add-metric',
@@ -11,7 +16,7 @@ export class AddMetricPageComponent implements OnInit {
   public allMetrics: MetricViewDto[] = [];
   public selectedMetrics: MetricRegisterMetricDto[] = [];
   public clickedDate: Date = new Date();
-  public metricSelectionMap: Map<string, { selectedValue: string }> = new Map();
+  public metricSelectionMap: Map<string, string> = new Map(); // <MetricId, MetricValueId>
   periodMetric: MetricViewDto | undefined;
 
   constructor(private dataService: DataService, private metricService: MetricService) {
@@ -19,7 +24,7 @@ export class AddMetricPageComponent implements OnInit {
   }
 
   ngOnInit(): void {
-      this.dataService.clickedDate$.subscribe((clickedDate) => {
+    this.dataService.clickedDate$.subscribe((clickedDate) => {
       // When the date changes, update the selected metrics for the new date
       this.getSelectedMetricsForDay().then(() => {
         this.updateSelectedMetrics();
@@ -28,39 +33,47 @@ export class AddMetricPageComponent implements OnInit {
   }
 
   // TODO: Add option to deselect optional values
-  addOrRemoveMetric(metric: MetricViewDto, optionalValue: MetricValueViewDto | null,
-                    adding: boolean) {
+  addOrRemoveMetric(metric: MetricViewDto, adding: boolean, event: MouseEvent) {
+    if (event.target !== event.currentTarget) event.preventDefault(); // Prevents the click event from propagating to the parent element, otherwise deselecting optional values would deselect the metric as well
+
     if (adding) {
       // Add the metric to the selected metrics
-      this.metricSelectionMap.set(metric.id, { selectedValue: optionalValue?.id || '' });
+      this.metricSelectionMap.set(metric.id, '');
     } else {
       // Remove the metric from the selected metrics
       this.metricSelectionMap.delete(metric.id);
     }
-
     console.log(this.metricSelectionMap);
   }
 
-  onCheckboxChange(metric: MetricViewDto) {
-    // Toggle the selected state
-    if (!this.metricSelectionMap.has(metric.id)) {
-      // If no value is selected for this metric, select the first one
-      const firstValue = metric.values && metric.values.length > 0 ? metric.values[0].name : null;
-      this.metricSelectionMap.set(metric.id, { selectedValue: firstValue || '' });
-    } else {
-      // If a value is already selected, remove it
-      this.metricSelectionMap.delete(metric.id);
+  selectOptionalValue(metricId: string, optionalValueId: string) {
+    // Check if the metric is already selected, if not, exit
+    if (!this.metricSelectionMap.has(metricId)) {
+      return;
     }
 
-    this.updateSelectedMetrics();
+    if (this.metricSelectionMap.get(metricId) === optionalValueId) {
+      // If the optional value is already selected, deselect it
+      this.metricSelectionMap.set(metricId, '');
+      return;
+    }
+
+    this.metricSelectionMap.set(metricId, optionalValueId);
+    console.log("Value selected: " + optionalValueId);
   }
 
-  onRadioChange(metric: MetricViewDto, selectedValue: string) {
-    // Update the selected value directly in the metric
-    this.metricSelectionMap.set(metric.id, { selectedValue });
+  isMetricSelected(metricId: string) {
+    return this.metricSelectionMap.has(metricId);
+  }
 
-    // Update the selectedMetrics array
-    this.updateSelectedMetrics();
+  getSelectedOptionalValue(metricId: string) {
+    const valueId = this.metricSelectionMap.get(metricId);
+    if (!valueId) {
+      return "Optional";
+    }
+    const value = this.allMetrics.filter((metric) =>
+      metric.id === metricId)[0].values.filter((value) => value.id === valueId)[0];
+    return value.name;
   }
 
   public updateSelectedMetrics() {
@@ -73,7 +86,7 @@ export class AddMetricPageComponent implements OnInit {
       if (selection) {
         this.selectedMetrics.push({
           metricsId: metric.id,
-          metricValueId: selection.selectedValue,
+          metricValueId: selection,
         });
       }
     });
@@ -98,7 +111,7 @@ export class AddMetricPageComponent implements OnInit {
     // For example:
     const metrics = await this.metricService.getMetricsForDay(this.clickedDate!);
     metrics.forEach((metric) => {
-      this.metricSelectionMap.set(metric.metricsId, { selectedValue: metric.metricValueId });
+      this.metricSelectionMap.set(metric.metricsId, metric.metricValueId || '');
     });
   }
 }
