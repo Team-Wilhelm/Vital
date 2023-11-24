@@ -22,6 +22,7 @@ import {RegisterComponent} from "./register/register.component";
 import { CalendarComponent } from './calendar/calendar.component';
 import { AddMetricPageComponent } from './add-metric-page/add-metric-page.component';
 import {FormsModule} from "@angular/forms";
+import {MetricListItemComponent} from "./dashboard/metric-list-item/metric-list-item.component";
 
 @NgModule({
   declarations: [
@@ -34,7 +35,8 @@ import {FormsModule} from "@angular/forms";
     CalendarComponent,
     AddMetricPageComponent,
     LoginComponent,
-    RegisterComponent
+    RegisterComponent,
+    MetricListItemComponent
   ],
     imports: [
         BrowserModule,

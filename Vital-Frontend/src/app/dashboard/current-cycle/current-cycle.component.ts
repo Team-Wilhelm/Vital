@@ -14,15 +14,14 @@ import {Component, Input} from '@angular/core';
 
 export class CurrentCycleComponent {
   title = 'current-cycle';
-  @Input() date: Date = new Date();
+  @Input() date: string = '';
 
   constructor() {
 
   }
 
   get dateString(): string {
-    return this.date.toLocaleDateString().substring(0, 6); //TODO: look into local dates that start with year
+    //return this.date.toLocaleDateString().substring(0, 6); //TODO: look into local dates that start with year
+    return "";
   }
-
-
 }

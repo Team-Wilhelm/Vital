@@ -1,7 +1,7 @@
-import {Component, OnInit} from '@angular/core';
-import {DataService} from '../services/data.service';
-import {MetricService} from '../services/metric.service';
-import {MetricRegisterMetricDto, MetricViewDto, CalendarDayMetricDto} from '../interfaces/dtos/metric.dto.interface';
+import { Component, OnInit } from '@angular/core';
+import { DataService } from '../services/data.service';
+import { MetricService } from '../services/metric.service';
+import { MetricRegisterMetricDto, MetricViewDto, CalendarDayMetricDto } from '../interfaces/dtos/metric.dto.interface';
 
 @Component({
   selector: 'add-metric',
@@ -10,17 +10,15 @@ import {MetricRegisterMetricDto, MetricViewDto, CalendarDayMetricDto} from '../i
 export class AddMetricPageComponent implements OnInit {
   public allMetrics: MetricViewDto[] = [];
   public selectedMetrics: MetricRegisterMetricDto[] = [];
-  public clickedDate: string | undefined;
+  public clickedDate: Date = new Date();
   public metricSelectionMap: Map<string, { selectedValue: string }> = new Map();
-
 
   constructor(private dataService: DataService, private metricService: MetricService) {
     this.getMetrics().then();
   }
 
   ngOnInit(): void {
-    this.dataService.clickedDate$.subscribe((clickedDate) => {
-      this.clickedDate = clickedDate ? clickedDate.toISOString() : new Date().toISOString();
+      this.dataService.clickedDate$.subscribe((clickedDate) => {
       // When the date changes, update the selected metrics for the new date
       this.getSelectedMetricsForDay().then(() => {
         this.updateSelectedMetrics();
@@ -33,7 +31,7 @@ export class AddMetricPageComponent implements OnInit {
     if (!this.metricSelectionMap.has(metric.id)) {
       // If no value is selected for this metric, select the first one
       const firstValue = metric.values && metric.values.length > 0 ? metric.values[0].name : null;
-      this.metricSelectionMap.set(metric.id, {selectedValue: firstValue || ''});
+      this.metricSelectionMap.set(metric.id, { selectedValue: firstValue || '' });
     } else {
       // If a value is already selected, remove it
       this.metricSelectionMap.delete(metric.id);
@@ -44,7 +42,7 @@ export class AddMetricPageComponent implements OnInit {
 
   onRadioChange(metric: MetricViewDto, selectedValue: string) {
     // Update the selected value directly in the metric
-    this.metricSelectionMap.set(metric.id, {selectedValue});
+    this.metricSelectionMap.set(metric.id, { selectedValue });
 
     // Update the selectedMetrics array
     this.updateSelectedMetrics();
@@ -69,7 +67,7 @@ export class AddMetricPageComponent implements OnInit {
   public async saveMetrics() {
     //TODO check if there is a calendarday in db, if not create one
     //TODO update isPeriod
-    await this.metricService.addMetricsForDay(this.clickedDate!, this.selectedMetrics);
+    await this.metricService.addMetricsForDay(this.clickedDate.toISOString(), this.selectedMetrics);
     //TODO reroute to dashboard
     //TODO make toast for success
   }
@@ -81,7 +79,7 @@ export class AddMetricPageComponent implements OnInit {
   public async getSelectedMetricsForDay() {
     const metrics = await this.metricService.getMetricsForDay(this.clickedDate!);
     metrics.forEach((metric) => {
-      this.metricSelectionMap.set(metric.metricsId, {selectedValue: metric.metricValueId});
+      this.metricSelectionMap.set(metric.metricsId, { selectedValue: metric.metricValueId });
     });
   }
 }
