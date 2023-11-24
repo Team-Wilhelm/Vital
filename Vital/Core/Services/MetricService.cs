@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Infrastructure.Adapters;
 using Infrastructure.Repository.Interface;
 using Models;
 using Models.Days;
@@ -30,7 +31,51 @@ public class MetricService : IMetricService
     
     public async Task<IEnumerable<CalendarDay>> GetMetricsForCalendarDays(Guid userId, DateTimeOffset fromDate, DateTimeOffset toDate)
     {
-        return await _metricRepository.GetMetricsForCalendarDays(userId, fromDate, toDate);
+        var list = await _metricRepository.GetMetricsForCalendarDays(userId, fromDate, toDate);
+        
+        var calendarDays = new List<CalendarDay>();
+        foreach (var calendarDayAdapter in list)
+        {
+            // Check if the day already exists in the list
+            var calendarDay = calendarDays.FirstOrDefault(c => c.Id == calendarDayAdapter.CalendarDayId);
+            if (calendarDay is null)
+            {
+                calendarDay = BuildCalendarDay(calendarDayAdapter);
+                calendarDays.Add(calendarDay);
+            }
+            
+            // Create the metric and its value and append to the day's list of selected metrics
+            var calendarDayMetric = new CalendarDayMetric()
+            {
+                Id = calendarDayAdapter.CalendarDayMetricId,
+                CalendarDayId = calendarDayAdapter.CalendarDayId,
+                MetricValueId = calendarDayAdapter.MetricValueId,
+                MetricsId = calendarDayAdapter.MetricsId,
+            };
+
+            var metricValue = new MetricValue()
+            {
+                Id = calendarDayAdapter.MetricValueId,
+                Name = calendarDayAdapter.MetricValueName,
+                MetricsId = calendarDayAdapter.MetricsId,
+            };
+            
+            var metric = new Metrics()
+            {
+                Id = calendarDayAdapter.MetricsId,
+                Name = calendarDayAdapter.MetricName,
+                Values = new List<MetricValue>()
+                {
+                    metricValue
+                }
+            };
+            
+            calendarDayMetric.Metrics = metric;
+            calendarDayMetric.MetricValue = metricValue;
+            calendarDay.SelectedMetrics.Add(calendarDayMetric);
+        }
+
+        return calendarDays;
     }
 
     public async Task<ICollection<CalendarDayMetric>> Get(Guid userId, DateTimeOffset date)
@@ -51,5 +96,25 @@ public class MetricService : IMetricService
         await _metricRepository.UploadMetricForADay(calendarDay.Id, metrics);
         calendarDay = await _calendarDayRepository.GetById(calendarDay.Id); //TODO: Include a list of selected metrics
         return _mapper.Map<CalendarDayDto>(calendarDay);
+    }
+    
+    private CalendarDay? BuildCalendarDay(CalendarDayAdapter calendarDayAdapter)
+    {
+        switch (calendarDayAdapter.State)
+        {
+            case "CycleDay":
+                return new CycleDay()
+                {
+                    Id = calendarDayAdapter.CalendarDayId,
+                    CycleId = calendarDayAdapter.CycleId!.Value,
+                    Date = calendarDayAdapter.Date,
+                    UserId = calendarDayAdapter.UserId,
+                    State = calendarDayAdapter.State,
+                    SelectedMetrics = new List<CalendarDayMetric>(),
+                    IsPeriod = calendarDayAdapter.IsPeriodDay,
+                };
+            default:
+                return null;
+        }
     }
 }

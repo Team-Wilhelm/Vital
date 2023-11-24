@@ -71,21 +71,27 @@ public class CalendarDayRepository : ICalendarDayRepository
             UserId = UserId,
             Date = dateTime
         };
-        
+
         // TODO: please rework me into Dapper
         await _applicationDbContext.CycleDays.AddAsync(cycleDay);
-        
         await _applicationDbContext.SaveChangesAsync();
-
         return cycleDay;
     }
 
-    private CalendarDay? BuildCalendarDay(string state, string sql, object param)
+    public CalendarDay? BuildCalendarDay(string state, string sql, object param)
     {
         return state switch
         {
             "CycleDay" => _db.QuerySingleOrDefault<CycleDay>(sql, param),
-            _ => throw new InvalidOperationException($"There was an issue while creating a calendar day. Invalid state, {state}")
+            _ => throw new InvalidOperationException(
+                $"There was an issue while creating a calendar day. Invalid state, {state}")
         };
     }
+
+    public async Task<IEnumerable<CycleDay>> GetCycleDaysForSpecifiedPeriodAsync(Guid userId, DateTimeOffset startDate, DateTimeOffset endDate)
+        {
+            var sql = @"SELECT * FROM ""CalendarDay"" WHERE ""Date"" BETWEEN @startDate AND @endDate AND ""UserId""=@userId";
+            var calendarDays = await _db.QueryAsync<CycleDay>(sql, new { startDate, endDate, userId });
+            return calendarDays;
+        }
 }
