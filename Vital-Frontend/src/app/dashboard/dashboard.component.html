@@ -29,13 +29,13 @@ min-h-[calc(100vh-10rem)]
     </app-card>
 
     <!-- Metrics -->
-    <app-card cardTitle="Metrics" #metricsCard
+    <app-card cardTitle="Metrics"
               class="lg:col-span-2 lg:row-span-2 order-4 lg:order-none h-full justify-between overflow-y-scroll"
               [hasPlusButton]="true"
               (plusButtonClicked)="redirectToMetrics()">
-        <div *ngFor="let metric of selectedDayMetrics; index as i" class="flex justify-between items-center">
-            <metric-list-item [metricName]="metric.metrics.name" [metricValue]="metric.metricValue.name"
-                              [metricTime]="selectedDay.toLocaleTimeString().substring(0,5)"
+        <div *ngFor="let metric of metricService.loggedMetrics; index as i" class="flex justify-between items-center">
+            <metric-list-item [metricName]="metric.metrics.name" [metricValue]="metric.metricValue?.name || ''"
+                              [metricTime]="dataService.clickedDate.toLocaleTimeString().substring(0,5)"
                               [listIndex]="i"
                               class="w-full"
             >

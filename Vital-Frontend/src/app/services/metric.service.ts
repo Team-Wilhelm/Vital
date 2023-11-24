@@ -7,21 +7,32 @@ import {
   MetricRegisterMetricDto,
   MetricViewDto
 } from "../interfaces/dtos/metric.dto.interface";
-import {CalendarDay} from "../interfaces/day.interface";
+import {CalendarDay, CalendarDayMetric} from "../interfaces/day.interface";
+import {DataService} from "./data.service";
 
 @Injectable({
   providedIn: 'root'
 })
 export class MetricService {
   private apiUrl = environment.baseUrl + '/metric';
+  private clickedDate: Date = new Date();
+
   allMetrics: MetricViewDto[] = [];
+
   metricSelectionMap: Map<string, string | null> = new Map(); // <MetricId, MetricValueId>
-  selectedMetrics: MetricRegisterMetricDto[] = [];
+  loggedMetrics: CalendarDayMetric[] = [];
   periodMetric: MetricViewDto | undefined;
 
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient, private dataService: DataService) {
+    this.dataService.clickedDate$.subscribe((clickedDate) => {
+      // When the date changes, update the selected metrics for the new date
+      if (clickedDate) {
+        this.clickedDate = clickedDate;
+      }
+    });
+
     this.getAllMetricsWithValues();
-    this.getUsersMetric(new Date());
+    this.getUsersMetric(this.clickedDate);
   }
 
   public async getAllMetricsWithValues(): Promise<MetricViewDto[]> {
@@ -32,11 +43,12 @@ export class MetricService {
   }
 
   public async getUsersMetric(date: Date): Promise<void> {
-    const  calendarDayArray =  await firstValueFrom(this.http.get<CalendarDayMetricViewDto[]>(`${this.apiUrl}/${date.toISOString()}`));
+    const  calendarDayArray =  await firstValueFrom(this.http.get<CalendarDayMetric[]>(`${this.apiUrl}/${date.toISOString()}`));
     calendarDayArray.forEach((calendarDay) => {
       this.metricSelectionMap.set(calendarDay.metricsId, calendarDay.metricValueId || null);
     });
-    console.log(this.metricSelectionMap);
+    this.loggedMetrics = calendarDayArray;
+    console.log(this.loggedMetrics);
   }
 
   //TODO: Look into casting the retrieved data into another type
@@ -87,22 +99,17 @@ export class MetricService {
   }
 
   saveMetrics() {
-    // Get date from route params
-    const date = new Date().toISOString();
-
     // Add selected metrics to the selectedMetrics array
-    this.selectedMetrics = [];
+    const metricsToPost =  [] as MetricRegisterMetricDto[];
     this.metricSelectionMap.forEach((value, key) => {
-        this.selectedMetrics.push({
+      metricsToPost.push({
           metricsId: key,
           metricValueId: value ? value : undefined
       });
     });
 
-    console.log(this.selectedMetrics);
-
-    this.http.post(`${this.apiUrl}?date=${date}`, this.selectedMetrics).subscribe((response) => {
-      console.log(response);
+    this.http.post(`${this.apiUrl}?date=${this.dataService.clickedDate.toISOString()}`, metricsToPost).subscribe(() => {
+      this.getUsersMetric(this.dataService.clickedDate);
     });
   }
 

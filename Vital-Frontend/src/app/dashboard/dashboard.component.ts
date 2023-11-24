@@ -15,10 +15,8 @@ export class DashboardComponent implements OnInit {
   nextPeriodInDays: number = 0;
   @ViewChild('hasYourPeriodStartedModal') hasYourPeriodStartedModal!: ElementRef;
   currentCycleDays: CycleDay[] = [];
-  selectedDay: Date = new Date(); // TODO: Set value of selected day based on selected day in calendar
-  selectedDayMetrics: CalendarDayMetric[] = [];
 
-  constructor(public cycleService: CycleService, private metricService: MetricService, private dataService: DataService, private router: Router) {
+  constructor(public cycleService: CycleService, public metricService: MetricService, public dataService: DataService, private router: Router) {
     cycleService.getPredictedPeriod().then(() => {
       this.nextPeriodInDays = this.calculateNextPeriodInDays();
     });
@@ -46,23 +44,10 @@ export class DashboardComponent implements OnInit {
   }
 
   async ngOnInit() {
-    //this.selectedDay.setDate(this.selectedDay.getDate() - 1);
-    this.dataService.clickedDate$.subscribe((clickedDate) => {
-      // When the date changes, update the selected metrics for the new date
-      if (clickedDate) {
-        this.selectedDay = clickedDate;
-      }
-    });
-    await this.getMetricsForDay(this.selectedDay);
+
   }
 
   redirectToMetrics() {
     this.router.navigate(['/add-metric']);
-  }
-
-  //TODO: Get the metrics for selected day
-  async getMetricsForDay(date: Date) {
-    this.selectedDayMetrics = (await this.metricService.getMetricsForCalendarDays(this.selectedDay, new Date()))[0].selectedMetrics;
-    console.log(this.selectedDayMetrics);
   }
 }

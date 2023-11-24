@@ -1,11 +1,8 @@
-﻿using System.Collections;
-using System.Data;
+﻿using System.Data;
 using Dapper;
 using Infrastructure.Adapters;
 using Infrastructure.Repository.Interface;
-using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using Models;
-using Models.Days;
 using Models.Dto.Metrics;
 using Models.Util;
 using Vital.Models.Exception;
@@ -52,7 +49,7 @@ public class MetricRepository : IMetricRepository
                 ""CalendarDay"".""UserId"" as {nameof(CalendarDayAdapter.UserId)},
                 ""CalendarDay"".""State"" as {nameof(CalendarDayAdapter.State)},
                 ""CalendarDay"".""CycleId"" as {nameof(CalendarDayAdapter.CycleId)},
-                ""CalendarDay"".""IsPeriod"" as {nameof(CalendarDayAdapter.IsPeriodDay)},
+                ""CalendarDay"".""IsPeriod"" as {nameof(CalendarDayAdapter.IsPeriod)},
                 CDM.""Id"" as {nameof(CalendarDayAdapter.CalendarDayMetricId)},
                 M.""Id"" as {nameof(CalendarDayAdapter.MetricsId)},
                 M.""Name"" as {nameof(CalendarDayAdapter.MetricName)},
