@@ -1,16 +1,20 @@
-import {AfterViewInit, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {CycleService} from "../services/cycle.service";
 import {Router} from "@angular/router";
 import {MetricService} from "../services/metric.service";
 import {CalendarDayMetric, CycleDay} from "../interfaces/day.interface";
 import {DataService} from "../services/data.service";
+import {Subscription} from "rxjs";
 
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html'
 })
 
-export class DashboardComponent implements OnInit {
+export class DashboardComponent implements OnInit, OnDestroy {
+  private subscription: Subscription | undefined;
+  clickedDate = new Date();
+
   title = 'dashboard';
   nextPeriodInDays: number = 0;
   @ViewChild('hasYourPeriodStartedModal') hasYourPeriodStartedModal!: ElementRef;
@@ -20,6 +24,21 @@ export class DashboardComponent implements OnInit {
     cycleService.getPredictedPeriod().then(() => {
       this.nextPeriodInDays = this.calculateNextPeriodInDays();
     });
+  }
+
+  ngOnInit() {
+    this.dataService.clickedDate$.subscribe(clickedDate => {
+      if (clickedDate) {
+        this.updateDashboardData(clickedDate);
+        this.clickedDate = clickedDate;
+      }
+    });
+  }
+
+  ngOnDestroy() {
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
   }
 
   private calculateNextPeriodInDays() {
@@ -43,11 +62,14 @@ export class DashboardComponent implements OnInit {
     }, 100);
   }
 
-  async ngOnInit() {
-
-  }
-
   redirectToMetrics() {
     this.router.navigate(['/add-metric']);
+  }
+
+  updateDashboardData(date: Date) {
+    // Call the methods to update your dashboard data here
+    // For example:
+    this.metricService.getUsersMetric(date);
+    // Add other methods as needed
   }
 }

@@ -1,6 +1,6 @@
 import {HttpClient} from '@angular/common/http';
-import {Injectable} from "@angular/core";
-import {firstValueFrom} from "rxjs";
+import {Injectable, OnDestroy, OnInit} from "@angular/core";
+import {firstValueFrom, Subscription} from "rxjs";
 import {environment} from "../../../environments/environment";
 import {
   CalendarDayMetricViewDto,
@@ -13,26 +13,36 @@ import {DataService} from "./data.service";
 @Injectable({
   providedIn: 'root'
 })
-export class MetricService {
+export class MetricService implements OnInit, OnDestroy {
   private apiUrl = environment.baseUrl + '/metric';
-  private clickedDate: Date = new Date();
+  private subscription: Subscription | undefined;
+
+  clickedDate = new Date();
 
   allMetrics: MetricViewDto[] = [];
-
   metricSelectionMap: Map<string, string | null> = new Map(); // <MetricId, MetricValueId>
   loggedMetrics: CalendarDayMetric[] = [];
   periodMetric: MetricViewDto | undefined;
 
   constructor(private http: HttpClient, private dataService: DataService) {
-    this.dataService.clickedDate$.subscribe((clickedDate) => {
-      // When the date changes, update the selected metrics for the new date
-      if (clickedDate) {
-        this.clickedDate = clickedDate;
-      }
-    });
-
     this.getAllMetricsWithValues();
     this.getUsersMetric(this.clickedDate);
+  }
+
+  ngOnInit(): void {
+    this.subscription = this.dataService.clickedDate$.subscribe(clickedDate => {
+      if (clickedDate) {
+        this.clickedDate = clickedDate;
+        this.getUsersMetric(clickedDate);
+        console.log("Clicked date changed to: " + clickedDate);
+      }
+    });
+  }
+
+  ngOnDestroy(): void {
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
   }
 
   public async getAllMetricsWithValues(): Promise<MetricViewDto[]> {
@@ -43,12 +53,13 @@ export class MetricService {
   }
 
   public async getUsersMetric(date: Date): Promise<void> {
-    const  calendarDayArray =  await firstValueFrom(this.http.get<CalendarDayMetric[]>(`${this.apiUrl}/${date.toISOString()}`));
+    const utcDate = new Date(date.toUTCString());
+    console.log("Getting users metric for date: " + utcDate);
+    const calendarDayArray = await firstValueFrom(this.http.get<CalendarDayMetric[]>(`${this.apiUrl}/${utcDate.toISOString()}`));
     calendarDayArray.forEach((calendarDay) => {
       this.metricSelectionMap.set(calendarDay.metricsId, calendarDay.metricValueId || null);
     });
     this.loggedMetrics = calendarDayArray;
-    console.log(this.loggedMetrics);
   }
 
   //TODO: Look into casting the retrieved data into another type
@@ -100,17 +111,18 @@ export class MetricService {
 
   saveMetrics() {
     // Add selected metrics to the selectedMetrics array
-    const metricsToPost =  [] as MetricRegisterMetricDto[];
+    const metricsToPost = [] as MetricRegisterMetricDto[];
     this.metricSelectionMap.forEach((value, key) => {
       metricsToPost.push({
-          metricsId: key,
-          metricValueId: value ? value : undefined
+        metricsId: key,
+        metricValueId: value ? value : undefined
       });
     });
 
-    this.http.post(`${this.apiUrl}?date=${this.dataService.clickedDate.toISOString()}`, metricsToPost).subscribe(() => {
-      this.getUsersMetric(this.dataService.clickedDate);
-    });
+    this.http.post(`${this.apiUrl}?date=${this.clickedDate.toISOString()}`, metricsToPost)
+      .subscribe(() => {
+        this.getUsersMetric(this.clickedDate);
+      });
   }
 
   async getPeriodDays(previousMonthFirstDay: Date, thisMonthLastDay: Date) {
