@@ -11,14 +11,16 @@
       </div>
       <div class="collapse-content flex flex-col">
         <label class="label cursor-pointer">
-          <span class="label-text text-xl mr-10">Had Flow</span>
+          <span class="label-text text-xl mr-10">Had {{periodMetric?.name}}</span>
           <div class="flex items-center">
             <div class="dropdown dropdown-hover dropdown-left mr-5">
               <label tabindex="0" class="btn m-1">Hover</label>
-              <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
-                <li><a>Light</a></li>
-                <li><a>Medium</a></li>
-                <li><a>Heavy</a></li>
+              <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52" *ngFor="let value of periodMetric?.values">
+                <li>
+                  <a>
+                    {{value.name}}
+                  </a>
+                </li>
               </ul>
             </div>
             <input type="radio" name="had-flow" class="radio radio-accent"/>
@@ -29,7 +31,7 @@
 
         <!-- Bottom Part - No Flow -->
         <label class="label cursor-pointer py-3">
-          <span class="label-text text-xl">No Flow</span>
+          <span class="label-text text-xl">No {{periodMetric?.name}}</span>
           <input type="radio" name="no-flow" class="radio radio-accent"/>
         </label>
       </div>
@@ -53,31 +55,5 @@
         <p>hello</p>
       </div>
     </div>
-
-    <h1 class="text-lg font-semibold mb-4">Select one or more:</h1>
-
-    <div *ngFor="let metric of allMetrics" class="mb-4">
-      <div class="flex items-center">
-        <input type="checkbox" id="{{ metric.id }}"
-               [ngModel]="metricSelectionMap.get(metric.id) && metricSelectionMap.get(metric.id)?.selectedValue"
-               (click)="onCheckboxChange(metric)"
-               class="hidden">
-        <label for="{{ metric.id }}"
-               [ngClass]="{'bg-button-selected text-white': metricSelectionMap.get(metric.id)?.selectedValue, 'bg-button-unselected text-black': !metricSelectionMap.get(metric.id)?.selectedValue}"
-               class="px-4 py-2 border rounded-full cursor-pointer transition duration-300 ease-in-out hover:badge-warning">
-          {{ metric.name }}
-        </label>
-      </div>
-
-      <div class="mt-2">
-        <div *ngFor="let value of metric.values" class="flex items-center">
-          <input type="radio" [name]="metric.id" [value]="value.id"
-                 [ngModel]="metricSelectionMap.get(metric.id) && metricSelectionMap.get(metric.id)?.selectedValue"
-                 (change)="onRadioChange(metric, value.id)" class="mr-2">
-          <span>{{ value.name }}</span>
-        </div>
-      </div>
-    </div>
-    <button (click)="saveMetrics()">Update Selected Metrics</button>
   </div>
 </div>

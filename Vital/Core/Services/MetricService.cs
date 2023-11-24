@@ -53,25 +53,27 @@ public class MetricService : IMetricService
                 MetricsId = calendarDayAdapter.MetricsId,
             };
 
-            var metricValue = new MetricValue()
-            {
-                Id = calendarDayAdapter.MetricValueId,
-                Name = calendarDayAdapter.MetricValueName,
-                MetricsId = calendarDayAdapter.MetricsId,
-            };
-            
             var metric = new Metrics()
             {
                 Id = calendarDayAdapter.MetricsId,
                 Name = calendarDayAdapter.MetricName,
                 Values = new List<MetricValue>()
-                {
-                    metricValue
-                }
             };
             
+            MetricValue metricValue;
+            if (calendarDayAdapter.MetricValueId is not null)
+            {
+                metricValue= new MetricValue()
+                {
+                    Id = calendarDayAdapter.MetricValueId!.Value,
+                    Name = calendarDayAdapter.MetricValueName,
+                    MetricsId = calendarDayAdapter.MetricsId,
+                };
+                calendarDayMetric.MetricValue = metricValue;
+                metric.Values.Add(metricValue);
+            }
+            
             calendarDayMetric.Metrics = metric;
-            calendarDayMetric.MetricValue = metricValue;
             calendarDay.SelectedMetrics.Add(calendarDayMetric);
         }
 

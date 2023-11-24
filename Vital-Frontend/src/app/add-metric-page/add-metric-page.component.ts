@@ -12,6 +12,7 @@ export class AddMetricPageComponent implements OnInit {
   public selectedMetrics: MetricRegisterMetricDto[] = [];
   public clickedDate: Date = new Date();
   public metricSelectionMap: Map<string, { selectedValue: string }> = new Map();
+  periodMetric: MetricViewDto | undefined;
 
   constructor(private dataService: DataService, private metricService: MetricService) {
     this.getMetrics().then();
@@ -72,6 +73,10 @@ export class AddMetricPageComponent implements OnInit {
     // Fetch metrics from your service and populate allMetrics
     // For example:
     this.allMetrics = await this.metricService.getAllMetricsWithValues();
+
+    this.periodMetric = this.allMetrics.filter((metric) => metric.name === 'Flow')
+      ? this.allMetrics.filter((metric) => metric.name === 'Flow')[0]
+      : undefined;
   }
 
   public async getSelectedMetricsForDay() {

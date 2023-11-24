@@ -13,7 +13,7 @@ public class CalendarDayAdapter
     // CalendarDayMetric
     public Guid CalendarDayMetricId { get; set; } // Retrieved as Id
     public Guid MetricsId { get; set; }
-    public Guid MetricValueId { get; set; }
+    public Guid? MetricValueId { get; set; }
     
     // Metrics
     public string MetricName { get; set; } // Retrieved as Name
