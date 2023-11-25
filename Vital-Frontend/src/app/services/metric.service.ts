@@ -53,9 +53,10 @@ export class MetricService implements OnInit, OnDestroy {
   }
 
   public async getUsersMetric(date: Date): Promise<void> {
-    const utcDate = new Date(date.toUTCString());
-    console.log("Getting users metric for date: " + utcDate);
-    const calendarDayArray = await firstValueFrom(this.http.get<CalendarDayMetric[]>(`${this.apiUrl}/${utcDate.toISOString()}`));
+    // Format date as 'YYYY-MM-DD' in local timezone
+    const formattedDate = date.getFullYear() + '-' + String(date.getMonth() + 1).padStart(2, '0') + '-' + String(date.getDate()).padStart(2, '0');
+    console.log("Getting metrics for date: " + formattedDate);
+    const calendarDayArray = await firstValueFrom(this.http.get<CalendarDayMetric[]>(`${this.apiUrl}/${formattedDate}`));
     calendarDayArray.forEach((calendarDay) => {
       this.metricSelectionMap.set(calendarDay.metricsId, calendarDay.metricValueId || null);
     });

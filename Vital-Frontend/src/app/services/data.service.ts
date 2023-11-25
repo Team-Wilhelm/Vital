@@ -10,6 +10,5 @@ export class DataService {
 
   setClickedDate(clickedDate: Date) {
     this.clickedDateSource.next(clickedDate);
-    console.log('Clicked date changed to: ' + clickedDate.toISOString());
   }
 }
