@@ -85,6 +85,7 @@ public class MetricRepository : IMetricRepository
     
     public async Task<ICollection<CalendarDayMetric>> Get(Guid userId, DateTimeOffset date)
     {
+        date = date.UtcDateTime;
         var calendarDay = await _calendarDayRepository.GetByDate(userId, date);
         var sql = $@"SELECT
                 CDM.*,

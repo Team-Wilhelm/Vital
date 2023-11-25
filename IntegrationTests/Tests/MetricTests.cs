@@ -55,6 +55,7 @@ public class MetricTests
         response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }
 
+    //TODO: Update this test, after we decide how to handle the metrics in the calendar
     [Fact]
     public async Task Get_Should_return_a_list_of_metrics()
     {
@@ -102,7 +103,7 @@ public class MetricTests
         };
 
         // Act
-        var response = await _client.PostAsJsonAsync($"/Metric?dateTimeOffsetString={date}",
+        var response = await _client.PostAsJsonAsync($"/Metric?date={date}",
             new List<MetricRegisterMetricDto> { metricRegisterMetricDto });
         var actual = await response.Content.ReadFromJsonAsync<CalendarDayDto>();
         

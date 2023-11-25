@@ -50,13 +50,16 @@ public class MetricController : BaseController
     /// <summary>
     /// Gets the metrics for a day for the current user (based on the token).
     /// </summary>
-    /// <param name="date"></param>
-    [HttpGet("{date}")]
+    /// <param name="dateString"></param>
+    [HttpGet("{dateString}")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ICollection<CalendarDayMetric>))]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> GetAsync([FromRoute] DateTimeOffset date)
+    public async Task<IActionResult> GetAsync([FromRoute] string dateString)
     {
+        Console.WriteLine(dateString);
+        var date = DateTimeOffset.Parse(dateString);
+        Console.WriteLine(date);
         var userId = _currentContext.UserId!.Value;
         var list = await _metricService.Get(userId, date);
         return Ok(list);
