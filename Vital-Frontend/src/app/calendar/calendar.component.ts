@@ -1,37 +1,35 @@
-import {AfterViewInit, Component, OnInit} from '@angular/core';
-import {Calendar, CalendarApi, CalendarOptions, EventSourceInput} from '@fullcalendar/core';
+import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
+import {Calendar, CalendarOptions} from '@fullcalendar/core';
+import {FullCalendarComponent} from '@fullcalendar/angular';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin, {DateClickArg} from '@fullcalendar/interaction';
 import timeGridPlugin from '@fullcalendar/timegrid';
-import {Router} from "@angular/router";
 import {DataService} from "../services/data.service";
 import {MetricService} from "../services/metric.service";
-import {EventContainer} from "@fullcalendar/core/internal";
 
 @Component({
   selector: 'calendar',
   templateUrl: './calendar.component.html',
 })
-export class CalendarComponent implements OnInit, AfterViewInit{
+export class CalendarComponent implements OnInit, AfterViewInit {
 
-  calendarApi!: CalendarApi;
-  private newEvent: any;
+  @ViewChild('calendar') calendarComponent!: FullCalendarComponent;
+
   private eventList: any[] = [];
   private periodDays: Date[] = [];
   clickedDate = new Date();
   selectedDateElement: HTMLElement | null = null;
-  constructor(private dataService: DataService, private metricService: MetricService, private router: Router) {}
+  private calendarApi!: Calendar;
+
+  constructor(private dataService: DataService, private metricService: MetricService) {
+  }
 
   async ngOnInit() {
-    await this.getPeriodDays();
+    await this.getPeriodDays()
   }
 
   async ngAfterViewInit() {
-    for (const date of this.periodDays) {
-      const formattedDate = date.toISOString().split('T')[0];
-      this.createEvent(formattedDate);
-    }
-    this.calendarApi.refetchEvents();
+    this.calendarApi = this.calendarComponent.getApi();
   }
 
   calendarOptions: CalendarOptions = {
@@ -42,21 +40,18 @@ export class CalendarComponent implements OnInit, AfterViewInit{
     weekNumberCalculation: 'ISO',
     height: 'auto',
     events: this.eventList,
-    datesSet: (info) => {
-      this.calendarApi = info.view.calendar;
-    }
   };
 
   async handleDateClick(arg: DateClickArg) {
     this.clickedDate = arg.date;
     const today = new Date();
-    today.setHours(0,0,0,0);
+    today.setHours(0, 0, 0, 0);
     //console.log(this.clickedDate);
     //console.log(today);
     //console.log(this.clickedDate > today);
     //TODO
 
-    if(this.clickedDate > today) return;
+    if (this.clickedDate > today) return;
 
     this.dataService.setClickedDate(this.clickedDate);
     if (this.selectedDateElement) {
@@ -69,21 +64,31 @@ export class CalendarComponent implements OnInit, AfterViewInit{
 
   async getPeriodDays() {
     const previousMonthFirstDay = new Date(2023, 10, 1);
-    const thisMonthLastDay = new Date(2023, 11, 23);
+    const thisMonthLastDay = new Date(2023, 11, 27);
     this.periodDays = await this.metricService.getPeriodDays(previousMonthFirstDay, thisMonthLastDay);
+
+    for (let date of this.periodDays) {
+      date = new Date(date);
+      this.createEvent(date);
+    }
   }
 
-  createEvent(date: string){
-    this.newEvent = {
-      title: 'Period',
+  createEvent(date: Date) {
+    const newEvent = {
       start: date,
       allDay: true,
       editable: true,
       color: 'red',
       textColor: 'white',
-      duration: {days: 1},
+      extendedProps: {
+        value: 'Heavy Flow',
+      }
     };
-    this.eventList.push(this.newEvent);
+    // Use the addEvent method to dynamically add the new event
+    this.calendarApi.addEvent(newEvent);
+
+    // Alternatively, you can update the eventList array if needed
+    this.eventList.push(newEvent);
   }
 }
 
