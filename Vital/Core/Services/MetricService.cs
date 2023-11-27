@@ -51,6 +51,7 @@ public class MetricService : IMetricService
                 CalendarDayId = calendarDayAdapter.CalendarDayId,
                 MetricValueId = calendarDayAdapter.MetricValueId,
                 MetricsId = calendarDayAdapter.MetricsId,
+                CreatedAt = calendarDayAdapter.CreatedAt,
             };
 
             var metric = new Metrics()

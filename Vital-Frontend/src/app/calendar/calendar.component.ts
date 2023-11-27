@@ -25,7 +25,7 @@ export class CalendarComponent implements OnInit, AfterViewInit {
   }
 
   async ngOnInit() {
-    await this.getPeriodDays()
+    await this.getPeriodDays();
   }
 
   async ngAfterViewInit() {
@@ -45,11 +45,7 @@ export class CalendarComponent implements OnInit, AfterViewInit {
   async handleDateClick(arg: DateClickArg) {
     this.clickedDate = arg.date;
     const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    //console.log(this.clickedDate);
-    //console.log(today);
-    //console.log(this.clickedDate > today);
-    //TODO
+    today.setHours(0,0,0,0);
 
     if (this.clickedDate > today) return;
 

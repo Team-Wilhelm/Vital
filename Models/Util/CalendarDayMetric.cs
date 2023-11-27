@@ -5,6 +5,7 @@ namespace Models.Util;
 public class CalendarDayMetric
 {
     public Guid Id { get; set; }
+    public DateTimeOffset CreatedAt { get; set; }
     public Guid CalendarDayId { get; set; }
     public CalendarDay? CalendarDay { get; set; }
     public Guid MetricsId { get; set; }

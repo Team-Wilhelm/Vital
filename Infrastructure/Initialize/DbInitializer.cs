@@ -148,7 +148,8 @@ public class DbInitializer
                 {
                     CalendarDayId = Guid.Parse("0029A2AF-4FC7-497F-BFEC-6E32CDC12623"),
                     MetricsId = Guid.Parse("d56807fe-05ca-4901-a564-68f14e31b241"), // Flow
-                    MetricValueId = Guid.Parse("b5bf508b-9cd5-4c9c-aa64-63bc9cbafe3b") // Heavy
+                    MetricValueId = Guid.Parse("b5bf508b-9cd5-4c9c-aa64-63bc9cbafe3b"), // Heavy
+                    CreatedAt = DateTimeOffset.UtcNow.AddDays(-5).AddHours(-5)
                 }
             }
         });
@@ -165,7 +166,8 @@ public class DbInitializer
                 {
                     CalendarDayId = Guid.Parse("E429A2AF-4FC7-497F-BFEC-6E32CDC12623"),
                     MetricsId = Guid.Parse("d56807fe-05ca-4901-a564-68f14e31b241"), // Flow
-                    MetricValueId = Guid.Parse("b5bf508b-9cd5-4c9c-aa64-63bc9cbafe3b") // Heavy
+                    MetricValueId = Guid.Parse("b5bf508b-9cd5-4c9c-aa64-63bc9cbafe3b"), // Heavy
+                    CreatedAt = DateTimeOffset.UtcNow.AddDays(-4).AddHours(-4)
                 }
             }
         });
@@ -182,7 +184,8 @@ public class DbInitializer
                 {
                     CalendarDayId = Guid.Parse("9B294EA6-0440-427F-84D1-8058AEDB3B12"),
                     MetricsId = Guid.Parse("d56807fe-05ca-4901-a564-68f14e31b241"), // Flow
-                    MetricValueId = Guid.Parse("b5bf508b-9cd5-4c9c-aa64-63bc9cbafe3b") // Heavy
+                    MetricValueId = Guid.Parse("b5bf508b-9cd5-4c9c-aa64-63bc9cbafe3b"), // Heavy
+                    CreatedAt = DateTimeOffset.UtcNow.AddDays(-3).AddHours(-3)
                 }
             }
 
@@ -200,7 +203,8 @@ public class DbInitializer
                 {
                     CalendarDayId = Guid.Parse("388725C0-63AD-4EC8-A5E5-E760ACFCB0F0"),
                     MetricsId = Guid.Parse("d56807fe-05ca-4901-a564-68f14e31b241"), // Flow
-                    MetricValueId = Guid.Parse("24d4c8aa-614d-467f-9afb-9e2f744cf151") // Moderate
+                    MetricValueId = Guid.Parse("24d4c8aa-614d-467f-9afb-9e2f744cf151"), // Moderate
+                    CreatedAt = DateTimeOffset.UtcNow.AddDays(-2).AddHours(-2)
                 }
             }
         });
@@ -216,7 +220,8 @@ public class DbInitializer
                 new()
                 {
                     CalendarDayId = Guid.Parse("388725C0-63AD-4EC8-A5E5-E760ACFCB0F0"),
-                    MetricsId = Guid.Parse("d56807fe-05ca-4901-a564-68f14e31b241") // Flow
+                    MetricsId = Guid.Parse("d56807fe-05ca-4901-a564-68f14e31b241"), // Flow
+                    CreatedAt = DateTimeOffset.UtcNow.AddDays(-1).AddHours(-1)
                 }
             }
         });
@@ -247,7 +252,8 @@ public class DbInitializer
                 {
                     CalendarDayId =  Guid.Parse("EFE6886A-374D-48E2-A3E7-16637865ED74"),
                     MetricsId = Guid.Parse("d56807fe-05ca-4901-a564-68f14e31b241"), // Flow
-                    MetricValueId = Guid.Parse("24d4c8aa-614d-467f-9afb-9e2f744cf151") // Moderate
+                    MetricValueId = Guid.Parse("24d4c8aa-614d-467f-9afb-9e2f744cf151"), // Moderate
+                    CreatedAt = DateTimeOffset.UtcNow.AddDays(-1).AddHours(-1)
                 }
             }
         });
@@ -264,7 +270,8 @@ public class DbInitializer
                 {
                     CalendarDayId =  Guid.Parse("F0121084-6054-4278-AA9A-246A7AEFD11A"),
                     MetricsId = Guid.Parse("d56807fe-05ca-4901-a564-68f14e31b241"), // Flow
-                    MetricValueId = Guid.Parse("24d4c8aa-614d-467f-9afb-9e2f744cf151") // Moderate
+                    MetricValueId = Guid.Parse("24d4c8aa-614d-467f-9afb-9e2f744cf151"), // Moderate
+                    CreatedAt = DateTimeOffset.UtcNow
                 }
             }
         });
@@ -273,7 +280,6 @@ public class DbInitializer
         user2.CurrentCycleId = Guid.Parse("EA2DCAC0-47C5-4406-BA1C-FA870EE5577E");
         await _userManager.UpdateAsync(user2);
         
-
         await _context.SaveChangesAsync();
     }
 }
