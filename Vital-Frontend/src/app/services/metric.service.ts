@@ -14,7 +14,7 @@ import {DataService} from "./data.service";
 })
 export class MetricService implements OnDestroy {
   private apiUrl = environment.baseUrl + '/metric';
-  private subscription: Subscription | undefined;
+  private readonly subscription: Subscription | undefined;
 
   clickedDate = new Date();
 
@@ -50,7 +50,7 @@ export class MetricService implements OnDestroy {
 
   public async getUsersMetric(date: Date): Promise<void> {
     // Format date as 'YYYY-MM-DD'
-    let formattedDate = date.getFullYear() + '-' + String(date.getMonth() + 1).padStart(2, '0') + '-' + String(date.getDate()).padStart(2, '0') ;
+    let formattedDate = date.getFullYear() + '-' + String(date.getMonth() + 1).padStart(2, '0') + '-' + String(date.getDate()).padStart(2, '0');
 
     // Add the local offset to the date in +HH:mm format (e.g. +02:00)
     const offset = date.getTimezoneOffset();
@@ -59,6 +59,8 @@ export class MetricService implements OnDestroy {
     const offsetMinutes = Math.abs(offset % 60);
     formattedDate += offsetSign + String(offsetHours).padStart(2, '0') + ':' + String(offsetMinutes).padStart(2, '0');
 
+    // Get the metrics for the date
+    this.metricSelectionMap.clear();
     const calendarDayArray = await firstValueFrom(this.http.get<CalendarDayMetric[]>(`${this.apiUrl}/${formattedDate}`));
     calendarDayArray.forEach((calendarDay) => {
       calendarDay.createdAt = new Date(calendarDay.createdAt);
@@ -66,15 +68,14 @@ export class MetricService implements OnDestroy {
       this.metricSelectionMap.set(
         calendarDay.metricsId,
         {
-        metricId: calendarDay.metricsId,
-        metricValueId: calendarDay.metricValueId || null,
-        createdAt: calendarDay.createdAt
-      });
+          metricId: calendarDay.metricsId,
+          metricValueId: calendarDay.metricValueId || null,
+          createdAt: calendarDay.createdAt
+        });
     });
     this.loggedMetrics = calendarDayArray;
   }
 
-  //TODO: Look into casting the retrieved data into another type
   public async getMetricsForCalendarDays(startDate: Date, endDate: Date): Promise<CalendarDay[]> {
     const call = this.http.get<CalendarDay[]>(`${this.apiUrl}/calendar?fromDate=${startDate.toISOString()}&toDate=${endDate.toISOString()}`);
     return await firstValueFrom(call);
@@ -110,10 +111,6 @@ export class MetricService implements OnDestroy {
   }
 
   selectOptionalValue(metricId: string, optionalValueId: string) {
-    // Check if the metric is already selected, if not, exit
-    if (!this.metricSelectionMap.has(metricId)) {
-      return;
-    }
 
     const createdAt = this.metricSelectionMap.get(metricId)!.createdAt;
     if (this.metricSelectionMap.get(metricId)?.metricValueId === optionalValueId) {
@@ -142,6 +139,10 @@ export class MetricService implements OnDestroy {
     const valueId = this.metricSelectionMap.get(metricId)?.metricValueId;
     if (!valueId) {
       return "Optional";
+    }
+
+    if (metricId === this.periodMetric?.id) {
+      return this.periodMetric?.values.filter((value) => value.id === valueId)[0].name;
     }
 
     const value = this.allMetrics.filter((metric) =>
