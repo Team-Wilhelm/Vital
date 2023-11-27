@@ -63,9 +63,9 @@ export class CalendarComponent implements OnInit, AfterViewInit {
   }
 
   async getPeriodDays() {
-    const previousMonthFirstDay = new Date(2023, 10, 1);
-    const thisMonthLastDay = new Date(2023, 11, 27);
-    this.periodDays = await this.metricService.getPeriodDays(previousMonthFirstDay, thisMonthLastDay);
+    const today = new Date();
+    const previousMonthFirstDay = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+    this.periodDays = await this.metricService.getPeriodDays(previousMonthFirstDay, today);
 
     for (let date of this.periodDays) {
       date = new Date(date);
@@ -77,17 +77,10 @@ export class CalendarComponent implements OnInit, AfterViewInit {
     const newEvent = {
       start: date,
       allDay: true,
-      editable: true,
       color: 'red',
-      textColor: 'white',
-      extendedProps: {
-        value: 'Heavy Flow',
-      }
+      //url: maybe route to add metric page for that day?
     };
-    // Use the addEvent method to dynamically add the new event
     this.calendarApi.addEvent(newEvent);
-
-    // Alternatively, you can update the eventList array if needed
     this.eventList.push(newEvent);
   }
 }
