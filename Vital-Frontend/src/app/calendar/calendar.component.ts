@@ -49,12 +49,9 @@ export class CalendarComponent implements OnInit, AfterViewInit{
 
   async handleDateClick(arg: DateClickArg) {
     this.clickedDate = arg.date;
+    console.log(this.clickedDate);
     const today = new Date();
     today.setHours(0,0,0,0);
-    //console.log(this.clickedDate);
-    //console.log(today);
-    //console.log(this.clickedDate > today);
-    //TODO
 
     if(this.clickedDate > today) return;
 

@@ -51,6 +51,7 @@ public class MetricRepository : IMetricRepository
                 ""CalendarDay"".""CycleId"" as {nameof(CalendarDayAdapter.CycleId)},
                 ""CalendarDay"".""IsPeriod"" as {nameof(CalendarDayAdapter.IsPeriod)},
                 CDM.""Id"" as {nameof(CalendarDayAdapter.CalendarDayMetricId)},
+                CDM.""CreatedAt"" as {nameof(CalendarDayAdapter.CreatedAt)},
                 M.""Id"" as {nameof(CalendarDayAdapter.MetricsId)},
                 M.""Name"" as {nameof(CalendarDayAdapter.MetricName)},
                 MV.""Id"" as {nameof(CalendarDayAdapter.MetricValueId)},
@@ -143,13 +144,13 @@ public class MetricRepository : IMetricRepository
         }
 
         // Insert new metrics for the day
-        sql = @"INSERT INTO ""CalendarDayMetric"" (""Id"",""CalendarDayId"", ""MetricsId"", ""MetricValueId"") VALUES (@Id, @calendarDayId, @metricsId, @metricValueId)";
+        sql = @"INSERT INTO ""CalendarDayMetric"" (""Id"",""CalendarDayId"", ""MetricsId"", ""MetricValueId"", ""CreatedAt"") VALUES (@Id, @calendarDayId, @metricsId, @metricValueId, @createdAt)";
         foreach (var metricsDto in metrics)
         {
             await _db.ExecuteAsync(sql,
                 new
                 {
-                    Id = Guid.NewGuid(), calendarDayId, metricsId = metricsDto.MetricsId,
+                    Id = Guid.NewGuid(), calendarDayId, metricsId = metricsDto.MetricsId, createdAt = metricsDto.CreatedAt,
                     metricValueId = metricsDto.MetricValueId ?? (object)DBNull.Value
                 });
         }

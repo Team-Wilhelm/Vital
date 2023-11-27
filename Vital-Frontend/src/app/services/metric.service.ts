@@ -3,7 +3,6 @@ import {Injectable, OnDestroy, OnInit} from "@angular/core";
 import {firstValueFrom, Subscription} from "rxjs";
 import {environment} from "../../../environments/environment";
 import {
-  CalendarDayMetricViewDto,
   MetricRegisterMetricDto,
   MetricViewDto
 } from "../interfaces/dtos/metric.dto.interface";
@@ -13,7 +12,7 @@ import {DataService} from "./data.service";
 @Injectable({
   providedIn: 'root'
 })
-export class MetricService implements OnInit, OnDestroy {
+export class MetricService implements OnDestroy {
   private apiUrl = environment.baseUrl + '/metric';
   private subscription: Subscription | undefined;
 
@@ -27,14 +26,11 @@ export class MetricService implements OnInit, OnDestroy {
   constructor(private http: HttpClient, private dataService: DataService) {
     this.getAllMetricsWithValues();
     this.getUsersMetric(this.clickedDate);
-  }
 
-  ngOnInit(): void {
     this.subscription = this.dataService.clickedDate$.subscribe(clickedDate => {
       if (clickedDate) {
         this.clickedDate = clickedDate;
         this.getUsersMetric(clickedDate);
-        console.log("Clicked date changed to: " + clickedDate);
       }
     });
   }
@@ -120,7 +116,19 @@ export class MetricService implements OnInit, OnDestroy {
       });
     });
 
-    this.http.post(`${this.apiUrl}?date=${this.clickedDate.toISOString()}`, metricsToPost)
+    // Add local time and convert to ISO string
+    const currentDate = new Date();
+    const localDate = new Date(this.clickedDate);
+    localDate.setHours(currentDate.getHours(), currentDate.getMinutes(), currentDate.getSeconds(), currentDate.getMilliseconds());
+
+    // Create a new Date object for the backend date
+    const dateForBackend = new Date(localDate);
+
+    // Set the time for dateForBackend using UTC methods
+    dateForBackend.setUTCHours(localDate.getUTCHours(), localDate.getUTCMinutes(), localDate.getUTCSeconds(), localDate.getUTCMilliseconds());
+    console.log(localDate.toISOString());
+
+    this.http.post(`${this.apiUrl}?date=${dateForBackend.toISOString()}`, metricsToPost)
       .subscribe(() => {
         this.getUsersMetric(this.clickedDate);
       });
