@@ -23,6 +23,7 @@ import { CalendarComponent } from './calendar/calendar.component';
 import { AddMetricPageComponent } from './add-metric-page/add-metric-page.component';
 import {FormsModule} from "@angular/forms";
 import {MetricListItemComponent} from "./dashboard/metric-list-item/metric-list-item.component";
+import {MetricSelectionItemComponent} from "./add-metric-page/metric-selection-item/metric-selection-item.component";
 
 @NgModule({
   declarations: [
@@ -36,7 +37,8 @@ import {MetricListItemComponent} from "./dashboard/metric-list-item/metric-list-
     AddMetricPageComponent,
     LoginComponent,
     RegisterComponent,
-    MetricListItemComponent
+    MetricListItemComponent,
+    MetricSelectionItemComponent
   ],
     imports: [
         BrowserModule,

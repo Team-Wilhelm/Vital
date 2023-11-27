@@ -1,27 +1,44 @@
-import {AfterViewInit, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {CycleService} from "../services/cycle.service";
 import {Router} from "@angular/router";
 import {MetricService} from "../services/metric.service";
 import {CalendarDayMetric, CycleDay} from "../interfaces/day.interface";
 import {DataService} from "../services/data.service";
+import {Subscription} from "rxjs";
 
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html'
 })
 
-export class DashboardComponent implements OnInit {
+export class DashboardComponent implements OnInit, OnDestroy {
+  private subscription: Subscription | undefined;
+  clickedDate = new Date();
+
   title = 'dashboard';
   nextPeriodInDays: number = 0;
   @ViewChild('hasYourPeriodStartedModal') hasYourPeriodStartedModal!: ElementRef;
   currentCycleDays: CycleDay[] = [];
-  selectedDay: Date = new Date(); // TODO: Set value of selected day based on selected day in calendar
-  selectedDayMetrics: CalendarDayMetric[] = [];
 
-  constructor(public cycleService: CycleService, private metricService: MetricService, private dataService: DataService, private router: Router) {
+  constructor(public cycleService: CycleService, public metricService: MetricService, public dataService: DataService, private router: Router) {
     cycleService.getPredictedPeriod().then(() => {
       this.nextPeriodInDays = this.calculateNextPeriodInDays();
     });
+  }
+
+  ngOnInit() {
+    this.dataService.clickedDate$.subscribe(clickedDate => {
+      if (clickedDate) {
+        this.updateDashboardData(clickedDate);
+        this.clickedDate = clickedDate;
+      }
+    });
+  }
+
+  ngOnDestroy() {
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
   }
 
   private calculateNextPeriodInDays() {
@@ -45,24 +62,14 @@ export class DashboardComponent implements OnInit {
     }, 100);
   }
 
-  async ngOnInit() {
-    //this.selectedDay.setDate(this.selectedDay.getDate() - 1);
-    this.dataService.clickedDate$.subscribe((clickedDate) => {
-      // When the date changes, update the selected metrics for the new date
-      if (clickedDate) {
-        this.selectedDay = clickedDate;
-      }
-    });
-    await this.getMetricsForDay(this.selectedDay);
-  }
-
   redirectToMetrics() {
     this.router.navigate(['/add-metric']);
   }
 
-  //TODO: Get the metrics for selected day
-  async getMetricsForDay(date: Date) {
-    this.selectedDayMetrics = (await this.metricService.getMetricsForCalendarDays(this.selectedDay, new Date()))[0].selectedMetrics;
-    console.log(this.selectedDayMetrics);
+  updateDashboardData(date: Date) {
+    // Call the methods to update your dashboard data here
+    // For example:
+    this.metricService.getUsersMetric(date);
+    // Add other methods as needed
   }
 }

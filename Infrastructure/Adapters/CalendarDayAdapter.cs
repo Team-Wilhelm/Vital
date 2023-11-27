@@ -8,12 +8,12 @@ public class CalendarDayAdapter
     public Guid UserId { get; set; }
     public string State { get; set; }
     public Guid? CycleId { get; set; }
-    public bool IsPeriodDay { get; set; }
+    public bool IsPeriod { get; set; }
     
     // CalendarDayMetric
     public Guid CalendarDayMetricId { get; set; } // Retrieved as Id
     public Guid MetricsId { get; set; }
-    public Guid MetricValueId { get; set; }
+    public Guid? MetricValueId { get; set; }
     
     // Metrics
     public string MetricName { get; set; } // Retrieved as Name

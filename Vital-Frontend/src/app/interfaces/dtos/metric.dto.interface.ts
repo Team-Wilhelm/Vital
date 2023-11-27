@@ -1,15 +1,17 @@
+import {Metrics} from "../metric.interface";
+
 export interface CalendarDayMetricDto {
   id: string; //guid
   calendarDayId: string; //guid
   metricsId: string; //guid
-  metrics: any; // Replace 'any' with the appropriate type
+  metrics: MetricsDto[];
   metricValueId: string; //guid
 }
 
 export interface CalendarDayMetricViewDto {
     calendarDayId: string; //guid
     metricsId: string; //guid
-    metricValueId: string; //guid
+    metricValueId?: string; //guid
 }
 
 export interface MetricsDto {
@@ -39,5 +41,5 @@ export interface MetricValueViewDto {
 
 export interface MetricRegisterMetricDto {
   metricsId: string; //guid
-  metricValueId: string; //guid
+  metricValueId?: string; //guid
 }

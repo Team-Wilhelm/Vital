@@ -23,6 +23,6 @@ export interface CalendarDayMetric {
   calendarDay: CalendarDay;
   metricsId: string; //guid
   metrics: Metrics;
-  metricValueId: string; //guid
-  metricValue: MetricValue;
+  metricValueId?: string; //guid
+  metricValue?: MetricValue;
 }

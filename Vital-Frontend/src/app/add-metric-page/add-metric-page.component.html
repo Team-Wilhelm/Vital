@@ -1,27 +1,32 @@
 <div class="card bg-card">
   <div class="card-body">
 
-    <h1 class="text-lg font-semibold mb-4">Select one or more:</h1>
+    <!-- Title -->
+    <div class="text-2xl font-medium mb-4 flex justify-between">
+      <p>Log Metrics</p>
+      <button class="btn btn-primary btn-sm" (click)="metricService.saveMetrics()">Save</button>
+    </div>
 
-    <div *ngFor="let metric of allMetrics" class="mb-4">
-      <div class="flex items-center">
-        <input type="checkbox" id="{{ metric.id }}" [ngModel]="metricSelectionMap.get(metric.id) && metricSelectionMap.get(metric.id)?.selectedValue" (click)="onCheckboxChange(metric)"
-               class="hidden">
-        <label for="{{ metric.id }}"
-               [ngClass]="{'bg-button-selected text-white': metricSelectionMap.get(metric.id)?.selectedValue, 'bg-button-unselected text-black': !metricSelectionMap.get(metric.id)?.selectedValue}"
-               class="px-4 py-2 border rounded-full cursor-pointer transition duration-300 ease-in-out hover:badge-warning">
-          {{ metric.name }}
-        </label>
+    <!-- Period -->
+    <div class="collapse collapse-arrow bg-orange-100">
+      <input type="radio" name="metrics-accordion" checked="checked"/>
+      <div class="collapse-title text-xl font-medium bg-yellow-accent">
+        Period
       </div>
-
-      <div class="mt-2">
-        <div *ngFor="let value of metric.values" class="flex items-center">
-          <input type="radio" [name]="metric.id" [value]="value.id" [ngModel]="metricSelectionMap.get(metric.id) && metricSelectionMap.get(metric.id)?.selectedValue"
-                 (change)="onRadioChange(metric, value.id)" class="mr-2">
-          <span>{{ value.name }}</span>
-        </div>
+      <div class="collapse-content">
+        <metric-selection-item [metric]="metricService.periodMetric"></metric-selection-item>
       </div>
     </div>
-    <button (click)="saveMetrics()">Update Selected Metrics</button>
+
+    <!-- Other metrics -->
+    <div class="collapse collapse-arrow bg-orange-100">
+      <input type="radio" name="metrics-accordion"/>
+      <div class="collapse-title text-xl font-medium bg-yellow-accent">
+        Other metrics
+      </div>
+      <div class="collapse-content">
+        <metric-selection-item *ngFor="let metric of metricService.allMetrics" [metric]="metric" />
+      </div>
+    </div>
   </div>
 </div>

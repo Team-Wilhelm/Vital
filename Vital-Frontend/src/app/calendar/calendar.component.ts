@@ -49,9 +49,16 @@ export class CalendarComponent implements OnInit, AfterViewInit{
 
   async handleDateClick(arg: DateClickArg) {
     this.clickedDate = arg.date;
-    if(this.clickedDate > new Date()) return;
-    this.dataService.setClickedDate(this.clickedDate);
+    const today = new Date();
+    today.setHours(0,0,0,0);
+    //console.log(this.clickedDate);
+    //console.log(today);
+    //console.log(this.clickedDate > today);
+    //TODO
 
+    if(this.clickedDate > today) return;
+
+    this.dataService.setClickedDate(this.clickedDate);
     if (this.selectedDateElement) {
       this.selectedDateElement.classList.remove('bg-green-accent');
     }

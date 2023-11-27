@@ -82,12 +82,6 @@ public class DbInitializer
             {
                 new()
                 {
-                    Id = Guid.Parse("abe0a53d-bc66-417d-a99a-4490a7bd0640"),
-                    Name = "None",
-                    MetricsId = Guid.Parse("d56807fe-05ca-4901-a564-68f14e31b241")
-                },
-                new()
-                {
                     Id = Guid.Parse("c5cd051e-2990-4171-8e2f-268b0bfc59e0"),
                     Name = "Light",
                     MetricsId = Guid.Parse("d56807fe-05ca-4901-a564-68f14e31b241")
@@ -103,7 +97,7 @@ public class DbInitializer
                     Id = Guid.Parse("b5bf508b-9cd5-4c9c-aa64-63bc9cbafe3b"),
                     Name = "Heavy",
                     MetricsId = Guid.Parse("d56807fe-05ca-4901-a564-68f14e31b241")
-                }
+                },
             },
             }, new Metrics()
             {
@@ -222,8 +216,7 @@ public class DbInitializer
                 new()
                 {
                     CalendarDayId = Guid.Parse("388725C0-63AD-4EC8-A5E5-E760ACFCB0F0"),
-                    MetricsId = Guid.Parse("d56807fe-05ca-4901-a564-68f14e31b241"), // Flow
-                    MetricValueId = Guid.Parse("abe0a53d-bc66-417d-a99a-4490a7bd0640") // None
+                    MetricsId = Guid.Parse("d56807fe-05ca-4901-a564-68f14e31b241") // Flow
                 }
             }
         });

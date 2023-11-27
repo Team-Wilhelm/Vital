@@ -6,5 +6,5 @@ public class CalendarDayMetricDto
     public Guid CalendarDayId { get; set; }
     public Guid MetricsId { get; set; }
     public Models.Metrics Metrics { get; set; }
-    public Guid MetricValueId { get; set; }
+    public Guid? MetricValueId { get; set; }
 }
