@@ -134,8 +134,8 @@ export class MetricService implements OnDestroy {
       });
   }
 
-  async getPeriodDays(previousMonthFirstDay: Date, thisMonthLastDay: Date) {
-    const call = this.http.get<Date[]>(`${this.apiUrl}/period?fromDate=${previousMonthFirstDay.toISOString()}&toDate=${thisMonthLastDay.toISOString()}`);
+  async getPeriodDays(previousMonthFirstDay: Date, nextMonthLastDay: Date) {
+    const call = this.http.get<Date[]>(`${this.apiUrl}/period?fromDate=${previousMonthFirstDay.toISOString()}&toDate=${nextMonthLastDay.toISOString()}`);
     return await firstValueFrom(call);
   }
 }

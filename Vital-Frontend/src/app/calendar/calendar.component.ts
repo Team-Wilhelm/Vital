@@ -6,12 +6,13 @@ import interactionPlugin, {DateClickArg} from '@fullcalendar/interaction';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import {DataService} from "../services/data.service";
 import {MetricService} from "../services/metric.service";
+import {CycleService} from "../services/cycle.service";
 
 @Component({
   selector: 'calendar',
   templateUrl: './calendar.component.html',
 })
-export class CalendarComponent implements OnInit, AfterViewInit {
+export class CalendarComponent implements AfterViewInit {
 
   @ViewChild('calendar') calendarComponent!: FullCalendarComponent;
 
@@ -19,17 +20,18 @@ export class CalendarComponent implements OnInit, AfterViewInit {
   private periodDays: Date[] = [];
   clickedDate = new Date();
   selectedDateElement: HTMLElement | null = null;
-  private calendarApi!: Calendar;
+  private calendarApi?: Calendar;
 
-  constructor(private dataService: DataService, private metricService: MetricService) {
-  }
-
-  async ngOnInit() {
-    await this.getPeriodDays();
+  constructor(private dataService: DataService, private metricService: MetricService, private cycleService: CycleService) {
   }
 
   async ngAfterViewInit() {
     this.calendarApi = this.calendarComponent.getApi();
+    await this.getPeriodDays();
+    await this.getPredictedPeriodDays();
+
+    this.calendarApi?.setOption('dateClick', this.handleDateClick.bind(this));
+    this.calendarApi?.setOption('datesSet', this.handleDatesSet.bind(this));
   }
 
   calendarOptions: CalendarOptions = {
@@ -58,14 +60,36 @@ export class CalendarComponent implements OnInit, AfterViewInit {
     this.selectedDateElement.classList.add('bg-green-accent');
   }
 
+  async handleDatesSet(arg: any) {
+    await this.getPeriodDays();
+    await this.getPredictedPeriodDays();
+  }
+
   async getPeriodDays() {
+    if (!this.calendarApi) {
+      return;
+    }
+    this.eventList = [];
+    this.calendarApi?.removeAllEvents();
+
+    const currentDate = this.calendarApi.getDate(); // Get the currently displayed month
+    const firstDay = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1);
+    const lastDay = new Date(currentDate.getFullYear(), currentDate.getMonth() + 2, 0);
     const today = new Date();
-    const previousMonthFirstDay = new Date(today.getFullYear(), today.getMonth() - 1, 1);
-    this.periodDays = await this.metricService.getPeriodDays(previousMonthFirstDay, today);
+
+    this.periodDays = await this.metricService.getPeriodDays(firstDay, lastDay > today ? today : lastDay);
 
     for (let date of this.periodDays) {
       date = new Date(date);
       this.createEvent(date);
+    }
+    //console.log('getting events for: ', firstDay, ' to ', lastDay > today ? today : lastDay);
+  }
+
+  async getPredictedPeriodDays() {
+    for (let date of this.cycleService.predictedPeriod) {
+      date = new Date(date);
+      this.createPredictedEvent(date);
     }
   }
 
@@ -76,7 +100,18 @@ export class CalendarComponent implements OnInit, AfterViewInit {
       color: 'red',
       //url: maybe route to add metric page for that day?
     };
-    this.calendarApi.addEvent(newEvent);
+    this.calendarApi?.addEvent(newEvent);
+    this.eventList.push(newEvent);
+  }
+
+  createPredictedEvent(date: Date) {
+    const newEvent = {
+      start: date,
+      allDay: true,
+      color: 'pink',
+      //url: maybe route to add metric page for that day?
+    };
+    this.calendarApi?.addEvent(newEvent);
     this.eventList.push(newEvent);
   }
 }
