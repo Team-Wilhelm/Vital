@@ -55,9 +55,9 @@ public class CalendarDayRepository : ICalendarDayRepository
         return state is null ? null : BuildCalendarDay(state!, sql, new { calendarDayId });
     }
 
-    public async Task<CalendarDay> CreteCycleDay(Guid UserId, DateTimeOffset dateTime)
+    public async Task<CalendarDay> CreteCycleDay(Guid userId, DateTimeOffset dateTime)
     {
-        var lastCycle = _applicationDbContext.Cycles.Where(c => c.UserId == UserId)
+        var lastCycle = _applicationDbContext.Cycles.Where(c => c.UserId == userId)
             .OrderByDescending(c => c.StartDate)
             .FirstOrDefault();
         if (lastCycle is null)
@@ -68,7 +68,7 @@ public class CalendarDayRepository : ICalendarDayRepository
         var cycleDay = new CycleDay()
         {
             CycleId = lastCycle.Id,
-            UserId = UserId,
+            UserId = userId,
             Date = dateTime
         };
 

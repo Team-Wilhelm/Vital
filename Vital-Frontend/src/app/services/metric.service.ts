@@ -19,7 +19,7 @@ export class MetricService implements OnDestroy {
   clickedDate = new Date();
 
   allMetrics: MetricViewDto[] = [];
-  metricSelectionMap: Map<string, string | null> = new Map(); // <MetricId, MetricValueId>
+  metricSelectionMap: Map<string, MetricSelection> = new Map(); // <MetricId, MetricValueId>
   loggedMetrics: CalendarDayMetric[] = [];
   periodMetric: MetricViewDto | undefined;
 
@@ -49,13 +49,27 @@ export class MetricService implements OnDestroy {
   }
 
   public async getUsersMetric(date: Date): Promise<void> {
-    //TODO: Change to UTC
-    // Format date as 'YYYY-MM-DD' in local timezone
-    const formattedDate = date.getFullYear() + '-' + String(date.getMonth() + 1).padStart(2, '0') + '-' + String(date.getDate()).padStart(2, '0');
+    // Format date as 'YYYY-MM-DD'
+    let formattedDate = date.getFullYear() + '-' + String(date.getMonth() + 1).padStart(2, '0') + '-' + String(date.getDate()).padStart(2, '0') ;
+
+    // Add the local offset to the date in +HH:mm format (e.g. +02:00)
+    const offset = date.getTimezoneOffset();
+    const offsetSign = offset < 0 ? '+' : '-';
+    const offsetHours = Math.abs(Math.floor(offset / 60));
+    const offsetMinutes = Math.abs(offset % 60);
+    formattedDate += offsetSign + String(offsetHours).padStart(2, '0') + ':' + String(offsetMinutes).padStart(2, '0');
+
     const calendarDayArray = await firstValueFrom(this.http.get<CalendarDayMetric[]>(`${this.apiUrl}/${formattedDate}`));
     calendarDayArray.forEach((calendarDay) => {
       calendarDay.createdAt = new Date(calendarDay.createdAt);
-      this.metricSelectionMap.set(calendarDay.metricsId, calendarDay.metricValueId || null);
+
+      this.metricSelectionMap.set(
+        calendarDay.metricsId,
+        {
+        metricId: calendarDay.metricsId,
+        metricValueId: calendarDay.metricValueId || null,
+        createdAt: calendarDay.createdAt
+      });
     });
     this.loggedMetrics = calendarDayArray;
   }
@@ -67,13 +81,32 @@ export class MetricService implements OnDestroy {
   }
 
   addOrRemoveMetric(metric: MetricViewDto) {
+    // Check if the metric is already selected, if not, add it
     if (!this.metricSelectionMap.has(metric.id)) {
       // Add the metric to the selected metrics
-      this.metricSelectionMap.set(metric.id, null);
+      this.metricSelectionMap.set(metric.id, {
+        metricId: metric.id,
+        metricValueId: null,
+        createdAt: this.dataService.getCurrentUTCTime()
+      });
     } else {
       // Remove the metric from the selected metrics
       this.metricSelectionMap.delete(metric.id);
     }
+  }
+
+  updateMetricTime(metricId: string, metricTime: Date) {
+    // Check if the metric is already selected, if not, exit
+    if (!this.metricSelectionMap.has(metricId)) {
+      return;
+    }
+
+    const createdAtUTCDate = this.dataService.getUTCDate(metricTime);
+    this.metricSelectionMap.set(metricId, {
+      metricId: metricId,
+      metricValueId: this.metricSelectionMap.get(metricId)?.metricValueId || null,
+      createdAt: createdAtUTCDate
+    });
   }
 
   selectOptionalValue(metricId: string, optionalValueId: string) {
@@ -82,13 +115,22 @@ export class MetricService implements OnDestroy {
       return;
     }
 
-    if (this.metricSelectionMap.get(metricId) === optionalValueId) {
+    const createdAt = this.metricSelectionMap.get(metricId)!.createdAt;
+    if (this.metricSelectionMap.get(metricId)?.metricValueId === optionalValueId) {
       // If the optional value is already selected, deselect it
-      this.metricSelectionMap.set(metricId, null);
+      this.metricSelectionMap.set(metricId, {
+        metricId: metricId,
+        metricValueId: null,
+        createdAt: createdAt!
+      });
       return;
     }
 
-    this.metricSelectionMap.set(metricId, optionalValueId);
+    this.metricSelectionMap.set(metricId, {
+      metricId: metricId,
+      metricValueId: optionalValueId,
+      createdAt: createdAt!
+    });
     console.log("Value selected: " + optionalValueId);
   }
 
@@ -97,38 +139,28 @@ export class MetricService implements OnDestroy {
   }
 
   getSelectedOptionalValue(metricId: string) {
-    const valueId = this.metricSelectionMap.get(metricId);
+    const valueId = this.metricSelectionMap.get(metricId)?.metricValueId;
     if (!valueId) {
       return "Optional";
     }
+
     const value = this.allMetrics.filter((metric) =>
       metric.id === metricId)[0].values.filter((value) => value.id === valueId)[0];
     return value.name;
   }
 
   saveMetrics() {
-    // Add local time and convert to ISO string
-    const currentDate = new Date();
-    const localDate = new Date(this.clickedDate);
-    localDate.setHours(currentDate.getHours(), currentDate.getMinutes(), currentDate.getSeconds(), currentDate.getMilliseconds());
-
-    // Create a new Date object for the backend date
-    const dateForBackend = new Date(localDate);
-
-    // Set the time for dateForBackend using UTC methods
-    dateForBackend.setUTCHours(localDate.getUTCHours(), localDate.getUTCMinutes(), localDate.getUTCSeconds(), localDate.getUTCMilliseconds());
-
     // Add selected metrics to the selectedMetrics array
     const metricsToPost = [] as MetricRegisterMetricDto[];
     this.metricSelectionMap.forEach((value, key) => {
       metricsToPost.push({
         metricsId: key,
-        metricValueId: value ? value : undefined,
-        createdAt: localDate
+        metricValueId: value.metricValueId ? value.metricValueId : undefined,
+        createdAt: value.createdAt
       });
     });
 
-    this.http.post(`${this.apiUrl}?date=${dateForBackend.toISOString()}`, metricsToPost)
+    this.http.post(`${this.apiUrl}`, metricsToPost)
       .subscribe(() => {
         this.getUsersMetric(this.clickedDate);
       });
@@ -138,4 +170,10 @@ export class MetricService implements OnDestroy {
     const call = this.http.get<Date[]>(`${this.apiUrl}/period?fromDate=${previousMonthFirstDay.toISOString()}&toDate=${thisMonthLastDay.toISOString()}`);
     return await firstValueFrom(call);
   }
+}
+
+export interface MetricSelection {
+  metricId: string;
+  metricValueId: string | null;
+  createdAt: Date;
 }

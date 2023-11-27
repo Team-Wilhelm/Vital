@@ -260,7 +260,7 @@ public class DbInitializer
         await _context.CycleDays.AddAsync(new CycleDay()
         {
             Id = Guid.Parse("F0121084-6054-4278-AA9A-246A7AEFD11A"),
-            UserId = Guid.Parse("ADFEAD4C-823B-41E5-9C7E-C84AA04192A4"),
+            UserId = Guid.Parse("b1f0b1f0-b1f0-b1f0-b1f0-b1f0b1f0b1f0"),
             Date = DateTimeOffset.UtcNow,
             IsPeriod = true,
             CycleId = Guid.Parse("EA2DCAC0-47C5-4406-BA1C-FA870EE5577E"),

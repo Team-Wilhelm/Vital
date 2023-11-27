@@ -84,6 +84,7 @@ public class MetricRepository : IMetricRepository
         return parsedDates;
     }
     
+    //TODO: Refactor this method to work with UTC dates and local offsets
     public async Task<ICollection<CalendarDayMetric>> Get(Guid userId, DateTimeOffset date)
     {
         date = date.UtcDateTime;
