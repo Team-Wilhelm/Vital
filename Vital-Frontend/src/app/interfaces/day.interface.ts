@@ -25,4 +25,5 @@ export interface CalendarDayMetric {
   metrics: Metrics;
   metricValueId?: string; //guid
   metricValue?: MetricValue;
+  createdAt: Date;
 }

@@ -49,11 +49,12 @@ export class MetricService implements OnDestroy {
   }
 
   public async getUsersMetric(date: Date): Promise<void> {
+    //TODO: Change to UTC
     // Format date as 'YYYY-MM-DD' in local timezone
     const formattedDate = date.getFullYear() + '-' + String(date.getMonth() + 1).padStart(2, '0') + '-' + String(date.getDate()).padStart(2, '0');
-    console.log("Getting metrics for date: " + formattedDate);
     const calendarDayArray = await firstValueFrom(this.http.get<CalendarDayMetric[]>(`${this.apiUrl}/${formattedDate}`));
     calendarDayArray.forEach((calendarDay) => {
+      calendarDay.createdAt = new Date(calendarDay.createdAt);
       this.metricSelectionMap.set(calendarDay.metricsId, calendarDay.metricValueId || null);
     });
     this.loggedMetrics = calendarDayArray;
@@ -73,7 +74,6 @@ export class MetricService implements OnDestroy {
       // Remove the metric from the selected metrics
       this.metricSelectionMap.delete(metric.id);
     }
-    console.log(this.metricSelectionMap);
   }
 
   selectOptionalValue(metricId: string, optionalValueId: string) {
@@ -107,15 +107,6 @@ export class MetricService implements OnDestroy {
   }
 
   saveMetrics() {
-    // Add selected metrics to the selectedMetrics array
-    const metricsToPost = [] as MetricRegisterMetricDto[];
-    this.metricSelectionMap.forEach((value, key) => {
-      metricsToPost.push({
-        metricsId: key,
-        metricValueId: value ? value : undefined
-      });
-    });
-
     // Add local time and convert to ISO string
     const currentDate = new Date();
     const localDate = new Date(this.clickedDate);
@@ -126,7 +117,16 @@ export class MetricService implements OnDestroy {
 
     // Set the time for dateForBackend using UTC methods
     dateForBackend.setUTCHours(localDate.getUTCHours(), localDate.getUTCMinutes(), localDate.getUTCSeconds(), localDate.getUTCMilliseconds());
-    console.log(localDate.toISOString());
+
+    // Add selected metrics to the selectedMetrics array
+    const metricsToPost = [] as MetricRegisterMetricDto[];
+    this.metricSelectionMap.forEach((value, key) => {
+      metricsToPost.push({
+        metricsId: key,
+        metricValueId: value ? value : undefined,
+        createdAt: localDate
+      });
+    });
 
     this.http.post(`${this.apiUrl}?date=${dateForBackend.toISOString()}`, metricsToPost)
       .subscribe(() => {
