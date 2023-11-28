@@ -69,8 +69,6 @@ export class MetricListItemComponent implements OnInit, OnDestroy {
         this.deleteButtonDisabled = true;
       }
     });
-
-    console.log(metricService.metricSelectionMap);
   }
 
   ngOnInit() {
@@ -97,7 +95,6 @@ export class MetricListItemComponent implements OnInit, OnDestroy {
   }
 
   deleteMetric() {
-    console.log("Deleting metric");
     this.metricService.deleteMetric(this.calendarDayMetric!.id);
   }
 
