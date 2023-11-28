@@ -7,7 +7,7 @@ import {MetricService} from "../../services/metric.service";
   selector: 'app-current-cycle',
   template: `
     <div class="flex h-full justify-between items-center">
-      <div *ngFor="let day of dateMap.keys()"
+      <div *ngFor="let day of dateKeys"
            class="flex justify-center items-center text-center rounded-full {{getBackgroundColor(day)}} aspect-square p-2
     w-10
     sm:w-16
@@ -23,6 +23,7 @@ export class CurrentCycleComponent implements OnInit {
   @Input() date: string = '';
   today: Date = new Date();
   dateMap: Map<Date, string> = new Map();
+  dateKeys: Date[] = [];
   periodDays: Date[] = [];
   predictedPeriodDays: Date[] = [];
 
@@ -70,6 +71,9 @@ export class CurrentCycleComponent implements OnInit {
 
       this.dateMap.set(date, bgColor);
     }
+    this.dateMap.forEach((value: string, key:Date) => {
+      this.dateKeys.push(key);
+    })
   }
 
   private isSameDate(date1: Date, date2: Date): boolean {

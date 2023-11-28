@@ -64,14 +64,6 @@ export class MetricService implements OnDestroy {
     const calendarDayArray = await firstValueFrom(this.http.get<CalendarDayMetric[]>(`${this.apiUrl}/${formattedDate}`));
     calendarDayArray.forEach((calendarDay) => {
       calendarDay.createdAt = new Date(calendarDay.createdAt);
-
-      this.metricSelectionMap.set(
-        calendarDay.metricsId,
-        {
-          metricId: calendarDay.metricsId,
-          metricValueId: calendarDay.metricValueId || null,
-          createdAt: calendarDay.createdAt
-        });
     });
     this.loggedMetrics = calendarDayArray;
   }
@@ -111,6 +103,9 @@ export class MetricService implements OnDestroy {
   }
 
   selectOptionalValue(metricId: string, optionalValueId: string) {
+    if (!this.metricSelectionMap.has(metricId)) {
+      return;
+    }
 
     const createdAt = this.metricSelectionMap.get(metricId)!.createdAt;
     if (this.metricSelectionMap.get(metricId)?.metricValueId === optionalValueId) {
@@ -137,7 +132,7 @@ export class MetricService implements OnDestroy {
 
   getSelectedOptionalValue(metricId: string) {
     const valueId = this.metricSelectionMap.get(metricId)?.metricValueId;
-    if (!valueId) {
+    if (!valueId || valueId === "") {
       return "Optional";
     }
 
@@ -171,6 +166,13 @@ export class MetricService implements OnDestroy {
     const call = this.http.get<Date[]>(`${this.apiUrl}/period?fromDate=${previousMonthFirstDay.toISOString()}&toDate=${nextMonthLastDay.toISOString()}`);
     const result = await firstValueFrom(call);
     return result.map(date => new Date(date));
+  }
+
+  async deleteMetric(calendarDayMetricId: string) {
+    const calendarDayMetric = this.loggedMetrics.filter((metric) => metric.id === calendarDayMetricId)[0];
+    await firstValueFrom(this.http.delete(`${this.apiUrl}/${calendarDayMetric.id}`));
+    this.getUsersMetric(this.clickedDate);
+
   }
 }
 
