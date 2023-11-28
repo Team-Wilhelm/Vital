@@ -88,4 +88,15 @@ public class MetricController : BaseController
         var periodDays = await _metricService.GetPeriodDays(userId, fromDate, toDate);
         return Ok(periodDays);
     }
+    
+    [HttpDelete("{calendarDayMetricId:guid}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> DeleteMetricEntryAsync([FromRoute] Guid calendarDayMetricId)
+    {
+        var userId = _currentContext.UserId!.Value;
+        await _metricService.DeleteMetricEntry(calendarDayMetricId);
+        return Ok();
+    }
 }

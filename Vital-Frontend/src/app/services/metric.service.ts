@@ -74,6 +74,7 @@ export class MetricService implements OnDestroy {
         });
     });
     this.loggedMetrics = calendarDayArray;
+    console.log(this.loggedMetrics);
   }
 
   public async getMetricsForCalendarDays(startDate: Date, endDate: Date): Promise<CalendarDay[]> {
@@ -170,6 +171,13 @@ export class MetricService implements OnDestroy {
   async getPeriodDays(previousMonthFirstDay: Date, thisMonthLastDay: Date) {
     const call = this.http.get<Date[]>(`${this.apiUrl}/period?fromDate=${previousMonthFirstDay.toISOString()}&toDate=${thisMonthLastDay.toISOString()}`);
     return await firstValueFrom(call);
+  }
+
+  async deleteMetric(calendarDayMetricId: string) {
+    const calendarDayMetric = this.loggedMetrics.filter((metric) => metric.id === calendarDayMetricId)[0];
+    await firstValueFrom(this.http.delete(`${this.apiUrl}/${calendarDayMetric.id}`));
+    this.getUsersMetric(this.clickedDate);
+
   }
 }
 
