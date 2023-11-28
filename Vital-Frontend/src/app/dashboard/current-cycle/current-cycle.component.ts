@@ -7,7 +7,8 @@ import {MetricService} from "../../services/metric.service";
   selector: 'app-current-cycle',
   template: `
     <div class="flex h-full justify-between items-center">
-      <div *ngFor="let day of dateMap.keys()" class="flex justify-center items-center text-center rounded-full {{getBackgroundColor(day)}} aspect-square p-2
+      <div *ngFor="let day of dateMap.keys()"
+           class="flex justify-center items-center text-center rounded-full {{getBackgroundColor(day)}} aspect-square p-2
     w-10
     sm:w-16
     2xl:w-24">
@@ -85,11 +86,11 @@ export class CurrentCycleComponent implements OnInit, AfterViewInit {
   }
 
   getBackgroundColor(date: Date): string {
-    return this.dateMap.get(date) || ''; // This assumes the value in dateMap is a class name
+    return this.dateMap.get(date) || '';
   }
 
   dateString(date: Date): string {
-    const dateFormat = 'dd/MM'; // Adjust the date format based on your requirements
+    const dateFormat = 'dd/MM';
     return this.datePipe.transform(date, dateFormat) || '';
   }
 
