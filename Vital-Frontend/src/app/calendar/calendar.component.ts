@@ -32,6 +32,8 @@ export class CalendarComponent implements AfterViewInit {
 
     this.calendarApi?.setOption('dateClick', this.handleDateClick.bind(this));
     this.calendarApi?.setOption('datesSet', this.handleDatesSet.bind(this));
+
+    //TODO clicking TODAY should reset clickedDate to today
   }
 
   calendarOptions: CalendarOptions = {
