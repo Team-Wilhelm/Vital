@@ -6,6 +6,7 @@ export interface CalendarDayMetricDto {
   metricsId: string; //guid
   metrics: MetricsDto[];
   metricValueId: string; //guid
+  createdAt: Date;
 }
 
 export interface CalendarDayMetricViewDto {
@@ -42,4 +43,5 @@ export interface MetricValueViewDto {
 export interface MetricRegisterMetricDto {
   metricsId: string; //guid
   metricValueId?: string; //guid
+  createdAt: Date;
 }

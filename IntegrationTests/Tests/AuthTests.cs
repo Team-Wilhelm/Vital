@@ -17,6 +17,7 @@ public class AuthTests
     private readonly ApplicationDbContext _dbContext;
     private readonly IServiceScope _scope;
     private readonly UserManager<ApplicationUser> _userManager;
+    private readonly VitalApiFactory _waf;
 
     public AuthTests(VitalApiFactory waf)
     {
@@ -24,6 +25,7 @@ public class AuthTests
         _scope = waf.Services.CreateScope();
         _dbContext = _scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
         _userManager = _scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+        _waf = waf;
     }
 
     [Fact]

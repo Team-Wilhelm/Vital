@@ -6,7 +6,7 @@ namespace IntegrationTests.Setup;
 
 public static class Utilities
 {
-    public static async Task AuthorizeUserAndSetHeaderAsync(HttpClient client, string email = "user@app", string password = "P@ssw0rd.+")
+    public static async Task AuthorizeUserAndSetHeaderAsync(HttpClient client, string email = "user@application", string password = "P@ssw0rd.+")
     {
         var loginRequestDto = new LoginRequestDto()
         {

@@ -30,36 +30,34 @@ public class MetricController : BaseController
     public async Task<IActionResult> GetAllValues()
     {
         var list = await _metricService.GetAllMetrics();
-        
+
         return Ok(_mapper.Map<List<MetricsDto>>(list));
     }
 
     [HttpGet("calendar")]
-    public async Task<IActionResult> GetMetricsForCalendarDays([FromQuery] DateTimeOffset fromDate, [FromQuery]
-        DateTimeOffset toDate)
+    public async Task<IActionResult> GetMetricsForCalendarDays([FromQuery] DateTimeOffset fromDate,
+        [FromQuery] DateTimeOffset toDate)
     {
         if (toDate < fromDate)
         {
             throw new Exception("To date can't be before from date.");
         }
+
         var list = await _metricService.GetMetricsForCalendarDays(_currentContext.UserId!.Value, fromDate, toDate);
-        
         return Ok(list);
     }
-    
+
     /// <summary>
     /// Gets the metrics for a day for the current user (based on the token).
     /// </summary>
-    /// <param name="dateString"></param>
+    /// <param name="dateString">The date string in YYYY-MM-DD+HH:mm or YYYY-MM-DD-HH:mm format.</param>
     [HttpGet("{dateString}")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ICollection<CalendarDayMetric>))]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetAsync([FromRoute] string dateString)
     {
-        Console.WriteLine(dateString);
         var date = DateTimeOffset.Parse(dateString);
-        Console.WriteLine(date);
         var userId = _currentContext.UserId!.Value;
         var list = await _metricService.Get(userId, date);
         return Ok(list);
@@ -69,27 +67,25 @@ public class MetricController : BaseController
     /// Deletes any existing metrics for the day and uploads the new metrics.
     /// </summary>
     /// <param name="metrics"></param>
-    /// <param name="date"></param>
     [HttpPost]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(CalendarDayDto))]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> SaveMetricsAsync([FromBody] List<MetricRegisterMetricDto> metrics, [FromQuery] string date)
+    public async Task<IActionResult> SaveMetricsAsync([FromBody] List<MetricRegisterMetricDto> metrics)
     {
-        var dateTimeOffset = DateTimeOffset.Parse(date);
         var userId = _currentContext.UserId!.Value;
-        var calendarDayDto = await _metricService.SaveMetrics(userId, metrics, dateTimeOffset);
-        return Ok(calendarDayDto);
+        await _metricService.SaveMetrics(userId, metrics);
+        return Ok();
     }
 
     [HttpGet("period")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<DateTimeOffset>))]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetPeriodDays([FromQuery] DateTimeOffset fromDate, [FromQuery]
-                                                               DateTimeOffset toDate)
-        {
-            var userId = _currentContext.UserId!.Value;
-            var periodDays = await _metricService.GetPeriodDays(userId, fromDate, toDate);
-            return Ok(periodDays);
-        }
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<DateTimeOffset>))]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetPeriodDays([FromQuery] DateTimeOffset fromDate,
+        [FromQuery] DateTimeOffset toDate)
+    {
+        var userId = _currentContext.UserId!.Value;
+        var periodDays = await _metricService.GetPeriodDays(userId, fromDate, toDate);
+        return Ok(periodDays);
+    }
 }

@@ -2,11 +2,13 @@
 using System.Data.Common;
 using Infrastructure.Data;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Models.Identity;
 using Npgsql;
 using Respawn;
 using Testcontainers.PostgreSql;
@@ -18,6 +20,7 @@ public class VitalApiFactory : WebApplicationFactory<IApiAssemblyMarker>, IAsync
 {
     private DbConnection _dbConnection = null!;
     private Respawner _respawner = null!;
+    public TestDbInitializer _dbInitializer = null!;
 
     private readonly PostgreSqlContainer _dbContainer =
         new PostgreSqlBuilder()
@@ -76,8 +79,8 @@ public class VitalApiFactory : WebApplicationFactory<IApiAssemblyMarker>, IAsync
         });
         
         // Add TestDbInitializer
-        var testDbInitializer = scope.ServiceProvider.GetRequiredService<TestDbInitializer>();
-        await testDbInitializer.Init();
+        _dbInitializer = scope.ServiceProvider.GetRequiredService<TestDbInitializer>();
+        await _dbInitializer.Init();
     }
 
     public async Task ResetDatabaseAsync()
@@ -88,5 +91,10 @@ public class VitalApiFactory : WebApplicationFactory<IApiAssemblyMarker>, IAsync
     public new async Task DisposeAsync()
     {
         await _dbContainer.StopAsync();
+    }
+    
+    public async Task SeedDatabaseAsync()
+    {
+        await _dbInitializer.Init();
     }
 }
