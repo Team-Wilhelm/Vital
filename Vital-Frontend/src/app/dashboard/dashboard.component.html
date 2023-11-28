@@ -63,11 +63,8 @@ min-h-[calc(100vh-10rem)]
             [hasPlusButton]="true"
             (plusButtonClicked)="displayHasYourPeriodStartedDialog()"
   >
-    <div class="flex h-full justify-between items-center">
-      <app-current-cycle *ngFor="let day of cycleService.predictedPeriod"
-                         [date]="day.toISOString()">
+      <app-current-cycle>
       </app-current-cycle>
-    </div>
   </app-card>
 
     <!-- Medications -->

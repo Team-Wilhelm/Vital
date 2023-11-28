@@ -92,7 +92,7 @@ public class CycleController : BaseController
     /// </summary>
     /// <param name="cycleId">The ID of the predicted cycle.</param>
     [HttpGet("predicted-period")]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<PredictedPeriodDayDto>))]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<DateTimeOffset>))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetPredictedPeriod()
     {
