@@ -6,7 +6,7 @@ import {Router} from "@angular/router";
   template: `
     <div [ngClass]="getClassList()" (click)="onClickCard()">
       <div class="card-body">
-        <div class="flex justify-between w-full">
+        <div *ngIf="cardTitle != '' || !getPlusVisibility()" class="flex justify-between w-full">
           <h2 class="card-title text-2xl lg:text-3xl">{{cardTitle}}</h2>
           <svg class="cursor-pointer" [ngClass]="getPlusVisibility()" (click)="onClickPlusButton()"
                height="32px" id="Layer_1"

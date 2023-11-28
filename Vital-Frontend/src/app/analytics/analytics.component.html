@@ -1,53 +1,70 @@
-<div class="grid grid-cols-6 gap-4 grid-rows-8">
+<div class="grid grid-cols-6 gap-4">
 
-  <!-- Current cycle length -->
-  <app-card cardTitle="Current cycle length"
-            cardBody="Your current cycle is 14 days long."
-            class="col-span-2 row-span-2"
-  />
+  <div class="col-span-4 grid grid-cols-3 gap-4">
+    <!-- Current cycle length -->
+    <div class="stats shadow col-span-1 row-span-2">
 
-  <!-- Current/last period length -->
-  <app-card cardTitle="Current/last period length"
-            cardBody="Your last period lasted 5 days."
-            class="col-span-2 row-span-2"
-  />
+      <div class="stat">
+        <div class="stat-figure text-accent">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="inline-block w-8 h-8 stroke-current">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
+        </div>
+        <div class="stat-title">Current cycle length</div>
+        <div class="stat-value text-accent">28 days</div>
+        <div class="stat-desc">3 days more than last month</div>
+      </div>
+
+    </div>
+
+    <!-- Current/last period length -->
+    <div class="stats shadow col-span-1 row-span-2 bg-accent">
+
+      <div class="stat">
+        <div class="stat-figure">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="inline-block w-8 h-8 stroke-current">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
+          </svg>
+        </div>
+        <div class="stat-title">Period length</div>
+        <div class="stat-value">7 days</div>
+        <div class="stat-desc">1 days more than last month</div>
+      </div>
+
+    </div>
+
+    <!-- Current/last period length -->
+    <div class="stats shadow col-span-1 row-span-2">
+
+      <div class="stat">
+        <div class="stat-figure text-accent">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="inline-block w-8 h-8 stroke-current">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z" />
+          </svg>
+        </div>
+        <div class="stat-title">Current length</div>
+        <div class="stat-value text-accent">7 days</div>
+        <div class="stat-desc">1 days more than last month</div>
+      </div>
+
+    </div>
+
+    <!-- Average cycle length -->
+    <div class="stats shadow col-span-3">
+
+      <div class="stat">
+        <div class="stat-title">Average cycle length</div>
+        <div style="display: block; width: 100%;" class="h-full">
+          <canvas id="myChart" class="h-full w-fit"></canvas>
+        </div>
+        <div class="stat-desc">Graph of cycle lengths per your usage</div>
+      </div>
+
+    </div>
+  </div>
 
   <!-- Calendar -->
-  <div class="card bg-card text-primary-content col-span-2 row-span-4">
-    <div class="card-body">
-      <h2 class="card-title">I am a calendar</h2>
-      <p>Click here for a detailed overview of your cycle.</p>
-    </div>
-  </div>
-
-  <!-- Average cycle length -->
-  <app-card cardTitle="Average cycle length"
-            cardBody="Your average cycle length is 28 days."
-            class="col-span-2 row-span-2"
-  />
-
-  <!-- Average cycle length -->
-  <app-card cardTitle="Average period length"
-            cardBody="Your average period length is 5 days."
-            class="col-span-2 row-span-2"
-  />
-
-  <!-- Overview of the last three cycles -->
-  <div class="card bg-card text-primary-content col-span-2 row-span-4">
-    <div class="card-body">
-      <h2 class="card-title"> Cycle overview </h2>
-      <p>Cycle 1</p>
-      <p>Cycle 2</p>
-      <p>Cycle 3</p>
-    </div>
-  </div>
-
-  <!-- Metrics -->
-  <div class="card bg-card text-primary-content col-span-4 row-span-4">
-    <div class="card-body">
-      <h2 class="card-title">Metrics</h2>
-      <p>I will hold a list</p>
-    </div>
-  </div>
+  <app-card class="text-primary-content lg:col-span-2 order-2 lg:order-none analytics">
+    <calendar></calendar>
+  </app-card>
 
 </div>
