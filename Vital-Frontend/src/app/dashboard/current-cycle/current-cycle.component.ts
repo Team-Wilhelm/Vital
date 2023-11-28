@@ -59,15 +59,22 @@ export class CurrentCycleComponent implements OnInit, AfterViewInit {
     for (let i = -interval; i <= interval; i++) {
       const date = new Date(this.today);
       date.setDate(this.today.getDate() + i);
-      this.dateMap.set(date, 'bg-amber-100');
-      for (let p of this.periodDays)
-        if (this.isSameDate(p, date)) {
-          this.dateMap.set(date, 'bg-red-400');
+
+      let bgColor = 'bg-amber-100';
+
+      // Check for predicted period first
+      const predictedPeriod = this.predictedPeriodDays.find(pp => this.isSameDate(pp, date));
+      if (predictedPeriod) {
+        bgColor = 'bg-pink-200';
+      } else {
+        // Check for actual period
+        const actualPeriod = this.periodDays.find(p => this.isSameDate(p, date));
+        if (actualPeriod) {
+          bgColor = 'bg-red-400';
         }
-      for (let pp of this.predictedPeriodDays)
-        if (this.isSameDate(pp, date)) {
-          this.dateMap.set(date, 'bg-pink-200');
-        }
+      }
+
+      this.dateMap.set(date, bgColor);
     }
   }
 
