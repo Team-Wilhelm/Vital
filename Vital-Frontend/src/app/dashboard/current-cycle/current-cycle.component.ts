@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, Input, OnInit} from '@angular/core';
+import { Component, Input, OnInit} from '@angular/core';
 import {DatePipe} from "@angular/common";
 import {CycleService} from "../../services/cycle.service";
 import {MetricService} from "../../services/metric.service";
@@ -18,12 +18,11 @@ import {MetricService} from "../../services/metric.service";
   `
 })
 
-export class CurrentCycleComponent implements OnInit, AfterViewInit {
+export class CurrentCycleComponent implements OnInit {
   title = 'current-cycle';
   @Input() date: string = '';
   today: Date = new Date();
   dateMap: Map<Date, string> = new Map();
-  dateMapKeys: Date[] = [];
   periodDays: Date[] = [];
   predictedPeriodDays: Date[] = [];
 
@@ -46,12 +45,6 @@ export class CurrentCycleComponent implements OnInit, AfterViewInit {
     this.initializeDateMap();
     console.log(this.dateMap);
   }
-
-  ngAfterViewInit() {
-    this.dateMapKeys = Array.from(this.dateMap.keys());
-    console.log('keys: ' + this.dateMapKeys);
-  }
-
 
   //TODO make this shit work!
   initializeDateMap() {
