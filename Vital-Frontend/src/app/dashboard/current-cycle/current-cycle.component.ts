@@ -1,7 +1,5 @@
-import {AfterViewInit, Component, Input, OnDestroy, OnInit} from '@angular/core';
-import {DataService} from "../../services/data.service";
+import {AfterViewInit, Component, Input, OnInit} from '@angular/core';
 import {DatePipe} from "@angular/common";
-import {Subscription} from "rxjs";
 import {CycleService} from "../../services/cycle.service";
 import {MetricService} from "../../services/metric.service";
 
@@ -9,7 +7,7 @@ import {MetricService} from "../../services/metric.service";
   selector: 'app-current-cycle',
   template: `
     <div class="flex h-full justify-between items-center">
-      <div *ngFor="let day of dateMap.keys()" class="flex justify-center items-center text-center rounded-full bg-pink-300 aspect-square p-2
+      <div *ngFor="let day of dateMap.keys()" class="flex justify-center items-center text-center rounded-full {{getBackgroundColor(day)}} aspect-square p-2
     w-10
     sm:w-16
     2xl:w-24">
@@ -61,14 +59,14 @@ export class CurrentCycleComponent implements OnInit, AfterViewInit {
     for (let i = -interval; i <= interval; i++) {
       const date = new Date(this.today);
       date.setDate(this.today.getDate() + i);
-      this.dateMap.set(date, 'not-period');
+      this.dateMap.set(date, 'bg-amber-100');
       for (let p of this.periodDays)
         if (this.isSameDate(p, date)) {
-          this.dateMap.set(date, 'period');
+          this.dateMap.set(date, 'bg-red-400');
         }
       for (let pp of this.predictedPeriodDays)
         if (this.isSameDate(pp, date)) {
-          this.dateMap.set(date, 'predicted-period');
+          this.dateMap.set(date, 'bg-pink-200');
         }
     }
   }
@@ -77,6 +75,10 @@ export class CurrentCycleComponent implements OnInit, AfterViewInit {
     return date1.getFullYear() === date2.getFullYear() &&
       date1.getMonth() === date2.getMonth() &&
       date1.getDate() === date2.getDate();
+  }
+
+  getBackgroundColor(date: Date): string {
+    return this.dateMap.get(date) || ''; // This assumes the value in dateMap is a class name
   }
 
   dateString(date: Date): string {
