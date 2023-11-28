@@ -6,7 +6,7 @@ import {AppComponent} from './app.component';
 import {DashboardComponent} from './dashboard/dashboard.component';
 import { FullCalendarModule } from '@fullcalendar/angular';
 
-import {NgOptimizedImage} from "@angular/common";
+import {DatePipe, NgOptimizedImage} from "@angular/common";
 import {AnalyticsComponent} from './analytics/analytics.component';
 import {CardComponent} from "./card/card.component";
 import {CurrentCycleComponent} from "./dashboard/current-cycle/current-cycle.component";
@@ -61,7 +61,8 @@ import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
       multi: true
     },
     {provide: JWT_OPTIONS, useValue: JWT_OPTIONS},
-    JwtHelperService
+    JwtHelperService,
+    DatePipe,
   ],
   bootstrap: [AppComponent]
 })

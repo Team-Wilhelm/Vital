@@ -1,6 +1,6 @@
 import {HttpClient} from '@angular/common/http';
 import {Injectable, OnDestroy, OnInit} from "@angular/core";
-import {firstValueFrom, Subscription} from "rxjs";
+import {firstValueFrom, map, Subscription} from "rxjs";
 import {environment} from "../../../environments/environment";
 import {
   MetricRegisterMetricDto,
@@ -168,9 +168,10 @@ export class MetricService implements OnDestroy {
       });
   }
 
-  async getPeriodDays(previousMonthFirstDay: Date, thisMonthLastDay: Date) {
-    const call = this.http.get<Date[]>(`${this.apiUrl}/period?fromDate=${previousMonthFirstDay.toISOString()}&toDate=${thisMonthLastDay.toISOString()}`);
-    return await firstValueFrom(call);
+  async getPeriodDays(previousMonthFirstDay: Date, nextMonthLastDay: Date) {
+    const call = this.http.get<Date[]>(`${this.apiUrl}/period?fromDate=${previousMonthFirstDay.toISOString()}&toDate=${nextMonthLastDay.toISOString()}`);
+    const result = await firstValueFrom(call);
+    return result.map(date => new Date(date));
   }
 
   async deleteMetric(calendarDayMetricId: string) {
