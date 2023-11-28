@@ -65,11 +65,13 @@ public class CalendarDayRepository : ICalendarDayRepository
             throw new Exception("User had no cycle yet");
         }
 
+        // Set time to 12:00:00
+        dateTime = new DateTimeOffset(dateTime.Year, dateTime.Month, dateTime.Day, 12, 0, 0, dateTime.Offset);
         var cycleDay = new CycleDay()
         {
             CycleId = lastCycle.Id,
             UserId = userId,
-            Date = dateTime
+            Date = dateTime,
         };
 
         // TODO: please rework me into Dapper

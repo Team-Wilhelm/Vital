@@ -102,7 +102,7 @@ public class MetricService : IMetricService
         foreach (var date in dayList)
         {
             Console.WriteLine(date);
-            var calendarDay = await _calendarDayRepository.GetByDate(userId, DateTimeOffset.Parse(date.ToString(CultureInfo.InvariantCulture)));
+            var calendarDay = await _calendarDayRepository.GetByDate(userId, date);
             if (calendarDay is null)
             {
                 calendarDay = await _calendarDayRepository.CreteCycleDay(userId, date);

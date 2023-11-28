@@ -44,7 +44,6 @@ public class MetricController : BaseController
         }
 
         var list = await _metricService.GetMetricsForCalendarDays(_currentContext.UserId!.Value, fromDate, toDate);
-
         return Ok(list);
     }
 
