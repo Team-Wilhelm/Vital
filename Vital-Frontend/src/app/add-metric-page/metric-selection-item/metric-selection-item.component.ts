@@ -13,7 +13,6 @@ import {FormControl, FormGroup, Validators} from "@angular/forms";
           <span class="label-text text-xl mr-10"> {{metric?.name}}</span>
         </label>
         <input type="checkbox" id="had-flow" class="checkbox checkbox-accent" #checkbox
-               [defaultChecked]="metric && metricService.isMetricSelected(metric.id)"
                (click)="metric && metricService.addOrRemoveMetric(metric)"/>
       </div>
 
@@ -57,13 +56,11 @@ export class MetricSelectionItemComponent implements OnInit {
 
   async ngOnInit() {
     await this.metricService.getUsersMetric(this.dataService.clickedDate!);
-    console.log(this.metricService.metricSelectionMap);
-    const loggedTime = this.metric && this.metricService.metricSelectionMap.get(this.metric.id)?.createdAt;
     const currentTime = this.dataService.getCurrentLocalTime();
 
     this.timeFormGroup.setValue({
-      hour: loggedTime ? loggedTime.getHours() : currentTime.getHours(),
-      minute: loggedTime ? loggedTime.getMinutes() : currentTime.getMinutes()
+      hour: currentTime.getHours(),
+      minute: currentTime.getMinutes()
     });
 
     this.timeFormGroup.valueChanges.subscribe(() => {
@@ -77,9 +74,5 @@ export class MetricSelectionItemComponent implements OnInit {
       metricTime.setHours(this.timeFormGroup.value.hour || 0, this.timeFormGroup.value.minute || 0, 0, 0);
       this.metricService.updateMetricTime(this.metric.id, metricTime);
     }
-  }
-
-  formatTime(time: number) {
-    return Number(time.toString().padStart(2, '0'));
   }
 }

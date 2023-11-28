@@ -69,6 +69,8 @@ export class MetricListItemComponent implements OnInit, OnDestroy {
         this.deleteButtonDisabled = true;
       }
     });
+
+    console.log(metricService.metricSelectionMap);
   }
 
   ngOnInit() {
