@@ -7,14 +7,15 @@ import {MetricService} from "../../services/metric.service";
   selector: 'app-current-cycle',
   template: `
     <div class="flex h-full justify-between items-center">
-      <div *ngFor="let day of dateMapKeys" class="flex flex-col items-center text-center mx-2"
+      <div *ngFor="let day of dateKeys" class="flex flex-col items-center text-center mx-2"
            [ngStyle]="{
          'opacity': getOpacity(day),
          'font-size': 'inherit',
          'width': getSize(day) + 'px',
          'height': getSize(day) + 'px'
        }">
-        <div class="rounded-md overflow-hidden {{getBackgroundColor(day).bgColour}} border-2 {{getBackgroundColor(day).borderColour}} p-2 w-12 h-20">
+        <div
+          class="rounded-md overflow-hidden {{getBackgroundColor(day).bgColour}} border-2 {{getBackgroundColor(day).borderColour}} p-2 w-12 h-20">
         </div>
         <p class="text-sm sm:text-base md:text-lg lg:text-lg xs:text-xs mt-2">{{ dateString(day) }}</p>
       </div>
@@ -27,7 +28,7 @@ export class CurrentCycleComponent implements OnInit {
   @Input() date: string = '';
   today: Date = new Date();
   dateMap: Map<Date, {bgColour: string, borderColour: string, opacity: number, size: number}> = new Map();
-  dateMapKeys: Date[] = [];
+  dateKeys: Date[] = [];
   periodDays: Date[] = [];
   predictedPeriodDays: Date[] = [];
 
@@ -83,7 +84,7 @@ export class CurrentCycleComponent implements OnInit {
 
       this.dateMap.set(date, { bgColour, borderColour, opacity, size });
     }
-    this.dateMapKeys = Array.from(this.dateMap.keys());
+    this.dateKeys = Array.from(this.dateMap.keys());
   }
 
 
