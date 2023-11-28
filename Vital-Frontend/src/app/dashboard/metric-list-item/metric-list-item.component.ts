@@ -16,7 +16,6 @@ import {Component, Input, OnInit} from '@angular/core';
   `
 })
 
-//TODO
 export class MetricListItemComponent implements OnInit {
   title = 'metric-list-item';
   @Input() metricName: string = '';

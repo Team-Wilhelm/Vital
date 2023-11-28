@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System.Globalization;
+using AutoMapper;
 using Infrastructure.Adapters;
 using Infrastructure.Repository.Interface;
 using Models;
@@ -93,18 +94,22 @@ public class MetricService : IMetricService
         return list;
     }
 
-    public async Task<CalendarDayDto> SaveMetrics(Guid userId, List<MetricRegisterMetricDto> metrics,
-        DateTimeOffset dateTimeOffset)
+    public async Task SaveMetrics(Guid userId, List<MetricRegisterMetricDto> metrics)
     {
-        var calendarDay = await _calendarDayRepository.GetByDate(userId, dateTimeOffset);
-        if (calendarDay is null)
+        metrics.ForEach(m => Console.WriteLine(m.CreatedAt));
+        
+        var dayList = metrics.Select(m => m.CreatedAt).Distinct().ToList(); 
+        foreach (var date in dayList)
         {
-            calendarDay = await _calendarDayRepository.CreteCycleDay(userId, dateTimeOffset);
+            Console.WriteLine(date);
+            var calendarDay = await _calendarDayRepository.GetByDate(userId, date);
+            if (calendarDay is null)
+            {
+                calendarDay = await _calendarDayRepository.CreteCycleDay(userId, date);
+            }
+            
+            await _metricRepository.SaveMetrics(calendarDay.Id, metrics);
         }
-
-        await _metricRepository.SaveMetrics(calendarDay.Id, metrics);
-        calendarDay = await _calendarDayRepository.GetById(calendarDay.Id); //TODO: Include a list of selected metrics
-        return _mapper.Map<CalendarDayDto>(calendarDay);
     }
     
     private CalendarDay? BuildCalendarDay(CalendarDayAdapter calendarDayAdapter)

@@ -55,9 +55,9 @@ public class CalendarDayRepository : ICalendarDayRepository
         return state is null ? null : BuildCalendarDay(state!, sql, new { calendarDayId });
     }
 
-    public async Task<CalendarDay> CreteCycleDay(Guid UserId, DateTimeOffset dateTime)
+    public async Task<CalendarDay> CreteCycleDay(Guid userId, DateTimeOffset dateTime)
     {
-        var lastCycle = _applicationDbContext.Cycles.Where(c => c.UserId == UserId)
+        var lastCycle = _applicationDbContext.Cycles.Where(c => c.UserId == userId)
             .OrderByDescending(c => c.StartDate)
             .FirstOrDefault();
         if (lastCycle is null)
@@ -65,11 +65,13 @@ public class CalendarDayRepository : ICalendarDayRepository
             throw new Exception("User had no cycle yet");
         }
 
+        // Set time to 12:00:00
+        dateTime = new DateTimeOffset(dateTime.Year, dateTime.Month, dateTime.Day, 12, 0, 0, dateTime.Offset);
         var cycleDay = new CycleDay()
         {
             CycleId = lastCycle.Id,
-            UserId = UserId,
-            Date = dateTime
+            UserId = userId,
+            Date = dateTime,
         };
 
         // TODO: please rework me into Dapper

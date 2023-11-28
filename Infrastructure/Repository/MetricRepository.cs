@@ -86,8 +86,11 @@ public class MetricRepository : IMetricRepository
     
     public async Task<ICollection<CalendarDayMetric>> Get(Guid userId, DateTimeOffset date)
     {
-        date = date.UtcDateTime;
-        var calendarDay = await _calendarDayRepository.GetByDate(userId, date);
+        // Because the data in the database is stored in UTC, but we want to retrieve it in the user's timezone,
+        // we need to convert the date to UTC and add/subtract the offset + 24 hours to retrieve the correct data for the user's timezone.
+        // For example, if the user is trying to retrieve the data for 2023-11-27+01:00, we need to get anything between 2023-11-26T23:00:00Z and 2023-11-27T22:59:59Z
+        var start = date.UtcDateTime;
+        var end = date.UtcDateTime.AddDays(1); 
         var sql = $@"SELECT
                 CDM.*,
                 ""Metrics"".*,
@@ -95,13 +98,10 @@ public class MetricRepository : IMetricRepository
                 FROM ""CalendarDayMetric"" CDM
                     LEFT JOIN ""MetricValue"" MV ON CDM.""MetricValueId"" = MV.""Id""
                     LEFT JOIN ""Metrics"" on ""Metrics"".""Id"" = CDM.""MetricsId""    
-                WHERE CDM.""CalendarDayId""=@calendarDayId";
-        if (calendarDay is null)
-        {
-            return new List<CalendarDayMetric>();
-        }
+                WHERE ""CreatedAt"" >= @start AND ""CreatedAt"" < @end AND ""CalendarDayId"" IN (
+                    SELECT ""Id"" FROM ""CalendarDay"" WHERE ""UserId"" = @userId);";
 
-        // The result: Id, CalendarDayId, MetricsId, MetricValueId, Id, Name, Id, Name, MetricsId
+        // The result: Id, CalendarDayId, CreatedAt, MetricsId, MetricValueId, Id, Name, Id, Name, MetricsId
         var metrics = await _db.QueryAsync<CalendarDayMetric, Metrics, MetricValue, CalendarDayMetric>(
             sql,
             (calendarDayMetrics, metrics, metricValue) =>
@@ -111,7 +111,7 @@ public class MetricRepository : IMetricRepository
                 calendarDayMetrics.MetricValue = metricValue;
                 return calendarDayMetrics;
             }, splitOn: "Id, Id",
-            param: new { calendarDayId = calendarDay.Id });
+            param: new { userId, start, end });
         return metrics.ToList();
     }
 
