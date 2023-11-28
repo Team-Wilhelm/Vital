@@ -7,12 +7,16 @@ import {MetricService} from "../../services/metric.service";
   selector: 'app-current-cycle',
   template: `
     <div class="flex h-full justify-between items-center">
-      <div *ngFor="let day of dateMap.keys()"
-           class="flex justify-center items-center text-center rounded-full {{getBackgroundColor(day)}} aspect-square p-2
-    w-10
-    sm:w-16
-    2xl:w-24">
-        <p class="text-sm sm:text-base md:text-lg lg:text-lg 2xl:text-2xl">{{dateString(day)}}</p>
+      <div *ngFor="let day of dateMapKeys" class="flex flex-col items-center text-center mx-2"
+           [ngStyle]="{
+         'opacity': getOpacity(day),
+         'font-size': 'inherit',
+         'width': getSize(day) + 'px',
+         'height': getSize(day) + 'px'
+       }">
+        <div class="rounded-md overflow-hidden {{getBackgroundColor(day).bgColour}} border-2 {{getBackgroundColor(day).borderColour}} p-2 w-12 h-20">
+        </div>
+        <p class="text-sm sm:text-base md:text-lg lg:text-lg xs:text-xs mt-2">{{ dateString(day) }}</p>
       </div>
     </div>
   `
@@ -22,7 +26,8 @@ export class CurrentCycleComponent implements OnInit {
   title = 'current-cycle';
   @Input() date: string = '';
   today: Date = new Date();
-  dateMap: Map<Date, string> = new Map();
+  dateMap: Map<Date, {bgColour: string, borderColour: string, opacity: number, size: number}> = new Map();
+  dateMapKeys: Date[] = [];
   periodDays: Date[] = [];
   predictedPeriodDays: Date[] = [];
 
@@ -31,22 +36,16 @@ export class CurrentCycleComponent implements OnInit {
   }
 
   async ngOnInit() {
-    const threeDaysAgo = new Date(this.today);
-    threeDaysAgo.setDate(this.today.getDate() - 3);
-    const threeDaysHence = new Date(this.today);
-    threeDaysHence.setDate(this.today.getDate() + 3);
+    const originalToday = new Date(this.today);
+    const threeDaysAgo = new Date(originalToday.setDate(originalToday.getDate() - 3));
+    const threeDaysHence = new Date(originalToday.setDate(originalToday.getDate() + 6));
 
     this.periodDays = await this.metricService.getPeriodDays(threeDaysAgo, threeDaysHence);
-    console.log('period days: ' + this.periodDays);
-
     this.predictedPeriodDays = this.cycleService.predictedPeriod;
-    console.log('predicted days: ' + this.predictedPeriodDays);
 
     this.initializeDateMap();
-    console.log(this.dateMap);
   }
 
-  //TODO make this shit work!
   initializeDateMap() {
     const interval = 3;
 
@@ -54,23 +53,39 @@ export class CurrentCycleComponent implements OnInit {
       const date = new Date(this.today);
       date.setDate(this.today.getDate() + i);
 
-      let bgColor = 'bg-amber-100';
+      const conditionMapping = {
+        isToday: this.isSameDate(date, this.today),
+        isFutureDate: date > this.today,
+        isPredictedPeriod: this.predictedPeriodDays.some(pp => this.isSameDate(pp, date)),
+        isActualPeriod: this.periodDays.some(p => this.isSameDate(p, date)),
+      };
 
-      // Check for predicted period first
-      const predictedPeriod = this.predictedPeriodDays.find(pp => this.isSameDate(pp, date));
-      if (predictedPeriod) {
-        bgColor = 'bg-pink-200';
-      } else {
-        // Check for actual period
-        const actualPeriod = this.periodDays.find(p => this.isSameDate(p, date));
-        if (actualPeriod) {
-          bgColor = 'bg-red-400';
-        }
+      let bgColour = 'bg-non-period-day';
+      let borderColour = 'border-non-period-day-border';
+      let opacity = 0.4;
+      let size = 100;
+
+      if (conditionMapping.isToday) {
+        size = 125;
       }
 
-      this.dateMap.set(date, bgColor);
+      if (!conditionMapping.isFutureDate) {
+        opacity = 40;
+      }
+
+      if (conditionMapping.isPredictedPeriod) {
+        bgColour = 'bg-predicted-period-day';
+        borderColour = 'border-predicted-period-day-border';
+      } else if (conditionMapping.isActualPeriod) {
+        bgColour = 'bg-period-day';
+        borderColour = 'border-period-day-border';
+      }
+
+      this.dateMap.set(date, { bgColour, borderColour, opacity, size });
     }
+    this.dateMapKeys = Array.from(this.dateMap.keys());
   }
+
 
   private isSameDate(date1: Date, date2: Date): boolean {
     return date1.getFullYear() === date2.getFullYear() &&
@@ -78,8 +93,22 @@ export class CurrentCycleComponent implements OnInit {
       date1.getDate() === date2.getDate();
   }
 
-  getBackgroundColor(date: Date): string {
-    return this.dateMap.get(date) || '';
+  getBackgroundColor(date: Date): { bgColour: string, borderColour: string } {
+    const colors = this.dateMap.get(date);
+
+    if (colors) {
+      return colors;
+    } else {
+      return { bgColour: '', borderColour: '' };
+    }
+  }
+
+  getOpacity(date: Date): number {
+    return this.dateMap.get(date)?.opacity || 100;
+  }
+
+  getSize(date: Date): number {
+    return this.dateMap.get(date)?.size || 100;
   }
 
   dateString(date: Date): string {
