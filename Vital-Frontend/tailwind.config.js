@@ -15,8 +15,14 @@ module.exports = {
         'green-light-accent': '#B8DACD',
         'card': '#FAF7F5',
         'card-hover': '#ffffff',
-        'button-selected': '#EEAF3A',
-        'button-unselected': '#B8DACD',
+
+        /*Week and calendar days*/
+        'period-day':'#CB9292',
+        'predicted-period-day':'#DBC2C6',
+        'non-period-day':'#F9E8C8',
+        'period-day-border':'#BA6E6E',
+        'predicted-period-day-border':'#BA6E6E',
+        'non-period-day-border':'#EEAF3A',
       },
     },
     container: {

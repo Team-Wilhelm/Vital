@@ -32,8 +32,6 @@ export class CalendarComponent implements AfterViewInit {
 
     this.calendarApi?.setOption('dateClick', this.handleDateClick.bind(this));
     this.calendarApi?.setOption('datesSet', this.handleDatesSet.bind(this));
-
-    //TODO clicking TODAY should reset clickedDate to today
   }
 
   calendarOptions: CalendarOptions = {
@@ -55,11 +53,11 @@ export class CalendarComponent implements AfterViewInit {
 
     this.dataService.setClickedDate(this.clickedDate);
     if (this.selectedDateElement) {
-      this.selectedDateElement.classList.remove('bg-green-accent');
+      this.selectedDateElement.classList.remove('bg-non-period-day-border');
     }
     // Add the custom class to the clicked date cell
     this.selectedDateElement = arg.dayEl;
-    this.selectedDateElement.classList.add('bg-green-accent');
+    this.selectedDateElement.classList.add('bg-non-period-day-border');
   }
 
   async handleDatesSet(arg: any) {
@@ -99,7 +97,8 @@ export class CalendarComponent implements AfterViewInit {
     const newEvent = {
       start: date,
       allDay: true,
-      color: 'red',
+      backgroundColor: '#CB9292',
+      borderColor:'#BA6E6E'
       //url: maybe route to add metric page for that day?
     };
     this.calendarApi?.addEvent(newEvent);
@@ -110,7 +109,8 @@ export class CalendarComponent implements AfterViewInit {
     const newEvent = {
       start: date,
       allDay: true,
-      color: 'pink',
+      backgroundColor: '#DBC2C6',
+      borderColor: '#BA6E6E'
       //url: maybe route to add metric page for that day?
     };
     this.calendarApi?.addEvent(newEvent);
