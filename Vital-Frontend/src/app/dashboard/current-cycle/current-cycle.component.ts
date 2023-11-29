@@ -12,7 +12,8 @@ import {MetricService} from "../../services/metric.service";
          'opacity': getOpacity(day),
          'font-size': 'inherit',
          'width': getSize(day) + 'px',
-         'height': getSize(day) + 'px'
+         'height': getSize(day) + 'px',
+          'font-weight': getFontWeight(day),
        }">
         <div
           class="rounded-md overflow-hidden {{getBackgroundColor(day).bgColour}} border-2 {{getBackgroundColor(day).borderColour}} p-2 w-12 h-20">
@@ -27,7 +28,7 @@ export class CurrentCycleComponent implements OnInit {
   title = 'current-cycle';
   @Input() date: string = '';
   today: Date = new Date();
-  dateMap: Map<Date, {bgColour: string, borderColour: string, opacity: number, size: number}> = new Map();
+  dateMap: Map<Date, {bgColour: string, borderColour: string, opacity: number, size: number, fontWeight: number, tooltip: string}> = new Map();
   dateKeys: Date[] = [];
   periodDays: Date[] = [];
   predictedPeriodDays: Date[] = [];
@@ -36,6 +37,7 @@ export class CurrentCycleComponent implements OnInit {
 
   }
 
+  //TODO tooltip on hover to show what this business is about
   async ngOnInit() {
     const originalToday = new Date(this.today);
     const threeDaysAgo = new Date(originalToday.setDate(originalToday.getDate() - 3));
@@ -63,26 +65,31 @@ export class CurrentCycleComponent implements OnInit {
 
       let bgColour = 'bg-non-period-day';
       let borderColour = 'border-non-period-day-border';
-      let opacity = 0.4;
+      let opacity = 1;
       let size = 100;
+      let fontWeight = 400;
+      let tooltip = '';
 
       if (conditionMapping.isToday) {
-        size = 125;
+        size = 135;
+        fontWeight = 600;
       }
 
-      if (!conditionMapping.isFutureDate) {
-        opacity = 40;
+      if (conditionMapping.isFutureDate) {
+        opacity = 0.4;
       }
 
       if (conditionMapping.isPredictedPeriod) {
         bgColour = 'bg-predicted-period-day';
+        tooltip = 'Predicted period';
         borderColour = 'border-predicted-period-day-border';
       } else if (conditionMapping.isActualPeriod) {
         bgColour = 'bg-period-day';
         borderColour = 'border-period-day-border';
+        tooltip = 'Period';
       }
 
-      this.dateMap.set(date, { bgColour, borderColour, opacity, size });
+      this.dateMap.set(date, { bgColour, borderColour, opacity, size , fontWeight , tooltip });
     }
     this.dateKeys = Array.from(this.dateMap.keys());
   }
@@ -109,6 +116,14 @@ export class CurrentCycleComponent implements OnInit {
 
   getSize(date: Date): number {
     return this.dateMap.get(date)?.size || 100;
+  }
+
+getFontWeight(date: Date): number {
+    return this.dateMap.get(date)?.fontWeight || 400;
+  }
+
+  getTooltip(day: Date) {
+    return this.dateMap.get(day)?.tooltip || '';
   }
 
   dateString(date: Date): string {
