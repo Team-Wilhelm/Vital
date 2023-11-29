@@ -19,20 +19,24 @@ public class CalendarDayRepository : ICalendarDayRepository
 
     public async Task<CalendarDay?> GetByDate(Guid userId, DateTimeOffset date)
     {
-        var sql = @"SELECT ""State"" FROM ""CalendarDay"" WHERE ""UserId""=@userId AND CAST(""Date"" AS DATE) = CAST(@date AS DATE)";
+        var sql =
+            @"SELECT ""State"" FROM ""CalendarDay"" WHERE ""UserId""=@userId AND CAST(""Date"" AS DATE) = CAST(@date AS DATE)";
         var state = await _db.QuerySingleOrDefaultAsync<string>(sql, new { userId, date });
 
-        sql = @"SELECT * FROM ""CalendarDay"" WHERE ""UserId""=@userId AND CAST(""Date"" AS DATE) = CAST(@date AS DATE)";
+        sql =
+            @"SELECT * FROM ""CalendarDay"" WHERE ""UserId""=@userId AND CAST(""Date"" AS DATE) = CAST(@date AS DATE)";
 
         return state is null ? null : BuildCalendarDay(state, sql, new { userId, date });
     }
-    
+
     public async Task<List<CalendarDay>> GetByDateRange(Guid userId, DateTimeOffset from, DateTimeOffset to)
     {
-        var sql = @"SELECT ""State"" FROM ""CalendarDay"" WHERE ""UserId"" = @userId AND CAST(""Date"" AS DATE) >= CAST(@from AS DATE) AND CAST(""Date"" AS DATE) <= CAST(@to AS DATE)";
+        var sql =
+            @"SELECT ""State"" FROM ""CalendarDay"" WHERE ""UserId"" = @userId AND CAST(""Date"" AS DATE) >= CAST(@from AS DATE) AND CAST(""Date"" AS DATE) <= CAST(@to AS DATE)";
         var states = await _db.QueryAsync<string>(sql, new { userId, from, to });
 
-        sql = @"SELECT * FROM ""CalendarDay"" WHERE ""UserId"" = @userId AND CAST(""Date"" AS DATE) >= CAST(@from AS DATE) AND CAST(""Date"" AS DATE) <= CAST(@to AS DATE)";
+        sql =
+            @"SELECT * FROM ""CalendarDay"" WHERE ""UserId"" = @userId AND CAST(""Date"" AS DATE) >= CAST(@from AS DATE) AND CAST(""Date"" AS DATE) <= CAST(@to AS DATE)";
 
         var parameters = new { userId, from, to };
         var calendarDays = new List<CalendarDay>();
@@ -90,10 +94,24 @@ public class CalendarDayRepository : ICalendarDayRepository
         };
     }
 
-    public async Task<IEnumerable<CycleDay>> GetCycleDaysForSpecifiedPeriodAsync(Guid userId, DateTimeOffset startDate, DateTimeOffset endDate)
-        {
-            var sql = @"SELECT * FROM ""CalendarDay"" WHERE ""Date"" BETWEEN @startDate AND @endDate AND ""UserId""=@userId";
-            var calendarDays = await _db.QueryAsync<CycleDay>(sql, new { startDate, endDate, userId });
-            return calendarDays;
-        }
+    public async Task<IEnumerable<CycleDay>> GetCycleDaysForSpecifiedPeriodAsync(Guid userId, DateTimeOffset startDate,
+        DateTimeOffset endDate)
+    {
+        var sql =
+            @"SELECT * FROM ""CalendarDay"" WHERE ""Date"" BETWEEN @startDate AND @endDate AND ""UserId""=@userId";
+        var calendarDays = await _db.QueryAsync<CycleDay>(sql, new { startDate, endDate, userId });
+        return calendarDays;
+    }
+    
+    public async Task SetIsPeriod(Guid cycleDayId, bool isPeriod)
+    {
+        var sql = @"UPDATE ""CalendarDay"" SET ""IsPeriod"" = @isPeriod WHERE ""Id"" = @calendarDayId";
+        await _db.ExecuteAsync(sql, new { calendarDayId = cycleDayId, isPeriod });
+    }
+    
+    public async Task Delete(Guid calendarDayId)
+    {
+        var sql = @"DELETE FROM ""CalendarDay"" WHERE ""Id"" = @calendarDayId";
+        await _db.ExecuteAsync(sql, new { calendarDayId });
+    }
 }
