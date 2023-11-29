@@ -164,8 +164,12 @@ export class MetricService implements OnDestroy {
 
   async getPeriodDays(previousMonthFirstDay: Date, nextMonthLastDay: Date) {
     const call = this.http.get<Date[]>(`${this.apiUrl}/period?fromDate=${previousMonthFirstDay.toISOString()}&toDate=${nextMonthLastDay.toISOString()}`);
-    const result = await firstValueFrom(call);
-    return result.map(date => new Date(date));
+    let result = await firstValueFrom(call);
+
+    result = result.map(date => new Date(date));
+    result.sort((a, b) => a.getTime() - b.getTime()); // Sort the dates in ascending order
+    this.dataService.setLastLoggedFlowDate(result[result.length - 1]);
+    return result;
   }
 
   async deleteMetric(calendarDayMetricId: string) {

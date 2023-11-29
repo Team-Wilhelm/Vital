@@ -4,7 +4,7 @@
     <!-- Title -->
     <div class="text-2xl font-medium mb-4 flex justify-between">
       <p>Log Metrics</p>
-      <button class="btn btn-primary btn-sm" (click)="metricService.saveMetrics()">Save</button>
+      <button class="btn btn-primary btn-sm" (click)="saveMetrics()">Save</button>
     </div>
 
     <!-- Period -->
@@ -25,8 +25,25 @@
         Other metrics
       </div>
       <div class="collapse-content">
-        <metric-selection-item *ngFor="let metric of metricService.allMetrics" [metric]="metric" />
+        <metric-selection-item *ngFor="let metric of metricService.allMetrics" [metric]="metric"/>
       </div>
     </div>
   </div>
+
+  <!-- Your period has started dialog -->
+  <dialog id="newCycleModal" class="modal" #newCycleModal>
+    <div class="modal-box">
+      <h3 class="font-bold text-lg">Would you like to create a new cycle?</h3>
+      <p class="py-4">If you would like to log this period as a part of your current cycle, select no. </p>
+      <p>Otherwise, we will create a new cycle for you.</p>
+      <div class="modal-action">
+        <form method="dialog" class="flex">
+          <!-- if there is a button in form, it will close the modal -->
+          <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+          <button id="yes-button" class="btn btn-accent mx-2">Yes</button>
+          <button id="no-button" class="btn">Continue current cycle</button>
+        </form>
+      </div>
+    </div>
+  </dialog>
 </div>

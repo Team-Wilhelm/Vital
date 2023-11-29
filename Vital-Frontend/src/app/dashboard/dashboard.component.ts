@@ -17,7 +17,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   title = 'dashboard';
   nextPeriodInDays: number = 0;
-  @ViewChild('hasYourPeriodStartedModal') hasYourPeriodStartedModal!: ElementRef;
   currentCycleDays: CycleDay[] = [];
 
   constructor(public cycleService: CycleService, public metricService: MetricService, public dataService: DataService, private router: Router) {
@@ -51,15 +50,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
     const nextPeriod = this.cycleService.predictedPeriod[nextPeriodIndex];
     const diffTime = Math.abs(nextPeriod.getTime() - today.getTime());
     return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-  }
-
-  public displayHasYourPeriodStartedDialog(): void {
-    this.hasYourPeriodStartedModal.nativeElement.showModal();
-    // Focus on yes button
-    setTimeout(() => {
-      const yesButton = document.getElementById('yes-button');
-      yesButton?.focus();
-    }, 100);
   }
 
   redirectToMetrics() {
