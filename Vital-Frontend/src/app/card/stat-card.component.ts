@@ -2,30 +2,17 @@ import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {Router} from "@angular/router";
 
 @Component({
-  selector: 'app-card',
+  selector: 'stat-card',
   template: `
     <div [ngClass]="getClassList()" (click)="onClickCard()">
       <div class="card-body">
-        <div class="flex">
-          <div *ngIf="cardTitle != '' || !getPlusVisibility()" class="flex justify-between w-full ">
-            <h2 class="card-title text-2xl lg:text-3xl">{{cardTitle}}</h2>
-          </div>
-          <div *ngIf="!getPlusVisibility()" class="card-actions justify-end">
-            <button class="btn btn-square btn-sm">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-              </svg>
-            </button>
-          </div>
-        </div>
-
         <ng-content></ng-content>
       </div>
     </div>
   `
 })
 
-export class CardComponent implements OnInit {
+export class StatCardComponent implements OnInit {
   title = 'card';
   @Input() cardTitle: string = '';
   @Input() isTextContent: boolean = true;

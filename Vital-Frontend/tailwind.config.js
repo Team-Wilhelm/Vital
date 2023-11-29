@@ -4,18 +4,27 @@ module.exports = {
     "./src/**/*.{html,ts}",
   ],
   daisyui: {
-    themes: ["cupcake"],
+    themes: [
+      {
+        pastel: {
+          ...require("daisyui/src/theming/themes")["pastel"],
+          "--rounded-box": "1rem", // border radius rounded-box utility class, used in card and other large boxes
+          "--rounded-btn": "0.5rem", // border radius rounded-btn utility class, used in buttons and similar element
+          "--rounded-badge": "1.9rem", // border radius rounded-badge utility class, used in badges and similar
+          "--animation-btn": "0.25s", // duration of animation when you click on button
+          "--animation-input": "0.2s", // duration of animation for inputs like checkbox, toggle, radio, etc
+          "--btn-focus-scale": "0.95", // scale transform of button when you focus on it
+          "--border-btn": "1px", // border width of buttons
+          "--tab-border": "1px", // border width of tabs
+          "--tab-radius": "0.5rem", // border radius of tabs
+        },
+      },
+    ],
+    prefix: "",
   },
   theme: {
     extend: {
       colors: {
-        'background': '#EFEAE6',
-        'yellow-accent': '#EEAF3A',
-        'green-accent': '#82B09E',
-        'green-light-accent': '#B8DACD',
-        'card': '#FAF7F5',
-        'card-hover': '#ffffff',
-
         /*Week and calendar days*/
         'period-day':'#CB9292',
         'predicted-period-day':'#DBC2C6',
@@ -27,10 +36,10 @@ module.exports = {
     },
     container: {
       center: true,
-    },
+    }
   },
   plugins: [require("daisyui")],
-};
+}
 
 /*
  *  DEFAULT: '1rem',

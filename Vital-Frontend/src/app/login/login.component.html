@@ -8,11 +8,11 @@
               xl:w-[30rem] xl:h-[30rem] xl:rounded-2xl xl:shadow-xl"
     >
         <p class="mb-3">In order to use Vital, please log in or register.</p>
-        <input type="email" placeholder="E-mail address" class="input bg-background" aria-label="Email"
+        <input type="email" placeholder="E-mail address" class="input input-bordered input-primary" aria-label="Email"
                [formControl]="loginForm.controls.email"
                [class.input-error]="loginForm.controls.email.invalid && loginForm.controls.email.touched"
         >
-        <input type="password" placeholder="Password" class="input bg-background mb-1" aria-label="Password"
+        <input type="password" placeholder="Password" class="input input-bordered input-primary mb-1" aria-label="Password"
                [formControl]="loginForm.controls.password">
         <a href="#" class="text-accent self-end mb-1">Forgot password?</a>
         <button class="btn btn-accent" (click)="login()">Login</button>

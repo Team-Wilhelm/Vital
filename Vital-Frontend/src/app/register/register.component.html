@@ -12,13 +12,13 @@
     <!-- E-mail -->
     <p [hidden]="!(registerForm.controls.email.invalid && emailField.matches(':focus'))"
        class="text-error self-center">Please enter a valid e-mail address.</p>
-    <input type="email" placeholder="E-mail address" class="input bg-background" aria-label="Email"
+    <input type="email" placeholder="E-mail address" class="input input-bordered input-primary" aria-label="Email"
            [formControl]="registerForm.controls.email"
            [class.input-error]="registerForm.controls.email.invalid && registerForm.controls.email.touched" #emailField
     >
 
     <!-- Password -->
-    <input type="password" placeholder="Password" class="input bg-background mb-1" aria-label="Password"
+    <input type="password" placeholder="Password" class="input input-bordered input-primary mb-1" aria-label="Password"
            [formControl]="registerForm.controls.password"
            [class.input-error]="registerForm.controls.password.invalid && registerForm.controls.password.touched"
            #passwordField
@@ -49,7 +49,7 @@
     </div>
 
     <!-- Repeat password -->
-    <input type="password" placeholder="Repeat password" class="input bg-background mb-1" aria-label="Repeat password"
+    <input type="password" placeholder="Repeat password" class="input input-bordered input-primary mb-1" aria-label="Repeat password"
            [formControl]="registerForm.controls.repeatPassword"
            [class.input-error]="registerForm.controls.repeatPassword.invalid && registerForm.controls.repeatPassword.touched"
     >

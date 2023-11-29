@@ -24,17 +24,13 @@ export class MedicationListItemComponent implements OnInit {
   @Input() medicationDosage: string = '';
   @Input() listIndex: number = 1;
 
-  classString: string = "flex justify-between items-center rounded-xl p-5 my-2";
+  classString: string = "flex justify-between items-center rounded-xl p-5 my-3 shadow";
 
   constructor() {
 
   }
 
   ngOnInit() {
-    if (this.listIndex % 2 == 0) {
-      this.classString+= " bg-green-accent"
-    } else {
-      this.classString+= " bg-green-light-accent"
-    }
+    this.classString+= " bg-secondary"
   }
 }

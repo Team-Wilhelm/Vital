@@ -24,6 +24,7 @@ import { AddMetricPageComponent } from './add-metric-page/add-metric-page.compon
 import {FormsModule} from "@angular/forms";
 import {MetricListItemComponent} from "./dashboard/metric-list-item/metric-list-item.component";
 import {MetricSelectionItemComponent} from "./add-metric-page/metric-selection-item/metric-selection-item.component";
+import {StatCardComponent} from "./card/stat-card.component";
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 
 @NgModule({
@@ -32,6 +33,7 @@ import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
     DashboardComponent,
     AnalyticsComponent,
     CardComponent,
+    StatCardComponent,
     CurrentCycleComponent,
     MedicationListItemComponent,
     CalendarComponent,
