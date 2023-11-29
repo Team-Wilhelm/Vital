@@ -56,6 +56,10 @@ public class CycleService : ICycleService
     /// <returns></returns>
     public async Task<Cycle> Create()
     {
+        if (_currentContext.UserId == null)
+        {
+            throw new NotFoundException("No user found.");
+        }
         var cycle = new Cycle
         {
             StartDate = DateTimeOffset.Now,
@@ -130,6 +134,12 @@ public class CycleService : ICycleService
         return predictedPeriodDays;
     }
 
+    /// <summary>
+    /// Get current cycle for the current user.
+    /// </summary>
+    /// <param name="userId"></param>
+    /// <returns></returns>
+    /// <exception cref="NotFoundException"></exception>
     public async Task<Cycle?> GetCurrentCycle(Guid userId)
     {
         var cycle = await _cycleRepository.GetCurrentCycle(userId);
