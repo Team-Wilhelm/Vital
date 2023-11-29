@@ -10,4 +10,6 @@ public interface ICalendarDayRepository
     Task<CalendarDay?> GetById(Guid calendarDayId);
     CalendarDay? BuildCalendarDay(string state, string sql, object parameters);
     Task<IEnumerable<CycleDay>> GetCycleDaysForSpecifiedPeriodAsync(Guid userId, DateTimeOffset startDate, DateTimeOffset endDate);
+    Task SetIsPeriod(Guid cycleDayId, bool isPeriod);
+    Task Delete(Guid calendarDayId);
 }

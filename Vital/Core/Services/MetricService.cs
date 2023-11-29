@@ -61,11 +61,10 @@ public class MetricService : IMetricService
                 Name = calendarDayAdapter.MetricName,
                 Values = new List<MetricValue>()
             };
-            
-            MetricValue metricValue;
+
             if (calendarDayAdapter.MetricValueId is not null)
             {
-                metricValue= new MetricValue()
+                var metricValue = new MetricValue()
                 {
                     Id = calendarDayAdapter.MetricValueId!.Value,
                     Name = calendarDayAdapter.MetricValueName,
@@ -96,19 +95,52 @@ public class MetricService : IMetricService
 
     public async Task SaveMetrics(Guid userId, List<MetricRegisterMetricDto> metrics)
     {
-        metrics.ForEach(m => Console.WriteLine(m.CreatedAt));
-        
-        var dayList = metrics.Select(m => m.CreatedAt).Distinct().ToList(); 
+        var dayList = metrics.Select(m => m.CreatedAt).Distinct().ToList();
         foreach (var date in dayList)
         {
             var calendarDay = await _calendarDayRepository.GetByDate(userId, date) ?? await _calendarDayRepository.CreteCycleDay(userId, date);
+            
+            // Check one of the metrics we're saving is a flow metric and if so, update isPeriod on the calendar day
+            var metricNames = await _metricRepository.GetMetricNamesByIds(metrics.Select(m => m.MetricsId).ToList()); // Get the metric names for the metrics we're saving
+            
+            // Check if the metric names contain "Flow" and if so, update the calendar day to be a period day
+            if (metricNames.Values.Any(m => m.Contains("Flow")))
+            {
+                if (calendarDay is not CycleDay day)
+                {
+                    throw new BadRequestException("Cannot log a flow metric on a non-cycle day.");
+                }
+
+                if (!day.IsPeriod)
+                {
+                    day.IsPeriod = true;
+                    await _calendarDayRepository.SetIsPeriod(calendarDay.Id, true);
+                }
+            }
             await _metricRepository.SaveMetrics(calendarDay.Id, metrics.Where(m => m.CreatedAt == date).ToList());
         }
     }
 
     public async Task DeleteMetricEntry(Guid calendarDayMetricId)
     {
+        // Keep a reference to the calendar day id before deleting the metric entry
+        var calendarDayId = await _metricRepository.GetCalendarDayIdByCalendarDayMetricId(calendarDayMetricId);
+        
         await _metricRepository.DeleteMetricEntry(calendarDayMetricId);
+
+        // Check if there are any more metrics for the day, if not, delete the day
+        var metrics = await _metricRepository.GetMetricsForCalendarDayById(calendarDayId);
+        if (metrics.Count == 0)
+        {
+            await _calendarDayRepository.Delete(calendarDayId);
+        }
+        
+        // Check if there is any 'Flow' metric left for the day, if not, set isPeriod to false
+        var flowMetric = metrics.FirstOrDefault(m => m.Name.Contains("Flow"));
+        if (flowMetric is null)
+        {
+            await _calendarDayRepository.SetIsPeriod(calendarDayId, false);
+        }
     }
     
     private CalendarDay? BuildCalendarDay(CalendarDayAdapter calendarDayAdapter)
