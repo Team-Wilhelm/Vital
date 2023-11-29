@@ -12,19 +12,21 @@ import {CardComponent} from "./card/card.component";
 import {CurrentCycleComponent} from "./dashboard/current-cycle/current-cycle.component";
 import {MedicationListItemComponent} from "./dashboard/medication-list-item/medication-list-item.component";
 import {HTTP_INTERCEPTORS, HttpClientModule} from "@angular/common/http";
-import {LoginComponent} from "./login/login.component";
 import {AuthHttpInterceptor} from "./interceptors/auth-http-interceptor";
 import {TokenService} from "./services/token.service";
 import {CycleService} from "./services/cycle.service";
 import {JWT_OPTIONS, JwtHelperService} from "@auth0/angular-jwt";
 import {ReactiveFormsModule} from "@angular/forms";
-import {RegisterComponent} from "./register/register.component";
+import {AuthComponent} from "./auth/auth.component";
 import { CalendarComponent } from './calendar/calendar.component';
 import { AddMetricPageComponent } from './add-metric-page/add-metric-page.component';
 import {FormsModule} from "@angular/forms";
 import {MetricListItemComponent} from "./dashboard/metric-list-item/metric-list-item.component";
 import {MetricSelectionItemComponent} from "./add-metric-page/metric-selection-item/metric-selection-item.component";
+import {StatCardComponent} from "./card/stat-card.component";
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
+import {RegisterCardComponent} from "./auth/register/registerCard.component";
+import {LoginCardComponent} from "./auth/login/loginCard.component";
 
 @NgModule({
   declarations: [
@@ -32,12 +34,14 @@ import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
     DashboardComponent,
     AnalyticsComponent,
     CardComponent,
+    StatCardComponent,
     CurrentCycleComponent,
     MedicationListItemComponent,
     CalendarComponent,
     AddMetricPageComponent,
-    LoginComponent,
-    RegisterComponent,
+    AuthComponent,
+    RegisterCardComponent,
+    LoginCardComponent,
     MetricListItemComponent,
     MetricSelectionItemComponent
   ],

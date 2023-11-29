@@ -1,15 +1,17 @@
-import {Component} from "@angular/core";
+import {Component, EventEmitter, Output} from "@angular/core";
 import {AbstractControl, FormBuilder, FormGroup, Validators} from "@angular/forms";
-import {TokenService} from "../services/token.service";
+import {TokenService} from "../../services/token.service";
 import {Router} from "@angular/router";
-import {PasswordValidator} from "../validators/password.validator";
-import {LoginDto, PasswordRules, RegisterDto} from "../interfaces/Utilities";
+import {PasswordValidator} from "../../validators/password.validator";
+import {LoginDto, PasswordRules, RegisterDto} from "../../interfaces/Utilities";
 
 @Component({
-  selector: 'app-register',
-  templateUrl: './register.component.html',
+  selector: 'app-register-card',
+  templateUrl: './registerCard.component.html',
 })
-export class RegisterComponent {
+export class RegisterCardComponent {
+  @Output() switchToLogin = new EventEmitter<void>();
+
   readonly registerForm = new FormGroup({
     email: new FormBuilder().control('', [Validators.required, Validators.email]),
     password: new FormBuilder().control('', [Validators.required, PasswordValidator]),
@@ -53,12 +55,10 @@ export class RegisterComponent {
           specialCondition: /[^a-zA-Z\d]/.test(value)
         };
       });
-
-
     }
   }
-
   redirectToLogin() {
-    this.router.navigate(['/login']);
+    this.switchToLogin.emit();
   }
+
 }

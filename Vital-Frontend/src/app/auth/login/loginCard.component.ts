@@ -1,17 +1,22 @@
-import {Component} from "@angular/core";
-import {TokenService} from "../services/token.service";
+import {Component, EventEmitter, Output} from "@angular/core";
+import {TokenService} from "../../services/token.service";
 import {Router} from "@angular/router";
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
-import {LoginDto} from "../interfaces/Utilities";
-import {environment} from "../../../environments/environment";
+import {LoginDto} from "../../interfaces/Utilities";
+import {environment} from "../../../../environments/environment";
 
 @Component({
-    selector: 'app-login',
-    templateUrl: './login.component.html',
+    selector: 'app-login-card',
+    templateUrl: './loginCard.component.html',
 })
-export class LoginComponent {
+export class LoginCardComponent {
     redirectUrl: string | null = null;
 
+    @Output() switchToRegister = new EventEmitter<void>();
+
+    redirectToRegister() {
+      this.switchToRegister.emit();
+    }
     readonly loginForm = new FormGroup({
         email: new FormBuilder().control('', [Validators.required, Validators.email]),
         password: new FormBuilder().control('', [Validators.required])
@@ -27,11 +32,6 @@ export class LoginComponent {
         if (this.tokenService.isAuthenticated()) {
             await this.router.navigate([this.redirectUrl || '/dashboard']);
         }
-    }
-
-    // This routes to the register page correctly, but interacting with it reloads login page again for some reason
-    async redirectToRegister() {
-        await this.router.navigate(['/register']);
     }
 
     // TODO: Add link to register page
