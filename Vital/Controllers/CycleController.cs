@@ -80,7 +80,7 @@ public class CycleController : BaseController
     [HttpPut("{id:guid}")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(CycleDto))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> Update(Guid id, [FromBody] UpdateCycleDto dto)
+    public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateCycleDto dto)
     {
         var cycle = await _cycleService.Update(id, dto);
 

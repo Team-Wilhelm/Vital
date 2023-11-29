@@ -1,10 +1,8 @@
-﻿using System.Globalization;
-using AutoMapper;
+﻿using AutoMapper;
 using Infrastructure.Adapters;
 using Infrastructure.Repository.Interface;
 using Models;
 using Models.Days;
-using Models.Dto.Cycle;
 using Models.Dto.Metrics;
 using Models.Util;
 using Vital.Core.Services.Interfaces;
@@ -12,12 +10,14 @@ using Vital.Models.Exception;
 
 namespace Vital.Core.Services;
 
+
 public class MetricService : IMetricService
 {
     private readonly IMetricRepository _metricRepository;
     private readonly ICalendarDayRepository _calendarDayRepository;
     private readonly IMapper _mapper;
 
+   
     public MetricService(IMetricRepository metricRepository, ICalendarDayRepository calendarDayRepository, IMapper mapper)
     {
         _metricRepository = metricRepository;
@@ -42,7 +42,7 @@ public class MetricService : IMetricService
             if (calendarDay is null)
             {
                 calendarDay = BuildCalendarDay(calendarDayAdapter);
-                calendarDays.Add(calendarDay);
+                if (calendarDay != null) calendarDays.Add(calendarDay);
             }
             
             // Create the metric and its value and append to the day's list of selected metrics
@@ -59,7 +59,7 @@ public class MetricService : IMetricService
             {
                 Id = calendarDayAdapter.MetricsId,
                 Name = calendarDayAdapter.MetricName,
-                Values = new List<MetricValue>()
+                Values = new List<MetricValue?>()
             };
 
             if (calendarDayAdapter.MetricValueId is not null)
@@ -75,7 +75,7 @@ public class MetricService : IMetricService
             }
             
             calendarDayMetric.Metrics = metric;
-            calendarDay.SelectedMetrics.Add(calendarDayMetric);
+            calendarDay?.SelectedMetrics.Add(calendarDayMetric);
         }
 
         return calendarDays;
@@ -93,9 +93,19 @@ public class MetricService : IMetricService
         return list;
     }
 
+    /// <summary>
+    /// Deletes any existing metrics for the day and uploads the new metrics. Does it???
+    /// </summary>
+    /// <param name="userId"></param>
+    /// <param name="metrics"></param>
+    /// <exception cref="BadRequestException"></exception>
     public async Task SaveMetrics(Guid userId, List<MetricRegisterMetricDto> metrics)
     {
         var dayList = metrics.Select(m => m.CreatedAt).Distinct().ToList();
+        if (dayList.Any(date => date > DateTimeOffset.Now))
+        {
+            throw new BadRequestException("Cannot log metrics for a future date.");
+        }
         foreach (var date in dayList)
         {
             var calendarDay = await _calendarDayRepository.GetByDate(userId, date) ?? await _calendarDayRepository.CreteCycleDay(userId, date);
@@ -121,6 +131,10 @@ public class MetricService : IMetricService
         }
     }
 
+    /// <summary>
+    /// Deletes a metric entry.
+    /// </summary>
+    /// <param name="calendarDayMetricId"></param>
     public async Task DeleteMetricEntry(Guid calendarDayMetricId)
     {
         // Keep a reference to the calendar day id before deleting the metric entry

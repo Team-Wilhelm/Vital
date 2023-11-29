@@ -34,6 +34,13 @@ public class MetricController : BaseController
         return Ok(_mapper.Map<List<MetricsDto>>(list));
     }
 
+    /// <summary>
+    /// Gets the metrics for an interval of days for the current user.
+    /// </summary>
+    /// <param name="fromDate"></param>
+    /// <param name="toDate"></param>
+    /// <returns></returns>
+    /// <exception cref="Exception"></exception>
     [HttpGet("calendar")]
     public async Task<IActionResult> GetMetricsForCalendarDays([FromQuery] DateTimeOffset fromDate,
         [FromQuery] DateTimeOffset toDate)
@@ -78,10 +85,16 @@ public class MetricController : BaseController
         return Ok();
     }
 
+    /// <summary>
+    /// Gets the period days for the current user for a given period.
+    /// </summary>
+    /// <param name="fromDate"></param>
+    /// <param name="toDate"></param>
+    /// <returns></returns>
     [HttpGet("period")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<DateTimeOffset>))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> GetPeriodDays([FromQuery] DateTimeOffset fromDate,
+    public async Task<IActionResult> GetPeriodDaysAsync([FromQuery] DateTimeOffset fromDate,
         [FromQuery] DateTimeOffset toDate)
     {
         var userId = _currentContext.UserId!.Value;
@@ -89,6 +102,11 @@ public class MetricController : BaseController
         return Ok(periodDays);
     }
     
+    /// <summary>
+    /// Deletes a metric entry.
+    /// </summary>
+    /// <param name="calendarDayMetricId"></param>
+    /// <returns></returns>
     [HttpDelete("{calendarDayMetricId:guid}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
