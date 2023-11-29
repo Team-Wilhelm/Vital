@@ -1,0 +1,20 @@
+<app-card cardTitle="Log In" [hoverable]="false"
+          class="flex flex-col justify-around
+          w-[95%]
+          md:w-[80%]
+          lg:w-[75%]
+          xl:absolute lg:top-[20%] xl:right-[10%]
+          xl:w-[30rem] xl:h-[30rem] xl:rounded-2xl xl:shadow-xl"
+>
+    <p class="mb-3">In order to use Vital, please log in or register.</p>
+    <input type="email" placeholder="E-mail address" class="input input-bordered input-primary" aria-label="Email"
+           [formControl]="loginForm.controls.email"
+           [class.input-error]="loginForm.controls.email.invalid && loginForm.controls.email.touched"
+    >
+    <input type="password" placeholder="Password" class="input input-bordered input-primary mb-1" aria-label="Password"
+           [formControl]="loginForm.controls.password">
+    <a href="#" class="text-accent self-end mb-1">Forgot password?</a>
+    <button class="btn btn-accent" (click)="login()">Login</button>
+    <p class="text-center">Don't have an account? <a href="javascript:void(0)" class="text-accent" (click)="redirectToRegister()">Register</a>
+    </p>
+</app-card>
