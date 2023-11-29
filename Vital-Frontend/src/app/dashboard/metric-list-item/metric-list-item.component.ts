@@ -57,7 +57,7 @@ export class MetricListItemComponent implements OnInit, OnDestroy {
 
   private subscription: Subscription;
 
-  classString: string = "flex justify-between items-center rounded-xl p-5 w-full";
+  classString: string = "flex justify-between items-center rounded-xl p-5 w-full shadow";
 
   deleteHidden: boolean = true;
   deleteButtonDisabled: boolean = true;
@@ -73,11 +73,7 @@ export class MetricListItemComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     //TODO: colour based on metric value
-    if (this.listIndex % 2 === 0) {
-      this.classString += " bg-green-accent"
-    } else {
-      this.classString += " bg-green-light-accent"
-    }
+    this.classString += " bg-secondary"
   }
 
   ngOnDestroy() {

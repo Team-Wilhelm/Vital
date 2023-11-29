@@ -16,7 +16,7 @@ import {MetricService} from "../../services/metric.service";
           'font-weight': getFontWeight(day),
        }">
         <div
-          class="rounded-md overflow-hidden {{getBackgroundColor(day).bgColour}} border-2 {{getBackgroundColor(day).borderColour}} p-2 w-12 h-20">
+          class="rounded-md overflow-hidden {{getBackgroundColor(day).bgColour}} {{getBackgroundColor(day).borderColour}} p-2 w-12 h-20" style="border-width: 3px">
         </div>
         <p class="text-sm sm:text-base md:text-lg lg:text-lg xs:text-xs mt-2">{{ dateString(day) }}</p>
       </div>
