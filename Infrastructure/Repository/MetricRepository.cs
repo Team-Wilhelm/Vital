@@ -117,13 +117,9 @@ public class MetricRepository : IMetricRepository
 
     public async Task SaveMetrics(Guid calendarDayId, List<MetricRegisterMetricDto> metrics)
     {
-        // Delete all metrics for the day, if there are any
-        var sql = @"DELETE FROM ""CalendarDayMetric"" WHERE ""CalendarDayId""=@calendarDayId";
-        await _db.ExecuteAsync(sql, new { calendarDayId });
-
         // Check if the metric passed is valid
         var metricsIds = metrics.Select(m => m.MetricsId).Distinct().ToList();
-        sql = @"SELECT ""Id"" FROM ""Metrics"" WHERE ""Id"" = ANY(@metricsIds)";
+        var sql = @"SELECT ""Id"" FROM ""Metrics"" WHERE ""Id"" = ANY(@metricsIds)";
         var validMetricsIds = await _db.QueryAsync<Guid>(sql, new { metricsIds });
         if (validMetricsIds.Count() != metricsIds.Count)
         {
@@ -154,5 +150,11 @@ public class MetricRepository : IMetricRepository
                     metricValueId = metricsDto.MetricValueId ?? (object)DBNull.Value
                 });
         }
+    }
+    
+    public async Task DeleteMetricEntry(Guid calendarDayMetricId)
+    {
+        var sql = @"DELETE FROM ""CalendarDayMetric"" WHERE ""Id"" = @calendarDayMetricId";
+        await _db.ExecuteAsync(sql, new { calendarDayMetricId });
     }
 }

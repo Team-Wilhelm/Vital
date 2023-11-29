@@ -101,15 +101,14 @@ public class MetricService : IMetricService
         var dayList = metrics.Select(m => m.CreatedAt).Distinct().ToList(); 
         foreach (var date in dayList)
         {
-            Console.WriteLine(date);
-            var calendarDay = await _calendarDayRepository.GetByDate(userId, date);
-            if (calendarDay is null)
-            {
-                calendarDay = await _calendarDayRepository.CreteCycleDay(userId, date);
-            }
-            
-            await _metricRepository.SaveMetrics(calendarDay.Id, metrics);
+            var calendarDay = await _calendarDayRepository.GetByDate(userId, date) ?? await _calendarDayRepository.CreteCycleDay(userId, date);
+            await _metricRepository.SaveMetrics(calendarDay.Id, metrics.Where(m => m.CreatedAt == date).ToList());
         }
+    }
+
+    public async Task DeleteMetricEntry(Guid calendarDayMetricId)
+    {
+        await _metricRepository.DeleteMetricEntry(calendarDayMetricId);
     }
     
     private CalendarDay? BuildCalendarDay(CalendarDayAdapter calendarDayAdapter)

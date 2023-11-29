@@ -33,9 +33,8 @@ min-h-[calc(100vh-10rem)]
               class="lg:col-span-2 lg:row-span-2 order-4 lg:order-none h-full justify-between overflow-y-scroll"
               [hasPlusButton]="true"
               (plusButtonClicked)="redirectToMetrics()">
-        <div *ngFor="let metric of metricService.loggedMetrics; index as i" class="flex justify-between items-center">
-            <metric-list-item [metricName]="metric.metrics.name" [metricValue]="metric.metricValue?.name || ''"
-                              [metricTime]="metric.createdAt.toLocaleTimeString()"
+        <div *ngFor="let calendarDayMetric of metricService.loggedMetrics; index as i" class="flex justify-between items-center">
+            <metric-list-item [calendarDayMetric]="calendarDayMetric"
                               [listIndex]="i"
                               class="w-full"
             >
