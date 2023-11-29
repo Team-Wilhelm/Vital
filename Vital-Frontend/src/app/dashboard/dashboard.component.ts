@@ -5,6 +5,7 @@ import {MetricService} from "../services/metric.service";
 import {CalendarDayMetric, CycleDay} from "../interfaces/day.interface";
 import {DataService} from "../services/data.service";
 import {Subscription} from "rxjs";
+import {CalendarComponent} from "../calendar/calendar.component";
 
 @Component({
   selector: 'app-dashboard',
@@ -12,7 +13,10 @@ import {Subscription} from "rxjs";
 })
 
 export class DashboardComponent implements OnInit, OnDestroy {
-  private subscription: Subscription | undefined;
+  @ViewChild('calendarComponent') calendarComponent: CalendarComponent | undefined;
+  private readonly dateSubscription: Subscription;
+  private metricDeletedSubscription: Subscription;
+
   clickedDate = new Date();
 
   title = 'dashboard';
@@ -23,20 +27,28 @@ export class DashboardComponent implements OnInit, OnDestroy {
     cycleService.getPredictedPeriod().then(() => {
       this.nextPeriodInDays = this.calculateNextPeriodInDays();
     });
-  }
 
-  ngOnInit() {
-    this.dataService.clickedDate$.subscribe(clickedDate => {
+    this.dateSubscription = this.dataService.clickedDate$.subscribe(clickedDate => {
       if (clickedDate) {
         this.updateDashboardData(clickedDate);
         this.clickedDate = clickedDate;
       }
     });
+
+    this.metricDeletedSubscription = this.metricService.metricDeleted$.subscribe(metricDeleted => {
+      if (metricDeleted) {
+        this.updateDashboardData(this.clickedDate);
+      }
+    });
+  }
+
+  ngOnInit() {
+
   }
 
   ngOnDestroy() {
-    if (this.subscription) {
-      this.subscription.unsubscribe();
+    if (this.dateSubscription) {
+      this.dateSubscription.unsubscribe();
     }
   }
 
@@ -58,8 +70,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   updateDashboardData(date: Date) {
     // Call the methods to update your dashboard data here
-    // For example:
     this.metricService.getUsersMetric(date);
-    // Add other methods as needed
+    this.calendarComponent && this.calendarComponent.getPeriodDays();
+    this.metricService.setMetricDeleted(false);
+
+    // TODO: Update calendar events when a metric is deleted
   }
 }

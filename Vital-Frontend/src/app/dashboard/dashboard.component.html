@@ -41,14 +41,13 @@ min-h-[calc(100vh-10rem)]
 
     <!-- Calendar -->
     <app-card class="text-primary-content lg:col-span-2 lg:row-span-3 order-2 lg:order-none">
-        <calendar></calendar>
+        <calendar #calendarComponent></calendar>
     </app-card>
 
   <!-- Current cycle -->
   <app-card cardTitle="Week overview"
             class="lg:col-span-4 lg:row-span-1 order-1 lg:order-none
             max-h-64 overflow-x-auto card shadow"
-            [hasPlusButton]="true"
   >
     <app-current-cycle>
     </app-current-cycle>

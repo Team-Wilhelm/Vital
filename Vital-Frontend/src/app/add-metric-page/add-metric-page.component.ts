@@ -1,4 +1,4 @@
-import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {DataService} from '../services/data.service';
 import {MetricService} from '../services/metric.service';
 import {CycleService} from "../services/cycle.service";
@@ -8,7 +8,7 @@ import {Subscription} from "rxjs";
   selector: 'add-metric',
   templateUrl: './add-metric-page.component.html',
 })
-export class AddMetricPageComponent {
+export class AddMetricPageComponent implements OnDestroy {
   @ViewChild('newCycleModal') newCycleModal!: ElementRef;
   private subscription: Subscription;
   private lastLoggedFlowDate: Date | null = null;
@@ -20,6 +20,10 @@ export class AddMetricPageComponent {
         this.lastLoggedFlowDate = lastLoggedFlowDate;
       }
     });
+  }
+
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
   }
 
   // This method needs to return a promise of the user's choice, which is necessary to pause the execution of the saveMetrics() method
@@ -46,6 +50,7 @@ export class AddMetricPageComponent {
 
   async saveMetrics() {
     // Check if the last logged flow is more than 2 days ago and less than 10 days ago, if so, ask if new cycle has started
+    console.log(this.lastLoggedFlowDate);
     if (this.lastLoggedFlowDate) {
       const today = new Date();
       const diffTime = Math.abs(today.getTime() - this.lastLoggedFlowDate.getTime());
