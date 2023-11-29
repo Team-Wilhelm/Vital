@@ -43,7 +43,7 @@ export class CardComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.classList.push('card', 'card-compact', 'xl:card-normal', 'h-full', 'w-full', 'shadow-md');
+    this.classList.push('card', 'card-compact', 'xl:card-normal', 'h-full', 'w-full', 'shadow');
 
     if (this.isTextContent) {
       this.classList.push('text-primary-content');
