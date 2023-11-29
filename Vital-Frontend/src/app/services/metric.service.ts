@@ -8,6 +8,7 @@ import {
 } from "../interfaces/dtos/metric.dto.interface";
 import {CalendarDay, CalendarDayMetric} from "../interfaces/day.interface";
 import {DataService} from "./data.service";
+import {aW} from "@fullcalendar/core/internal-common";
 
 @Injectable({
   providedIn: 'root'
@@ -18,6 +19,8 @@ export class MetricService implements OnDestroy {
 
   metricDeletedSource = new BehaviorSubject<boolean | null>(false);
   metricDeleted$ = this.metricDeletedSource.asObservable();
+  newMetricAddedSource = new BehaviorSubject<boolean | null>(false);
+  newMetricAdded$ = this.newMetricAddedSource.asObservable();
 
   clickedDate = new Date();
 
@@ -149,7 +152,7 @@ export class MetricService implements OnDestroy {
     return value.name;
   }
 
-  saveMetrics() {
+  async saveMetrics(): Promise<boolean> {
     // Add selected metrics to the selectedMetrics array
     const metricsToPost = [] as MetricRegisterMetricDto[];
     this.metricSelectionMap.forEach((value, key) => {
@@ -160,10 +163,16 @@ export class MetricService implements OnDestroy {
       });
     });
 
-    this.http.post(`${this.apiUrl}`, metricsToPost)
-      .subscribe(() => {
-        this.getUsersMetric(this.clickedDate);
-      });
+    try {
+      this.http.post(`${this.apiUrl}`, metricsToPost)
+        .subscribe(() => {
+          this.getUsersMetric(this.clickedDate);
+          this.setNewMetricAdded(true);
+        });
+      return true;
+    } catch (e) {
+      return false;
+    }
   }
 
   async getPeriodDays(previousMonthFirstDay: Date, nextMonthLastDay: Date) {
@@ -182,7 +191,7 @@ export class MetricService implements OnDestroy {
     this.getUsersMetric(this.clickedDate); // Refresh the metrics
 
     const today = new Date();
-    this.getPeriodDays(new Date(today.getFullYear(), today.getMonth()-1, 1), new Date(today.getFullYear(), today.getMonth()+1, 0)); // Refresh the period days
+    this.getPeriodDays(new Date(today.getFullYear(), today.getMonth() - 1, 1), new Date(today.getFullYear(), today.getMonth() + 1, 0)); // Refresh the period days
     this.metricDeletedSource.next(true);
   }
 
@@ -190,6 +199,10 @@ export class MetricService implements OnDestroy {
   // to notify the dashboard component that a metric has been deleted, and it needs to refresh the metrics
   setMetricDeleted(metricDeleted: boolean) {
     this.metricDeletedSource.next(metricDeleted);
+  }
+
+  setNewMetricAdded(newMetricAdded: boolean) {
+    this.newMetricAddedSource.next(newMetricAdded);
   }
 }
 

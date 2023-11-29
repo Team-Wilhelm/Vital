@@ -15,7 +15,8 @@ import {CalendarComponent} from "../calendar/calendar.component";
 export class DashboardComponent implements OnInit, OnDestroy {
   @ViewChild('calendarComponent') calendarComponent: CalendarComponent | undefined;
   private readonly dateSubscription: Subscription;
-  private metricDeletedSubscription: Subscription;
+  private readonly metricDeletedSubscription: Subscription;
+  private readonly metricAddedSubscription: Subscription;
 
   clickedDate = new Date();
 
@@ -37,7 +38,13 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     this.metricDeletedSubscription = this.metricService.metricDeleted$.subscribe(metricDeleted => {
       if (metricDeleted) {
-        this.updateDashboardData(this.clickedDate);
+        this.updateCalendar();
+      }
+    });
+
+    this.metricAddedSubscription = this.metricService.newMetricAdded$.subscribe(newMetricAdded => {
+      if (newMetricAdded) {
+        this.updateCalendar();
       }
     });
   }
@@ -47,9 +54,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    if (this.dateSubscription) {
-      this.dateSubscription.unsubscribe();
-    }
+    this.dateSubscription.unsubscribe();
+    this.metricDeletedSubscription.unsubscribe();
+    this.metricAddedSubscription.unsubscribe();
   }
 
   private calculateNextPeriodInDays() {
@@ -71,9 +78,13 @@ export class DashboardComponent implements OnInit, OnDestroy {
   updateDashboardData(date: Date) {
     // Call the methods to update your dashboard data here
     this.metricService.getUsersMetric(date);
-    this.calendarComponent && this.calendarComponent.getPeriodDays();
-    this.metricService.setMetricDeleted(false);
-
     // TODO: Update calendar events when a metric is deleted
+  }
+
+  updateCalendar() {
+    this.calendarComponent && this.calendarComponent.getPeriodDays();
+    this.calendarComponent && this.calendarComponent.getPredictedPeriodDays();
+    this.metricService.setMetricDeleted(false);
+    this.metricService.setNewMetricAdded(false);
   }
 }

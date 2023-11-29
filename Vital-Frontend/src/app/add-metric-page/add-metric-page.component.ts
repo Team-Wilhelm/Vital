@@ -3,6 +3,7 @@ import {DataService} from '../services/data.service';
 import {MetricService} from '../services/metric.service';
 import {CycleService} from "../services/cycle.service";
 import {Subscription} from "rxjs";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'add-metric',
@@ -14,7 +15,10 @@ export class AddMetricPageComponent implements OnDestroy {
   private lastLoggedFlowDate: Date | null = null;
   newCycleStarted: boolean = false;
 
-  constructor(public metricService: MetricService, public dataService: DataService, public cycleService: CycleService) {
+  constructor(public metricService: MetricService,
+              public dataService: DataService,
+              public cycleService: CycleService,
+              private router: Router) {
     this.subscription = this.dataService.lastLoggedFlowDate$.subscribe(lastLoggedFlowDate => {
       if (lastLoggedFlowDate) {
         this.lastLoggedFlowDate = lastLoggedFlowDate;
@@ -66,6 +70,11 @@ export class AddMetricPageComponent implements OnDestroy {
     }
 
     // Save the metrics
-    this.metricService.saveMetrics();
+    const saveSuccessful = await this.metricService.saveMetrics();
+
+    // If saving was successful, redirect to dashboard
+    if (saveSuccessful) {
+      await this.router.navigate(['/dashboard']);
+    }
   }
 }
