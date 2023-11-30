@@ -1,5 +1,3 @@
-import {Metrics} from "../metric.interface";
-
 export interface CalendarDayMetricDto {
   id: string; //guid
   calendarDayId: string; //guid

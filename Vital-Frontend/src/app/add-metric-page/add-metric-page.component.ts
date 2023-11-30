@@ -1,4 +1,4 @@
-import {Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {Component, ElementRef, OnDestroy, ViewChild} from '@angular/core';
 import {DataService} from '../services/data.service';
 import {MetricService} from '../services/metric.service';
 import {CycleService} from "../services/cycle.service";

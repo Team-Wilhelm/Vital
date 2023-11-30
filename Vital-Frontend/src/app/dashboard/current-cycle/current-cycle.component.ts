@@ -1,4 +1,4 @@
-import { Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {DatePipe} from "@angular/common";
 import {CycleService} from "../../services/cycle.service";
 import {MetricService} from "../../services/metric.service";

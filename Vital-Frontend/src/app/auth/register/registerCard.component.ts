@@ -3,7 +3,7 @@ import {AbstractControl, FormBuilder, FormGroup, Validators} from "@angular/form
 import {TokenService} from "../../services/token.service";
 import {Router} from "@angular/router";
 import {PasswordValidator} from "../../validators/password.validator";
-import {LoginDto, PasswordRules, RegisterDto} from "../../interfaces/Utilities";
+import {PasswordRules, RegisterDto} from "../../interfaces/Utilities";
 
 @Component({
   selector: 'app-register-card',
