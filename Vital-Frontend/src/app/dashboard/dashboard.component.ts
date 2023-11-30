@@ -94,9 +94,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.metricService.setNewMetricAdded(false);
   }
 
-  messages = ["hello", "world", "foo", "bar", "baz"];
   showToast(title: string, message: string, type: 'info' | 'success' | 'error') {
-    const randomIndex = Math.floor(Math.random() * this.messages.length);
-    this.toastService.show(this.messages[randomIndex], title, type);
+    this.toastService.show(message, title, type);
   }
 }

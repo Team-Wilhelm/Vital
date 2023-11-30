@@ -1,39 +1,56 @@
 import {Component, EventEmitter, Output} from "@angular/core";
 import {TokenService} from "../../services/token.service";
 import {Router} from "@angular/router";
-import {FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {AbstractControl, FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {LoginDto} from "../../interfaces/Utilities";
 import {environment} from "../../../../environments/environment";
 
 @Component({
-    selector: 'app-login-card',
-    templateUrl: './loginCard.component.html',
+  selector: 'app-login-card',
+  templateUrl: './loginCard.component.html',
 })
 export class LoginCardComponent {
-    redirectUrl: string | null = null;
+  invalidCredentials = false;
+  redirectUrl: string | null = null;
 
-    @Output() switchToRegister = new EventEmitter<void>();
+  @Output() switchToRegister = new EventEmitter<void>();
 
-    redirectToRegister() {
-      this.switchToRegister.emit();
+  constructor(private tokenService: TokenService, private router: Router) {
+    this.loginForm.controls.email.setValue(environment.userEmailAddress);
+    this.loginForm.controls.password.setValue(environment.userPassword);
+    this.subscribeToPasswordFieldChanged();
+  }
+
+
+  redirectToRegister() {
+    this.switchToRegister.emit();
+  }
+
+  readonly loginForm = new FormGroup({
+    email: new FormBuilder().control('', [Validators.required, Validators.email]),
+    password: new FormBuilder().control('', [Validators.required])
+  });
+
+  async login(): Promise<void> {
+    try {
+      await this.tokenService.login(this.loginForm.value as LoginDto);
+      if (this.tokenService.isAuthenticated()) {
+        await this.router.navigate([this.redirectUrl || '/dashboard']);
+      }
+    } catch (e : any) {
+      if (e.message === 'Invalid credentials') {
+        this.invalidCredentials = true;
+      }
     }
-    readonly loginForm = new FormGroup({
-        email: new FormBuilder().control('', [Validators.required, Validators.email]),
-        password: new FormBuilder().control('', [Validators.required])
-    });
+  }
 
-    constructor(private tokenService: TokenService, private router: Router) {
-        this.loginForm.controls.email.setValue(environment.userEmailAddress);
-        this.loginForm.controls.password.setValue(environment.userPassword);
+  subscribeToPasswordFieldChanged(): void {
+    const passwordControl: AbstractControl = this.loginForm.get('password')!;
+
+    if (passwordControl) {
+      passwordControl.valueChanges.subscribe((value) => {
+        this.invalidCredentials = false;
+      });
     }
-
-    async login(): Promise<void> {
-        await this.tokenService.login(this.loginForm.value as LoginDto);
-        if (this.tokenService.isAuthenticated()) {
-            await this.router.navigate([this.redirectUrl || '/dashboard']);
-        }
-    }
-
-    // TODO: Add link to register page
-    // TODO: Nicer login page for mobile, add background image
+  }
 }

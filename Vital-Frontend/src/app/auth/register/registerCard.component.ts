@@ -57,8 +57,8 @@ export class RegisterCardComponent {
       });
     }
   }
+
   redirectToLogin() {
     this.switchToLogin.emit();
   }
-
 }
