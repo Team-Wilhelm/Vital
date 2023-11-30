@@ -84,7 +84,6 @@ public class CycleController : BaseController
                 EndDate = DateTimeOffset.Now
             });
         }
-        
         var cycle = await _cycleService.Create();
         user!.CurrentCycleId = cycle.Id;
         await _userManager.UpdateAsync(user);

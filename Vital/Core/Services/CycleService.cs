@@ -51,7 +51,7 @@ public class CycleService : ICycleService
     }
 
     /// <summary>
-    /// Create a new cycle for the current user.
+    /// Create a new cycle for the current user and re-calculates average period and cycle length.
     /// </summary>
     /// <returns></returns>
     public async Task<Cycle> Create()
@@ -60,6 +60,11 @@ public class CycleService : ICycleService
         {
             throw new NotFoundException("No user found.");
         }
+        
+        var periodAndCycleLength = await CalculatePeriodAndCycleLength();
+        _userManager.Users.First(u => u.Id == _currentContext.UserId.Value).CycleLength = periodAndCycleLength.CycleLength;
+        _userManager.Users.First(u => u.Id == _currentContext.UserId.Value).PeriodLength = periodAndCycleLength.PeriodLength;
+        
         var cycle = new Cycle
         {
             StartDate = DateTimeOffset.Now,
@@ -92,6 +97,22 @@ public class CycleService : ICycleService
 
         return cycle;
     }
+    
+    /// <summary>
+    /// Calculates average period and cycle length for the current user based on up to last three cycles.
+    /// </summary>
+    public async Task<PeriodAndCycleLengthDto> CalculatePeriodAndCycleLength()
+    {
+        var periodAndCycleLengths = await _cycleRepository.GetPeriodAndCycleLengths(_currentContext.UserId!.Value, 3);
+        var cycleLength = periodAndCycleLengths.Select(p => p.CycleLength).Average();
+        var periodLength = periodAndCycleLengths.Select(p => p.PeriodLength).Average();
+        var periodAndCycleLength = new PeriodAndCycleLengthDto
+        {
+            CycleLength = (float)Math.Round(cycleLength),
+            PeriodLength = (float)Math.Round(periodLength)
+        };
+        return periodAndCycleLength;
+    }
 
     /// <summary>
     /// Calculates remaining days in current cycle and predicted period days for the next three cycles.
@@ -114,6 +135,7 @@ public class CycleService : ICycleService
         
         //get latest period day for current cycle and add predicted days based on period length
         var latestPeriodDay = currentCycle.CycleDays.Where(d => d.IsPeriod).OrderBy(d => d.Date).Last();
+        //TODO if latestPeriodDay is more than 3 cyclelengths ago don't add predicted days
         var difference = (int)(latestPeriodDay.Date - cycleStartDay).TotalDays;
         
         for (var i = 0; i < difference; i++)
