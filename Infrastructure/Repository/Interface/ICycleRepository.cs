@@ -1,4 +1,5 @@
 ﻿using Models;
+using Models.Dto.Cycle;
 using Models.Pagination;
 
 namespace Infrastructure.Repository.Interface;
@@ -46,4 +47,6 @@ public interface ICycleRepository
     /// <param name="userId"></param>
     /// <returns></returns>
     Task<Cycle?> GetCurrentCycle(Guid userId);
+
+    Task<List<PeriodAndCycleLengthDto>> GetPeriodAndCycleLengths(Guid userId, int numberOfCycles);
 }

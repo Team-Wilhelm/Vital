@@ -10,4 +10,6 @@ public class Cycle
     public DateTimeOffset? EndDate { get; set; }
     public Guid UserId { get; set; }
     public List<CycleDay> CycleDays { get; set; } = new();
+    
+    public ApplicationUser? User { get; set; }
 }

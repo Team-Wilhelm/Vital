@@ -3,6 +3,7 @@ using Dapper;
 using Infrastructure.Repository.Interface;
 using Models;
 using Models.Days;
+using Models.Dto.Cycle;
 using Models.Pagination;
 
 namespace Infrastructure.Repository;
@@ -43,6 +44,32 @@ public class CycleRepository : ICycleRepository
         if (cycle != null) cycle.CycleDays = GetCycleDaysForCycleAsync(cycle.Id).Result.ToList();
         return cycle;
     }
+    
+    public async Task<List<PeriodAndCycleLengthDto>> GetPeriodAndCycleLengths(Guid userId, int numberOfCycles)
+    {
+        //get list of last number of cycles and their cycle days where enddate is today or later
+        var sql = @"SELECT * FROM ""Cycles"" WHERE ""UserId""=@UserId AND ""EndDate"" IS NOT NULL ORDER BY ""StartDate"" DESC LIMIT @NumberOfCycles";
+        var cycles = await _db.QueryAsync<Cycle>(sql, new { UserId = userId, NumberOfCycles = numberOfCycles });
+        var cycleList = cycles.ToList();
+        cycleList.ForEach(cycle =>
+        {
+            cycle.CycleDays = GetCycleDaysForCycleAsync(cycle.Id).Result.ToList();
+        });
+        //get difference between start and end dates of each cycle
+        var periodAndCycleLengths = cycleList.Select(cycle =>
+        {
+            var cycleLength = cycle.EndDate - cycle.StartDate;
+            var periodLength = cycle.CycleDays.Count(cd => cd.IsPeriod);
+            return new PeriodAndCycleLengthDto
+            {
+                CycleLength = (float)cycleLength?.Days,
+                PeriodLength = periodLength
+            };
+        });
+        return periodAndCycleLengths.ToList();
+    }
+    
+    
 
     public async Task<Cycle> Create(Cycle cycle)
     {
