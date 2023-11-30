@@ -1,12 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Microsoft.AspNetCore.Identity;
 
-namespace Models.Identity;
+namespace Models.Dto.Cycle;
 
-public class ApplicationUser : IdentityUser<Guid>
+public class PeriodAndCycleLengthDto
 {
-    public Guid? CurrentCycleId { get; set; }
-    
     [MinLength(1)]
     public float CycleLength { get; set; } = 28;
     

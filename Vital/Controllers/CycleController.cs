@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System.Runtime.InteropServices.JavaScript;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -127,5 +128,22 @@ public class CycleController : BaseController
         var userId = _currentContext.UserId!.Value;
         var cycle = await _cycleService.GetCurrentCycle(userId);
         return Ok(cycle);
+    }
+    
+    [HttpPost("period-cycle-length")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> SetPeriodCycleLength([FromBody] PeriodAndCycleLengthDto dto)
+    {
+        if(!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+        var userId = _currentContext.UserId!.Value;
+        var user = await _userManager.FindByIdAsync(userId.ToString());
+        user!.PeriodLength = dto.PeriodLength;
+        user!.CycleLength = dto.CycleLength;
+        await _userManager.UpdateAsync(user);
+        return Ok();
     }
 }
