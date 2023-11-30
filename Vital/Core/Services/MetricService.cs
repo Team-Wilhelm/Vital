@@ -41,7 +41,7 @@ public class MetricService : IMetricService
             var calendarDay = calendarDays.FirstOrDefault(c => c.Id == calendarDayAdapter.CalendarDayId);
             if (calendarDay is null)
             {
-                calendarDay = BuildCalendarDay(calendarDayAdapter);
+                calendarDay = BuildCalendarDayFromAdapter(calendarDayAdapter);
                 calendarDays.Add(calendarDay);
             }
             
@@ -143,7 +143,7 @@ public class MetricService : IMetricService
         }
     }
     
-    private CalendarDay? BuildCalendarDay(CalendarDayAdapter calendarDayAdapter)
+    private CalendarDay? BuildCalendarDayFromAdapter(CalendarDayAdapter calendarDayAdapter)
     {
         switch (calendarDayAdapter.State)
         {

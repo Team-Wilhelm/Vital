@@ -6,8 +6,13 @@ import { BehaviorSubject } from 'rxjs';
 })
 export class DataService {
   private clickedDateSource = new BehaviorSubject<Date | null>(null);
+  private lastLoggedFlowDateSource = new BehaviorSubject<Date | null>(null);
+
   clickedDate$ = this.clickedDateSource.asObservable();
+  lastLoggedFlowDate$ = this.lastLoggedFlowDateSource.asObservable();
+
   clickedDate: Date | null = null;
+  lastLoggedFlowDate: Date | null = null;
 
   constructor() {
     this.setClickedDate(new Date());
@@ -16,6 +21,11 @@ export class DataService {
   setClickedDate(clickedDate: Date) {
     this.clickedDateSource.next(clickedDate);
     this.clickedDate = clickedDate;
+  }
+
+  setLastLoggedFlowDate(lastLoggedFlowDate: Date) {
+    this.lastLoggedFlowDateSource.next(lastLoggedFlowDate);
+    this.lastLoggedFlowDate = lastLoggedFlowDate;
   }
 
   getCurrentUTCTime() : Date {
