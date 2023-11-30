@@ -82,6 +82,10 @@ public class CycleController : BaseController
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateCycleDto dto)
     {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
         var cycle = await _cycleService.Update(id, dto);
 
         return Ok(cycle);

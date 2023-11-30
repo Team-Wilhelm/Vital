@@ -113,7 +113,6 @@ public class MetricController : BaseController
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeleteMetricEntryAsync([FromRoute] Guid calendarDayMetricId)
     {
-        var userId = _currentContext.UserId!.Value;
         await _metricService.DeleteMetricEntry(calendarDayMetricId);
         return Ok();
     }
