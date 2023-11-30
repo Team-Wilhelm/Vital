@@ -5,6 +5,7 @@ import {MetricService} from "../services/metric.service";
 import {CalendarDayMetric, CycleDay} from "../interfaces/day.interface";
 import {DataService} from "../services/data.service";
 import {Subscription} from "rxjs";
+import {CalendarComponent} from "../calendar/calendar.component";
 
 @Component({
   selector: 'app-dashboard',
@@ -12,33 +13,50 @@ import {Subscription} from "rxjs";
 })
 
 export class DashboardComponent implements OnInit, OnDestroy {
-  private subscription: Subscription | undefined;
+  @ViewChild('calendarComponent') calendarComponent: CalendarComponent | undefined;
+  private readonly dateSubscription: Subscription;
+  private readonly metricDeletedSubscription: Subscription;
+  private readonly metricAddedSubscription: Subscription;
+
   clickedDate = new Date();
 
   title = 'dashboard';
   nextPeriodInDays: number = 0;
-  @ViewChild('hasYourPeriodStartedModal') hasYourPeriodStartedModal!: ElementRef;
   currentCycleDays: CycleDay[] = [];
 
   constructor(public cycleService: CycleService, public metricService: MetricService, public dataService: DataService, private router: Router) {
     cycleService.getPredictedPeriod().then(() => {
       this.nextPeriodInDays = this.calculateNextPeriodInDays();
     });
-  }
 
-  ngOnInit() {
-    this.dataService.clickedDate$.subscribe(clickedDate => {
+    this.dateSubscription = this.dataService.clickedDate$.subscribe(clickedDate => {
       if (clickedDate) {
         this.updateDashboardData(clickedDate);
         this.clickedDate = clickedDate;
       }
     });
+
+    this.metricDeletedSubscription = this.metricService.metricDeleted$.subscribe(metricDeleted => {
+      if (metricDeleted) {
+        this.updateCalendar();
+      }
+    });
+
+    this.metricAddedSubscription = this.metricService.newMetricAdded$.subscribe(newMetricAdded => {
+      if (newMetricAdded) {
+        this.updateCalendar();
+      }
+    });
+  }
+
+  ngOnInit() {
+
   }
 
   ngOnDestroy() {
-    if (this.subscription) {
-      this.subscription.unsubscribe();
-    }
+    this.dateSubscription.unsubscribe();
+    this.metricDeletedSubscription.unsubscribe();
+    this.metricAddedSubscription.unsubscribe();
   }
 
   private calculateNextPeriodInDays() {
@@ -53,23 +71,20 @@ export class DashboardComponent implements OnInit, OnDestroy {
     return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
   }
 
-  public displayHasYourPeriodStartedDialog(): void {
-    this.hasYourPeriodStartedModal.nativeElement.showModal();
-    // Focus on yes button
-    setTimeout(() => {
-      const yesButton = document.getElementById('yes-button');
-      yesButton?.focus();
-    }, 100);
-  }
-
   redirectToMetrics() {
     this.router.navigate(['/add-metric']);
   }
 
   updateDashboardData(date: Date) {
     // Call the methods to update your dashboard data here
-    // For example:
     this.metricService.getUsersMetric(date);
-    // Add other methods as needed
+    // TODO: Update calendar events when a metric is deleted
+  }
+
+  updateCalendar() {
+    this.calendarComponent && this.calendarComponent.getPeriodDays();
+    this.calendarComponent && this.calendarComponent.getPredictedPeriodDays();
+    this.metricService.setMetricDeleted(false);
+    this.metricService.setNewMetricAdded(false);
   }
 }

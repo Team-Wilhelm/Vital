@@ -1,8 +1,10 @@
-﻿using AutoMapper;
+﻿using System.Globalization;
+using AutoMapper;
 using Infrastructure.Adapters;
 using Infrastructure.Repository.Interface;
 using Models;
 using Models.Days;
+using Models.Dto.Cycle;
 using Models.Dto.Metrics;
 using Models.Util;
 using Vital.Core.Services.Interfaces;
@@ -10,14 +12,12 @@ using Vital.Models.Exception;
 
 namespace Vital.Core.Services;
 
-
 public class MetricService : IMetricService
 {
     private readonly IMetricRepository _metricRepository;
     private readonly ICalendarDayRepository _calendarDayRepository;
     private readonly IMapper _mapper;
 
-   
     public MetricService(IMetricRepository metricRepository, ICalendarDayRepository calendarDayRepository, IMapper mapper)
     {
         _metricRepository = metricRepository;
@@ -41,7 +41,7 @@ public class MetricService : IMetricService
             var calendarDay = calendarDays.FirstOrDefault(c => c.Id == calendarDayAdapter.CalendarDayId);
             if (calendarDay is null)
             {
-                calendarDay = BuildCalendarDay(calendarDayAdapter);
+                calendarDay = BuildCalendarDayFromAdapter(calendarDayAdapter);
                 if (calendarDay != null) calendarDays.Add(calendarDay);
             }
             
@@ -157,7 +157,7 @@ public class MetricService : IMetricService
         }
     }
     
-    private CalendarDay? BuildCalendarDay(CalendarDayAdapter calendarDayAdapter)
+    private CalendarDay? BuildCalendarDayFromAdapter(CalendarDayAdapter calendarDayAdapter)
     {
         switch (calendarDayAdapter.State)
         {

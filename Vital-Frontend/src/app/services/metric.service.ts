@@ -1,6 +1,6 @@
 import {HttpClient} from '@angular/common/http';
 import {Injectable, OnDestroy, OnInit} from "@angular/core";
-import {firstValueFrom, map, Subscription} from "rxjs";
+import {BehaviorSubject, firstValueFrom, map, Subscription} from "rxjs";
 import {environment} from "../../../environments/environment";
 import {
   MetricRegisterMetricDto,
@@ -8,6 +8,7 @@ import {
 } from "../interfaces/dtos/metric.dto.interface";
 import {CalendarDay, CalendarDayMetric} from "../interfaces/day.interface";
 import {DataService} from "./data.service";
+import {aW} from "@fullcalendar/core/internal-common";
 
 @Injectable({
   providedIn: 'root'
@@ -16,12 +17,18 @@ export class MetricService implements OnDestroy {
   private apiUrl = environment.baseUrl + '/metric';
   private readonly subscription: Subscription | undefined;
 
+  metricDeletedSource = new BehaviorSubject<boolean | null>(false);
+  metricDeleted$ = this.metricDeletedSource.asObservable();
+  newMetricAddedSource = new BehaviorSubject<boolean | null>(false);
+  newMetricAdded$ = this.newMetricAddedSource.asObservable();
+
   clickedDate = new Date();
 
   allMetrics: MetricViewDto[] = [];
   metricSelectionMap: Map<string, MetricSelection> = new Map(); // <MetricId, MetricValueId>
   loggedMetrics: CalendarDayMetric[] = [];
   periodMetric: MetricViewDto | undefined;
+  periodDays: Date[] = [];
 
   constructor(private http: HttpClient, private dataService: DataService) {
     this.getAllMetricsWithValues();
@@ -145,7 +152,7 @@ export class MetricService implements OnDestroy {
     return value.name;
   }
 
-  saveMetrics() {
+  async saveMetrics(): Promise<boolean> {
     // Add selected metrics to the selectedMetrics array
     const metricsToPost = [] as MetricRegisterMetricDto[];
     this.metricSelectionMap.forEach((value, key) => {
@@ -156,23 +163,46 @@ export class MetricService implements OnDestroy {
       });
     });
 
-    this.http.post(`${this.apiUrl}`, metricsToPost)
-      .subscribe(() => {
-        this.getUsersMetric(this.clickedDate);
-      });
+    try {
+      this.http.post(`${this.apiUrl}`, metricsToPost)
+        .subscribe(() => {
+          this.getUsersMetric(this.clickedDate);
+          this.setNewMetricAdded(true);
+        });
+      return true;
+    } catch (e) {
+      return false;
+    }
   }
 
   async getPeriodDays(previousMonthFirstDay: Date, nextMonthLastDay: Date) {
     const call = this.http.get<Date[]>(`${this.apiUrl}/period?fromDate=${previousMonthFirstDay.toISOString()}&toDate=${nextMonthLastDay.toISOString()}`);
-    const result = await firstValueFrom(call);
-    return result.map(date => new Date(date));
+    let result = await firstValueFrom(call);
+
+    this.periodDays = result.map(date => new Date(date));
+    this.periodDays.sort((a, b) => a.getTime() - b.getTime()); // Sort the dates in ascending order
+    this.dataService.setLastLoggedFlowDate(this.periodDays[this.periodDays.length - 1]);
+    return this.periodDays;
   }
 
   async deleteMetric(calendarDayMetricId: string) {
     const calendarDayMetric = this.loggedMetrics.filter((metric) => metric.id === calendarDayMetricId)[0];
     await firstValueFrom(this.http.delete(`${this.apiUrl}/${calendarDayMetric.id}`));
-    this.getUsersMetric(this.clickedDate);
+    this.getUsersMetric(this.clickedDate); // Refresh the metrics
 
+    const today = new Date();
+    this.getPeriodDays(new Date(today.getFullYear(), today.getMonth() - 1, 1), new Date(today.getFullYear(), today.getMonth() + 1, 0)); // Refresh the period days
+    this.metricDeletedSource.next(true);
+  }
+
+  // Since this method is called from within the metric-list-item component,we need to use a BehaviorSubject
+  // to notify the dashboard component that a metric has been deleted, and it needs to refresh the metrics
+  setMetricDeleted(metricDeleted: boolean) {
+    this.metricDeletedSource.next(metricDeleted);
+  }
+
+  setNewMetricAdded(newMetricAdded: boolean) {
+    this.newMetricAddedSource.next(newMetricAdded);
   }
 }
 

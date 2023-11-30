@@ -46,15 +46,18 @@ public class CycleRepository : ICycleRepository
 
     public async Task<Cycle> Create(Cycle cycle)
     {
+        cycle.StartDate = cycle.StartDate.ToOffset(TimeSpan.Zero);
+        cycle.EndDate = cycle.EndDate?.ToOffset(TimeSpan.Zero);
         var sql = @"INSERT INTO ""Cycles"" (""Id"", ""StartDate"", ""EndDate"", ""UserId"") 
                 VALUES (@Id, @StartDate, @EndDate, @UserId)";
-
         await _db.ExecuteAsync(sql, cycle);
         return cycle;
     }
 
     public async Task<Cycle> Update(Cycle cycle)
     {
+        cycle.StartDate = cycle.StartDate.ToOffset(TimeSpan.Zero);
+        cycle.EndDate = cycle.EndDate?.ToOffset(TimeSpan.Zero);
         var sql = @"UPDATE ""Cycles"" SET ""StartDate""=@StartDate, ""EndDate""=@EndDate WHERE ""Id""=@Id";
 
         await _db.ExecuteAsync(sql, new
