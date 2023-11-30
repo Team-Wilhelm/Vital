@@ -12,6 +12,10 @@ export class AppComponent {
   constructor(public tokenService: TokenService, private router: Router) {
   }
 
+  async profile() {
+    await this.router.navigate(['/profile']);
+  }
+
   async logout() {
     this.tokenService.logout();
     await this.router.navigate(['/login']);
