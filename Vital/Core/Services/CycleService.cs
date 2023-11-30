@@ -56,14 +56,16 @@ public class CycleService : ICycleService
     /// <returns></returns>
     public async Task<Cycle> Create()
     {
-        if (_currentContext.UserId == null)
+        var user = await _userManager.FindByIdAsync(_currentContext.UserId!.Value.ToString());
+        if (user == null)
         {
             throw new NotFoundException("No user found.");
         }
         
         var periodAndCycleLength = await CalculatePeriodAndCycleLength();
-        _userManager.Users.First(u => u.Id == _currentContext.UserId.Value).CycleLength = periodAndCycleLength.CycleLength;
-        _userManager.Users.First(u => u.Id == _currentContext.UserId.Value).PeriodLength = periodAndCycleLength.PeriodLength;
+        user.CycleLength = periodAndCycleLength.CycleLength;
+        user.PeriodLength = periodAndCycleLength.PeriodLength;
+        await _userManager.UpdateAsync(user);
         
         var cycle = new Cycle
         {
