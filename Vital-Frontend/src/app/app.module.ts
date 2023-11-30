@@ -27,6 +27,7 @@ import {StatCardComponent} from "./card/stat-card.component";
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 import {RegisterCardComponent} from "./auth/register/registerCard.component";
 import {LoginCardComponent} from "./auth/login/loginCard.component";
+import {ProfileComponent} from "./profile/profile.component";
 
 @NgModule({
   declarations: [
@@ -43,7 +44,8 @@ import {LoginCardComponent} from "./auth/login/loginCard.component";
     RegisterCardComponent,
     LoginCardComponent,
     MetricListItemComponent,
-    MetricSelectionItemComponent
+    MetricSelectionItemComponent,
+    ProfileComponent
   ],
     imports: [
         BrowserModule,
