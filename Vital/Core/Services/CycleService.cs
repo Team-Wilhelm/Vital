@@ -136,8 +136,10 @@ public class CycleService : ICycleService
         //get latest period day for current cycle and add predicted days based on period length
         var latestPeriodDay = currentCycle.CycleDays.Where(d => d.IsPeriod).OrderBy(d => d.Date).Last();
         //TODO if latestPeriodDay is more than 3 cyclelengths ago don't add predicted days
-        var difference = (int)(latestPeriodDay.Date - cycleStartDay).TotalDays;
+        var periodElapsed = (int)(latestPeriodDay.Date - cycleStartDay).TotalDays;
+        var difference = periodLength - periodElapsed;
         
+        //Add predicted days after latest period day until cycle length is reached
         for (var i = 0; i < difference; i++)
         {
             predictedPeriodDays.Add(latestPeriodDay.Date.AddDays(i + 1));
