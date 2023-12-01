@@ -48,5 +48,19 @@ public interface ICycleRepository
     /// <returns></returns>
     Task<Cycle?> GetCurrentCycle(Guid userId);
 
+    /// <summary>
+    /// Retrrieves the period and cycle lengths for the last x number of cycles for the specified user.
+    /// </summary>
+    /// <param name="userId"></param>
+    /// <param name="numberOfCycles"></param>
+    /// <returns></returns>
     Task<List<PeriodAndCycleLengthDto>> GetPeriodAndCycleLengths(Guid userId, int numberOfCycles);
+
+    /// <summary>
+    /// Retrieves a list of x amount of most recent completed cycles for the specified user.
+    /// </summary>
+    /// <param name="userId"></param>
+    /// <param name="numberOfCycles"></param>
+    /// <returns></returns>
+    Task<List<Cycle>> GetRecentCyclesWithDays(Guid userId, int numberOfCycles);
 }

@@ -149,4 +149,14 @@ public class CycleController : BaseController
         await _userManager.UpdateAsync(user);
         return Ok();
     }
+    
+    [HttpGet("analytics/{numberOfCycles}")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(CycleAnalyticsDto))]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetAnalytics(int numberOfCycles)
+    {
+        var userId = _currentContext.UserId!.Value;
+        var analytics = await _cycleService.GetAnalytics(userId, numberOfCycles);
+        return Ok(analytics);
+    }
 }

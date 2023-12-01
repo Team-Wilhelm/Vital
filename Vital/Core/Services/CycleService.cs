@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Infrastructure.Repository.Interface;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 using Models;
 using Models.Days;
 using Models.Dto.Cycle;
@@ -130,34 +131,57 @@ public class CycleService : ICycleService
             throw new NotFoundException("No current cycle found.");
         }
         
+        var today = DateTime.UtcNow.Date;
         var predictedPeriodDays = new List<DateTimeOffset>();
-        var cycleLength = _userManager.Users.First(u => u.Id == userId).CycleLength;
-        var periodLength = _userManager.Users.First(u => u.Id == userId).PeriodLength;
-        var cycleStartDay = currentCycle.StartDate;
+        var user = _userManager.Users.First(u => u.Id == userId);
+        var cycleLength = user.CycleLength;
+        var periodLength = user.PeriodLength;
+        var cycleStartDay = currentCycle.StartDate.Date;
         
         //get latest period day for current cycle and add predicted days based on period length
-        var latestPeriodDay = currentCycle.CycleDays.Where(d => d.IsPeriod).OrderBy(d => d.Date).Last();
-        //TODO if latestPeriodDay is more than 3 cyclelengths ago don't add predicted days
-        var periodElapsed = (int)(latestPeriodDay.Date - cycleStartDay).TotalDays;
+        var latestPeriodDay = currentCycle.CycleDays.Where(d => d.IsPeriod).OrderBy(d => d.Date).Last().Date;
+
+        //Only add predicted period days if latest period day is less than three cycles ago
+        if ((today - latestPeriodDay).TotalDays >= 3 * cycleLength) return predictedPeriodDays;
+        var periodElapsed = (latestPeriodDay - cycleStartDay).Days +1;
         var difference = periodLength - periodElapsed;
         
         //Add predicted days after latest period day until cycle length is reached
         for (var i = 0; i < difference; i++)
         {
-            predictedPeriodDays.Add(latestPeriodDay.Date.AddDays(i + 1));
-        }
-        
-        //get predicted period days for the next three cycles
-        for (var i = 1; i < 4; i++)
-        {
-            var futureCycleStartDay = cycleStartDay.Date.AddDays(cycleLength*i);
-            for (var j = 0; j < periodLength; j++)
+            var dayToAdd = latestPeriodDay.AddDays(i + 1);
+            if (dayToAdd.Date > today)
             {
-                predictedPeriodDays.Add(futureCycleStartDay.Date.AddDays(cycleLength + j));
+                predictedPeriodDays.Add(dayToAdd);
             }
         }
         
+        //get predicted period days for the next three cycles
+        for (var i = 0; i < 3; i++)
+        {
+            cycleStartDay = cycleStartDay.Date.AddDays(cycleLength);
+            for (var j = 0; j < periodLength; j++)
+            {
+                predictedPeriodDays.Add(cycleStartDay.Date.AddDays(j));
+            }
+        }
         return predictedPeriodDays;
+    }
+
+    public async Task<List<CycleAnalyticsDto>> GetAnalytics(Guid userId, int numberOfCycles)
+    {
+        var cycleList = await _cycleRepository.GetRecentCyclesWithDays(userId, numberOfCycles);
+        var cycleAnalytics = cycleList.Select(cycle => new CycleAnalyticsDto
+        {
+            StartDate = cycle.StartDate,
+            EndDate = (DateTimeOffset)cycle.EndDate!, 
+            PeriodDays = cycle.CycleDays
+                .Where(cd => cd.IsPeriod)
+                .Select(cd => cd.Date)
+                .ToList()
+        }).ToList();
+
+        return cycleAnalytics;
     }
 
     /// <summary>

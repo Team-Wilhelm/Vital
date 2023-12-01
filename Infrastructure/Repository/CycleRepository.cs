@@ -45,16 +45,17 @@ public class CycleRepository : ICycleRepository
         return cycle;
     }
     
+    /// <summary>
+    /// Retrieves a list of period and cycle lengths for the specified user for a number of cycles.
+    /// </summary>
+    /// <param name="userId"></param>
+    /// <param name="numberOfCycles"></param>
+    /// <returns></returns>
     public async Task<List<PeriodAndCycleLengthDto>> GetPeriodAndCycleLengths(Guid userId, int numberOfCycles)
     {
         //get list of last number of cycles and their cycle days where enddate is today or later
-        var sql = @"SELECT * FROM ""Cycles"" WHERE ""UserId""=@UserId AND ""EndDate"" IS NOT NULL ORDER BY ""StartDate"" DESC LIMIT @NumberOfCycles";
-        var cycles = await _db.QueryAsync<Cycle>(sql, new { UserId = userId, NumberOfCycles = numberOfCycles });
-        var cycleList = cycles.ToList();
-        cycleList.ForEach(cycle =>
-        {
-            cycle.CycleDays = GetCycleDaysForCycleAsync(cycle.Id).Result.ToList();
-        });
+        var cycleList = await GetRecentCyclesWithDays(userId, numberOfCycles);
+        
         //get difference between start and end dates of each cycle
         var periodAndCycleLengths = cycleList.Select(cycle =>
         {
@@ -68,8 +69,25 @@ public class CycleRepository : ICycleRepository
         });
         return periodAndCycleLengths.ToList();
     }
-    
-    
+
+    /// <summary>
+    /// Retrieves a list of the most recent of cycles for the specified user.
+    /// </summary>
+    /// <param name="userId"></param>
+    /// <param name="numberOfCycles"></param>
+    /// <returns></returns>
+    public async Task<List<Cycle>> GetRecentCyclesWithDays(Guid userId, int numberOfCycles)
+    {
+        var sql =
+            @"SELECT * FROM ""Cycles"" WHERE ""UserId""=@UserId AND ""EndDate"" IS NOT NULL ORDER BY ""StartDate"" DESC LIMIT @NumberOfCycles";
+        var cycles = await _db.QueryAsync<Cycle>(sql, new { UserId = userId, NumberOfCycles = numberOfCycles });
+        var cycleList = cycles.ToList();
+        cycleList.ForEach(cycle =>
+        {
+            cycle.CycleDays = GetCycleDaysForCycleAsync(cycle.Id).Result.ToList();
+        });
+        return cycleList;
+    }
 
     public async Task<Cycle> Create(Cycle cycle)
     {
