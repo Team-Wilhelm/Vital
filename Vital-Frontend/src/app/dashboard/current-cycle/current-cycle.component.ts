@@ -6,7 +6,7 @@ import {MetricService} from "../../services/metric.service";
 @Component({
   selector: 'app-current-cycle',
   template: `
-      <div class="flex h-full justify-between items-baseline overflow-hidden">
+      <div class="flex h-full justify-between items-baseline">
           <div *ngFor="let day of dateKeys" class="flex flex-col items-center text-center justify-center mx-2"
                [ngStyle]="{
          'opacity': getOpacity(day),
