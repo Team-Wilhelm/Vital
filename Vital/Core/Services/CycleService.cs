@@ -131,20 +131,23 @@ public class CycleService : ICycleService
         }
         
         var predictedPeriodDays = new List<DateTimeOffset>();
-        var cycleLength = _userManager.Users.First(u => u.Id == userId).CycleLength;
-        var periodLength = _userManager.Users.First(u => u.Id == userId).PeriodLength;
-        var cycleStartDay = currentCycle.StartDate;
+        var user = _userManager.Users.First(u => u.Id == userId);
+        var cycleLength = user.CycleLength;
+        var periodLength = user.PeriodLength;
+        var cycleStartDay = currentCycle.StartDate.Date;
         
         //get latest period day for current cycle and add predicted days based on period length
-        var latestPeriodDay = currentCycle.CycleDays.Where(d => d.IsPeriod).OrderBy(d => d.Date).Last();
-        //TODO if latestPeriodDay is more than 3 cyclelengths ago don't add predicted days
-        var periodElapsed = (int)(latestPeriodDay.Date - cycleStartDay).TotalDays;
+        var latestPeriodDay = currentCycle.CycleDays.Where(d => d.IsPeriod).OrderBy(d => d.Date).Last().Date;
+
+        //Only add predicted period days if latest period day is less than three cycles ago
+        if ((DateTimeOffset.Now.Date - latestPeriodDay).TotalDays >= 3 * cycleLength) return predictedPeriodDays;
+        var periodElapsed = (latestPeriodDay - cycleStartDay).Days +1;
         var difference = periodLength - periodElapsed;
         
         //Add predicted days after latest period day until cycle length is reached
         for (var i = 0; i < difference; i++)
         {
-            predictedPeriodDays.Add(latestPeriodDay.Date.AddDays(i + 1));
+            predictedPeriodDays.Add(latestPeriodDay.AddDays(i + 1));
         }
         
         //get predicted period days for the next three cycles
@@ -156,7 +159,7 @@ public class CycleService : ICycleService
                 predictedPeriodDays.Add(futureCycleStartDay.Date.AddDays(cycleLength + j));
             }
         }
-        
+
         return predictedPeriodDays;
     }
 
