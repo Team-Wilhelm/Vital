@@ -6,18 +6,17 @@ import {MetricService} from "../../services/metric.service";
 @Component({
   selector: 'app-current-cycle',
   template: `
-      <div class="flex h-full justify-between items-baseline">
+      <div class="flex h-full justify-between items-baseline overflow-hidden">
           <div *ngFor="let day of dateKeys" class="flex flex-col items-center text-center justify-center mx-2"
                [ngStyle]="{
          'opacity': getOpacity(day),
          'font-size': 'inherit',
-         'width': getSize(day) + 'px',
           'font-weight': getFontWeight(day),
        }">
 
               <div class="tooltip tooltip-primary" [attr.data-tip]="getTooltip(day)">
                   <div
-                          class="rounded-md overflow-hidden border-[3px] {{getBackgroundColor(day).bgColour}} {{getBackgroundColor(day).borderColour}} p-2 w-12 h-20"
+                          class="rounded-md overflow-hidden border-[3px] {{getBackgroundColor(day).bgColour}} {{getBackgroundColor(day).borderColour}} p-2 w-10 md:w-12 h-20"
                           [ngStyle]="{'height': getSize(day) + 'px'}">
                   </div>
                   <p class="text-sm sm:text-base md:text-lg lg:text-lg xs:text-xs mt-2">{{ dateString(day) }}</p>
