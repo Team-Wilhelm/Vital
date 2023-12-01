@@ -6,21 +6,24 @@ import {MetricService} from "../../services/metric.service";
 @Component({
   selector: 'app-current-cycle',
   template: `
-    <div class="flex h-full justify-between items-center">
-      <div *ngFor="let day of dateKeys" class="flex flex-col items-center text-center mx-2"
-           [ngStyle]="{
+      <div class="flex h-full justify-between items-baseline">
+          <div *ngFor="let day of dateKeys" class="flex flex-col items-center text-center justify-center mx-2"
+               [ngStyle]="{
          'opacity': getOpacity(day),
          'font-size': 'inherit',
          'width': getSize(day) + 'px',
-         'height': getSize(day) + 'px',
           'font-weight': getFontWeight(day),
        }">
-        <div
-          class="rounded-md overflow-hidden {{getBackgroundColor(day).bgColour}} {{getBackgroundColor(day).borderColour}} p-2 w-12 h-20" style="border-width: 3px">
-        </div>
-        <p class="text-sm sm:text-base md:text-lg lg:text-lg xs:text-xs mt-2">{{ dateString(day) }}</p>
+
+              <div class="tooltip tooltip-primary" [attr.data-tip]="getTooltip(day)">
+                  <div
+                          class="rounded-md overflow-hidden border-[3px] {{getBackgroundColor(day).bgColour}} {{getBackgroundColor(day).borderColour}} p-2 w-12 h-20"
+                          [ngStyle]="{'height': getSize(day) + 'px'}">
+                  </div>
+                  <p class="text-sm sm:text-base md:text-lg lg:text-lg xs:text-xs mt-2">{{ dateString(day) }}</p>
+              </div>
+          </div>
       </div>
-    </div>
   `
 })
 
@@ -28,7 +31,14 @@ export class CurrentCycleComponent implements OnInit {
   title = 'current-cycle';
   @Input() date: string = '';
   today: Date = new Date();
-  dateMap: Map<Date, {bgColour: string, borderColour: string, opacity: number, size: number, fontWeight: number, tooltip: string}> = new Map();
+  dateMap: Map<Date, {
+    bgColour: string,
+    borderColour: string,
+    opacity: number,
+    size: number,
+    fontWeight: number,
+    tooltip: string
+  }> = new Map();
   dateKeys: Date[] = [];
   periodDays: Date[] = [];
   predictedPeriodDays: Date[] = [];
@@ -37,7 +47,6 @@ export class CurrentCycleComponent implements OnInit {
 
   }
 
-  //TODO tooltip on hover to show what this business is about
   async ngOnInit() {
     const originalToday = new Date(this.today);
     const threeDaysAgo = new Date(originalToday.setDate(originalToday.getDate() - 3));
@@ -66,12 +75,12 @@ export class CurrentCycleComponent implements OnInit {
       let bgColour = 'bg-non-period-day';
       let borderColour = 'border-non-period-day-border';
       let opacity = 1;
-      let size = 100;
+      let size = 75;
       let fontWeight = 400;
       let tooltip = '';
 
       if (conditionMapping.isToday) {
-        size = 135;
+        size = 90;
         fontWeight = 600;
       }
 
@@ -87,9 +96,11 @@ export class CurrentCycleComponent implements OnInit {
         bgColour = 'bg-period-day';
         borderColour = 'border-period-day-border';
         tooltip = 'Period';
+      } else {
+        tooltip = 'Non-period day';
       }
 
-      this.dateMap.set(date, { bgColour, borderColour, opacity, size , fontWeight , tooltip });
+      this.dateMap.set(date, {bgColour, borderColour, opacity, size, fontWeight, tooltip});
     }
     this.dateKeys = Array.from(this.dateMap.keys());
   }
@@ -106,7 +117,7 @@ export class CurrentCycleComponent implements OnInit {
     if (colors) {
       return colors;
     } else {
-      return { bgColour: '', borderColour: '' };
+      return {bgColour: '', borderColour: ''};
     }
   }
 
@@ -118,7 +129,7 @@ export class CurrentCycleComponent implements OnInit {
     return this.dateMap.get(date)?.size || 100;
   }
 
-getFontWeight(date: Date): number {
+  getFontWeight(date: Date): number {
     return this.dateMap.get(date)?.fontWeight || 400;
   }
 
@@ -130,5 +141,4 @@ getFontWeight(date: Date): number {
     const dateFormat = 'dd/MM';
     return this.datePipe.transform(date, dateFormat) || '';
   }
-
 }
