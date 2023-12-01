@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Infrastructure.Repository.Interface;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 using Models;
 using Models.Days;
 using Models.Dto.Cycle;
@@ -165,6 +166,22 @@ public class CycleService : ICycleService
             }
         }
         return predictedPeriodDays;
+    }
+
+    public async Task<List<CycleAnalyticsDto>> GetAnalytics(Guid userId, int numberOfCycles)
+    {
+        var cycleList = await _cycleRepository.GetRecentCyclesWithDays(userId, numberOfCycles);
+        var cycleAnalytics = cycleList.Select(cycle => new CycleAnalyticsDto
+        {
+            StartDate = cycle.StartDate,
+            EndDate = (DateTimeOffset)cycle.EndDate!, 
+            PeriodDays = cycle.CycleDays
+                .Where(cd => cd.IsPeriod)
+                .Select(cd => cd.Date)
+                .ToList()
+        }).ToList();
+
+        return cycleAnalytics;
     }
 
     /// <summary>

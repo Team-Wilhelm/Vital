@@ -17,9 +17,7 @@ public class MappingProfile : Profile
         CreateMap<CreateCycleDto, Cycle>();
         CreateMap<UpdateCycleDto, Cycle>();
         CreateMap<PaginatedList<Cycle>, PaginatedList<CycleDto>>();
-
-        // CalendarDay
-        CreateMap<CalendarDay, CalendarDayDto>();
+        
 
         // Metric
         CreateMap<Metrics, MetricsDto>();

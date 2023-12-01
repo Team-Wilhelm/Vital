@@ -54,11 +54,8 @@ public class CycleRepository : ICycleRepository
     public async Task<List<PeriodAndCycleLengthDto>> GetPeriodAndCycleLengths(Guid userId, int numberOfCycles)
     {
         //get list of last number of cycles and their cycle days where enddate is today or later
-        var cycleList = await GetRecentCycles(userId, numberOfCycles);
-        cycleList.ForEach(cycle =>
-        {
-            cycle.CycleDays = GetCycleDaysForCycleAsync(cycle.Id).Result.ToList();
-        });
+        var cycleList = await GetRecentCyclesWithDays(userId, numberOfCycles);
+        
         //get difference between start and end dates of each cycle
         var periodAndCycleLengths = cycleList.Select(cycle =>
         {
@@ -79,17 +76,18 @@ public class CycleRepository : ICycleRepository
     /// <param name="userId"></param>
     /// <param name="numberOfCycles"></param>
     /// <returns></returns>
-    private async Task<List<Cycle>> GetRecentCycles(Guid userId, int numberOfCycles)
+    public async Task<List<Cycle>> GetRecentCyclesWithDays(Guid userId, int numberOfCycles)
     {
         var sql =
             @"SELECT * FROM ""Cycles"" WHERE ""UserId""=@UserId AND ""EndDate"" IS NOT NULL ORDER BY ""StartDate"" DESC LIMIT @NumberOfCycles";
         var cycles = await _db.QueryAsync<Cycle>(sql, new { UserId = userId, NumberOfCycles = numberOfCycles });
         var cycleList = cycles.ToList();
+        cycleList.ForEach(cycle =>
+        {
+            cycle.CycleDays = GetCycleDaysForCycleAsync(cycle.Id).Result.ToList();
+        });
         return cycleList;
     }
-    
-    
-
 
     public async Task<Cycle> Create(Cycle cycle)
     {

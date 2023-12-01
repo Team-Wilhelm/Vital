@@ -55,4 +55,11 @@ public interface ICycleService
     /// <param name="userId"></param>
     /// <returns></returns>
     Task<Cycle?> GetCurrentCycle(Guid userId);
+
+    /// <summary>
+    /// Retrieves the last x number cycles for the specified user.
+    /// </summary>
+    /// <param name="userId"></param>
+    /// <returns></returns>
+    Task<List<CycleAnalyticsDto>> GetAnalytics(Guid userId, int numberOfCycles);
 }
