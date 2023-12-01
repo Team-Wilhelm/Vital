@@ -7,36 +7,41 @@ import {FormControl, FormGroup, Validators} from "@angular/forms";
 @Component({
   selector: 'metric-selection-item',
   template: `
-    <div class="flex pt-3 min-h-[150px]">
-      <div class="flex flex-grow items-center">
-        <label class="label cursor-pointer" for="had-flow">
-          <span class="label-text text-xl mr-10"> {{metric?.name}}</span>
-        </label>
-        <input type="checkbox" id="had-flow" class="checkbox checkbox-accent" #checkbox
-               (click)="metric && metricService.addOrRemoveMetric(metric)"/>
-      </div>
+      <div class="flex flex-col pt-3
+      md:flex-row md:items-center">
+          <div class="flex flex-grow justify-between items-center mb-3
+          md:mb-0">
+              <label class="label cursor-pointer" for="had-flow">
+                  <span class="label-text text-xl"> {{ metric?.name }}</span>
+              </label>
 
-      <div class="flex items-center">
-        <!-- Optional values -->
-        <div class="dropdown dropdown-hover dropdown-left mr-5">
-          <label tabindex="0" class="btn m-1">{{metric && metricService.getSelectedOptionalValue(metric.id)}}</label>
-          <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
-            <li *ngFor="let value of metric?.values"
-                (click)="metric && metricService.selectOptionalValue(metric.id, value.id)">
-              <a>
-                {{value.name}}
-              </a>
-            </li>
-          </ul>
-        </div>
 
-        <input type="number" class="input max-w-[6rem] me-1" [formControl]="timeFormGroup.controls.hour"
-               (input)="updateMetricTime()" inputmode="numeric" pattern="[0-9]*">
-        <span>:</span>
-        <input type="number" class="input max-w-[6rem] ms-1" [formControl]="timeFormGroup.controls.minute"
-               (input)="updateMetricTime()" inputmode="numeric" pattern="[0-9]*">
+              <!-- Time -->
+              <div class="flex items-center mr-3">
+                  <input type="number" class="input input-bordered max-w-[5rem] me-1" [formControl]="timeFormGroup.controls.hour"
+                         (input)="updateMetricTime()" inputmode="numeric" pattern="[0-9]*">
+                  <span>:</span>
+                  <input type="number" class="input input-bordered max-w-[5rem] ms-1" [formControl]="timeFormGroup.controls.minute"
+                         (input)="updateMetricTime()" inputmode="numeric" pattern="[0-9]*">
+              </div>
+          </div>
+
+          <div class="flex  items-center justify-between mr-3">
+              <div class="flex-grow"></div>
+              <!-- Optional values -->
+              <select class="select select-bordered order-2 ml-3
+               md:order-1 md:mr-3 md:ml-0">
+                  <option selected>Optional</option>
+                  <option *ngFor="let value of metric?.values"
+                          (click)="metric && metricService.selectOptionalValue(metric.id, value.id)">{{ value.name }}
+                  </option>
+              </select>
+
+              <!-- Checkbox -->
+              <input type="checkbox" id="had-flow" class="checkbox checkbox-primary border-2 order-1 md:order-2 " #checkbox
+                     (click)="metric && metricService.addOrRemoveMetric(metric)"/>
+          </div>
       </div>
-    </div>
   `
 })
 
