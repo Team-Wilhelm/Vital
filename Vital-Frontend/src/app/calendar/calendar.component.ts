@@ -10,7 +10,7 @@ import {CycleService} from "../services/cycle.service";
 
 @Component({
   selector: 'calendar',
-  templateUrl: './calendar.component.html',
+  templateUrl: './calendar.component.html'
 })
 export class CalendarComponent implements AfterViewInit {
 
@@ -83,7 +83,6 @@ export class CalendarComponent implements AfterViewInit {
       date = new Date(date);
       this.createEvent(date);
     }
-    //console.log('getting events for: ', firstDay, ' to ', lastDay > today ? today : lastDay);
   }
 
   async getPredictedPeriodDays() {

@@ -2,3 +2,14 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  --fc-button-text-color: #000000;
+  --fc-button-bg-color: oklch(var(--p));
+  --fc-button-border-color: oklch(var(--p));
+  --fc-button-hover-bg-color: #baabbf;
+  --fc-button-hover-border-color: #baabbf;
+  --fc-button-active-bg-color: #ac9fb1;
+  --fc-button-active-border-color: #ac9fb1;
+  --fc-today-bg-color: rgba(255, 220, 40, 0.15);
+}
