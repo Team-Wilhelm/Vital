@@ -1,43 +1,46 @@
-<body class="bg-base-200">
+<body class="bg-base-200 overflow-auto h-full">
 
 <div class="absolute top-0 left-0 right-0 bottom-0" style="background-image: url('assets/Mark.png')">
 
 </div>
-<div class="h-screen relative flex justify-center lg:text-2xl text-xl">
+<div class="relative flex justify-center lg:text-2xl text-xl">
   <div class="container px-3 flex flex-col w-11/12 lg:w-4/5">
     <div class="flex justify-between py-5"> <!-- Header -->
       <a class="card shadow text-4xl text-black w-1/3 p-3 bg-base-100" href="/">
 
-      <div class="text-center">
+        <div class="text-center">
           <h1 class="w-full">
             VITAL
           </h1>
-      </div>
+        </div>
       </a>
 
-      <div class="card shadow bg-base-100 p-3 flex flex-row" *ngIf="tokenService.getToken() !== null && tokenService.getToken() !== undefined">
+      <div class="card shadow bg-base-100 p-3 flex flex-row"
+           *ngIf="tokenService.getToken() !== null && tokenService.getToken() !== null">
         <button class="btn me-3" (click)="profile()">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975m11.963 0a9 9 0 10-11.963 0m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275M15 9.75a3 3 0 11-6 0 3 3 0 016 0z" />
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+               stroke="currentColor" class="w-8 h-8">
+            <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975m11.963 0a9 9 0 10-11.963 0m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275M15 9.75a3 3 0 11-6 0 3 3 0 016 0z"/>
           </svg>
         </button>
         <button class="btn" (click)="logout()">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" />
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+               stroke="currentColor" class="w-6 h-6">
+            <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75"/>
           </svg>
           <span class="hidden md:visible">Log Out</span>
-          </button>
+        </button>
       </div>
 
     </div>
 
-    <main class="container px-3 pb-3 overflow-auto h-full"> <!-- Main Content -->
+    <main class="container px-3 pb-3"> <!-- Main Content -->
       <app-toast></app-toast>
       <router-outlet>
       </router-outlet>
     </main>
   </div>
 </div>
-
-
 </body>

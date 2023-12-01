@@ -52,7 +52,7 @@
          [formControl]="registerForm.controls.repeatPassword"
          [class.input-error]="registerForm.controls.repeatPassword.invalid && registerForm.controls.repeatPassword.touched"
   >
-  <p [hidden]="!(registerForm.invalid && registerForm.controls.email.valid && registerForm.controls.password.valid)">
+  <p class="text-error" [hidden]="!(registerForm.invalid && registerForm.controls.email.valid && registerForm.controls.password.valid)">
     Passwords do not match.</p>
 
   <!-- Register button -->
