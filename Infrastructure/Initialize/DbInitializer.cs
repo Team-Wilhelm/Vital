@@ -51,7 +51,7 @@ public class DbInitializer
         {
             Id = Guid.Parse("2AF6BC6C-B3C0-4E77-97D9-9FA6D36C4A0A"),
             UserId = Guid.Parse("ADFEAD4C-823B-41E5-9C7E-C84AA04192A4"),
-            StartDate =  new DateTimeOffset(utcNow.Year, utcNow.Month, utcNow.Day-5, 12, 0, 0, TimeSpan.Zero)
+            StartDate = new DateTimeOffset(utcNow.AddDays(-5).Date, TimeSpan.Zero).AddHours(12)
         });
         
         // User 2 with a current period
@@ -70,7 +70,7 @@ public class DbInitializer
         {
             Id = Guid.Parse("EA2DCAC0-47C5-4406-BA1C-FA870EE5577E"),
             UserId = Guid.Parse("B1F0B1F0-B1F0-B1F0-B1F0-B1F0B1F0B1F0"),
-            StartDate =  new DateTimeOffset(utcNow.Year, utcNow.Month, utcNow.Day-2, 12, 0, 0, TimeSpan.Zero)
+            StartDate = new DateTimeOffset(utcNow.AddDays(-2).Date, TimeSpan.Zero).AddHours(12)
         });
 
         // Add metrics
@@ -140,7 +140,7 @@ public class DbInitializer
         {
             Id = Guid.Parse("0029A2AF-4FC7-497F-BFEC-6E32CDC12623"),
             UserId = Guid.Parse("ADFEAD4C-823B-41E5-9C7E-C84AA04192A4"),
-            Date =  new DateTimeOffset(utcNow.Year, utcNow.Month, utcNow.Day-5, 12, 0, 0, TimeSpan.Zero),
+            Date = new DateTimeOffset(utcNow.AddDays(-5).Date, TimeSpan.Zero).AddHours(12),
             CycleId = Guid.Parse("2AF6BC6C-B3C0-4E77-97D9-9FA6D36C4A0A"),
             IsPeriod = true,
             SelectedMetrics = new List<CalendarDayMetric>()
@@ -158,7 +158,7 @@ public class DbInitializer
         {
             Id = Guid.Parse("E429A2AF-4FC7-497F-BFEC-6E32CDC12623"),
             UserId = Guid.Parse("ADFEAD4C-823B-41E5-9C7E-C84AA04192A4"),
-            Date =  new DateTimeOffset(utcNow.Year, utcNow.Month, utcNow.Day-4, 12, 0, 0, TimeSpan.Zero),
+            Date = new DateTimeOffset(utcNow.AddDays(-4).Date, TimeSpan.Zero).AddHours(12),
             CycleId = Guid.Parse("2AF6BC6C-B3C0-4E77-97D9-9FA6D36C4A0A"),
             IsPeriod = true,
             SelectedMetrics = new List<CalendarDayMetric>()
@@ -176,7 +176,7 @@ public class DbInitializer
         {
             Id = Guid.Parse("9B294EA6-0440-427F-84D1-8058AEDB3B12"),
             UserId = Guid.Parse("ADFEAD4C-823B-41E5-9C7E-C84AA04192A4"),
-            Date =  new DateTimeOffset(utcNow.Year, utcNow.Month, utcNow.Day-3, 12, 0, 0, TimeSpan.Zero),
+            Date = new DateTimeOffset(utcNow.AddDays(-3).Date, TimeSpan.Zero).AddHours(12),
             CycleId = Guid.Parse("2AF6BC6C-B3C0-4E77-97D9-9FA6D36C4A0A"),
             IsPeriod = true,
             SelectedMetrics = new List<CalendarDayMetric>()
@@ -195,7 +195,7 @@ public class DbInitializer
         {
             Id = Guid.Parse("388725C0-63AD-4EC8-A5E5-E760ACFCB0F0"),
             UserId = Guid.Parse("ADFEAD4C-823B-41E5-9C7E-C84AA04192A4"),
-            Date =  new DateTimeOffset(utcNow.Year, utcNow.Month, utcNow.Day-2, 12, 0, 0, TimeSpan.Zero),
+            Date = new DateTimeOffset(utcNow.AddDays(-2).Date, TimeSpan.Zero).AddHours(12),
             IsPeriod = true,
             CycleId = Guid.Parse("2AF6BC6C-B3C0-4E77-97D9-9FA6D36C4A0A"),
             SelectedMetrics = new List<CalendarDayMetric>()
@@ -213,7 +213,7 @@ public class DbInitializer
         {
             Id = Guid.NewGuid(),
             UserId = Guid.Parse("ADFEAD4C-823B-41E5-9C7E-C84AA04192A4"),
-            Date =  new DateTimeOffset(utcNow.Year, utcNow.Month, utcNow.Day-1, 12, 0, 0, TimeSpan.Zero),
+            Date = new DateTimeOffset(utcNow.AddDays(-1).Date, TimeSpan.Zero).AddHours(12),
             CycleId = Guid.Parse("2AF6BC6C-B3C0-4E77-97D9-9FA6D36C4A0A"),
             IsPeriod = false,
             SelectedMetrics = new List<CalendarDayMetric>()
@@ -244,7 +244,7 @@ public class DbInitializer
         {
             Id = Guid.Parse("EFE6886A-374D-48E2-A3E7-16637865ED74"),
             UserId = Guid.Parse("B1F0B1F0-B1F0-B1F0-B1F0-B1F0B1F0B1F0"),
-            Date =  new DateTimeOffset(utcNow.Year, utcNow.Month, utcNow.Day-1, 12, 0, 0, TimeSpan.Zero),
+            Date = new DateTimeOffset(utcNow.AddDays(-1).Date, TimeSpan.Zero).AddHours(12),
             CycleId = Guid.Parse("EA2DCAC0-47C5-4406-BA1C-FA870EE5577E"),
             IsPeriod = true,
             SelectedMetrics = new List<CalendarDayMetric>()
