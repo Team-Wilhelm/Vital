@@ -1,5 +1,8 @@
-import { Component, ViewEncapsulation, OnInit } from '@angular/core';
+import {Component, ViewEncapsulation, OnInit} from '@angular/core';
 import Chart from 'chart.js/auto';
+import {CycleService} from "../services/cycle.service";
+import {CycleAnalyticsDto} from '../interfaces/analytics.interface';
+
 
 @Component({
   selector: 'app-analytics',
@@ -7,19 +10,30 @@ import Chart from 'chart.js/auto';
   styleUrls: ['./analytics.component.css'],
   encapsulation: ViewEncapsulation.None
 })
-export class AnalyticsComponent implements OnInit { //corrected typo here, replaced imlements with implements
-  public chart: any;
-  public chart2: any;
+export class AnalyticsComponent implements OnInit {
+  public analytics: CycleAnalyticsDto[] = [];
+  public allCycleDays: number[] = [];
+  public allPeriodDays: number[] = [];
+  public allNonPeriodDays: number[] = [];
 
-  createChart(){
-    var myChart = new Chart('myChart', {
+
+  constructor(private cycleService: CycleService) {
+  }
+
+  async createChart(numberOfCycles: number) {
+    this.analytics = await this.cycleService.getAnalytics(numberOfCycles);
+    this.allCycleDays = this.getTotalCycleDays(this.analytics);
+    this.allPeriodDays = this.getTotalPeriodDays(this.analytics);
+    this.allNonPeriodDays = this.getNonPeriodDays(this.analytics);
+
+    const chart = new Chart('Cycle analytics', {
       type: 'bar',
       data: {
-        labels: ['26 days', '33 days', '26 days', '15 days', '26 days', '21 days', '27 days', '35 days'],
+        labels: this.allCycleDays,
         datasets: [
           {
             label: "Period",
-            data: [6, 4, 7, 5, 8, 4, 6, 5],
+            data: this.allPeriodDays,
             backgroundColor: [
               'rgb(246, 203, 209, 0.2)'
             ],
@@ -29,8 +43,8 @@ export class AnalyticsComponent implements OnInit { //corrected typo here, repla
             borderWidth: 2
           },
           {
-            label: "Cycle",
-            data: [20, 29, 19, 10, 18, 17, 21, 30],
+            label: "Non period",
+            data: this.allNonPeriodDays,
             backgroundColor: [
               'rgb(112, 172, 199, 0.2)'
             ],
@@ -53,11 +67,23 @@ export class AnalyticsComponent implements OnInit { //corrected typo here, repla
           }
         }
       }
+
     });
   }
 
-  ngOnInit(): void {
-    this.createChart();
+  async ngOnInit(): Promise<void> {
+    await this.createChart(5); //TODO: make this come from user input
   }
 
+  getTotalCycleDays(cycleAnalytics: CycleAnalyticsDto[]) {
+    return cycleAnalytics.map(a => a.EndDate.getTime() - a.StartDate.getTime());
+  }
+
+  getTotalPeriodDays(cycleAnalytics: CycleAnalyticsDto[]) {
+    return cycleAnalytics.map(a => a.PeriodDays.length);
+  }
+
+  getNonPeriodDays(cycleAnalytics: CycleAnalyticsDto[]) {
+    return cycleAnalytics.map(a => a.EndDate.getTime() - (a.PeriodDays.length * 86400000) - a.StartDate.getTime());
+  }
 }
