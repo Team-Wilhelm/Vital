@@ -1,7 +1,7 @@
 import {Component, OnInit, ViewEncapsulation} from '@angular/core';
 import Chart from 'chart.js/auto';
 import {CycleService} from "../services/cycle.service";
-import {CycleAnalyticsDto} from '../interfaces/analytics.interface';
+import {CycleAnalyticsDto, PeriodCycleStatsDto} from '../interfaces/analytics.interface';
 
 
 @Component({
@@ -15,16 +15,28 @@ export class AnalyticsComponent implements OnInit {
   public allCycleDays: number[] = [];
   public allPeriodDays: number[] = [];
   public allNonPeriodDays: number[] = [];
-
+  public periodCycleStats: PeriodCycleStatsDto | undefined;
+  public selectedOption: number = 3
+  public options: number[] = [3, 6, 9, 12];
+  public chart?: Chart | null;
 
   constructor(private cycleService: CycleService) {
+
   }
 
   async createChart(numberOfCycles: number) {
+
     this.analytics = await this.cycleService.getAnalytics(numberOfCycles);
+    if (this.analytics.length == 0) return;
+
     this.allCycleDays = this.getTotalCycleDays(this.analytics);
     this.allPeriodDays = this.getTotalPeriodDays(this.analytics);
     this.allNonPeriodDays = this.getNonPeriodDays(this.analytics);
+
+    if (this.chart) {
+      this.chart.destroy();
+      this.chart = null;
+    }
 
     const chart = new Chart('Cycle analytics', {
       type: 'bar',
@@ -72,6 +84,7 @@ export class AnalyticsComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     await this.createChart(5); //TODO: make this come from user input
+    this.periodCycleStats = await this.cycleService.getUserStats();
   }
 
   getTotalCycleDays(cycleAnalytics: CycleAnalyticsDto[]) {
@@ -85,4 +98,11 @@ export class AnalyticsComponent implements OnInit {
   getNonPeriodDays(cycleAnalytics: CycleAnalyticsDto[]) {
     return cycleAnalytics.map(a => a.EndDate.getTime() - (a.PeriodDays.length * 86400000) - a.StartDate.getTime());
   }
+
+  async onOptionsSelected(item: number) {
+    this.selectedOption = item;
+    await this.createChart(item);
+  }
 }
+
+

@@ -77,11 +77,11 @@ export class CalendarComponent implements AfterViewInit {
 
     this.dataService.setClickedDate(this.clickedDate);
     if (this.selectedDateElement) {
-      this.selectedDateElement.classList.remove('bg-non-period-day-border');
+      this.selectedDateElement.classList.remove('bg-selected-day');
     }
     // Add the custom class to the clicked date cell
     this.selectedDateElement = arg.dayEl;
-    this.selectedDateElement.classList.add('bg-non-period-day-border');
+    this.selectedDateElement.classList.add('bg-selected-day');
   }
 
   async handleDatesSet(arg: any) {

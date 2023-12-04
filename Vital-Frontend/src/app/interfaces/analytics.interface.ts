@@ -3,3 +3,9 @@ export interface CycleAnalyticsDto {
   EndDate: Date;
   PeriodDays: Date[];
 }
+
+export interface PeriodCycleStatsDto {
+  averageCycleLength: number,
+  averagePeriodLength: number,
+  currentCycleLength: number
+}
