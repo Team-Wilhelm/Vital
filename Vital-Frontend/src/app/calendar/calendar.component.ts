@@ -116,6 +116,7 @@ export class CalendarComponent implements AfterViewInit {
     }
   }
 
+  //TODO why no period event for 30/11? Is date being dumb?
   createEvent(date: Date) {
     const newEvent = {
       start: date,
