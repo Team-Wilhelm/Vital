@@ -5,7 +5,7 @@
             lg:w-[80%]
             xl:absolute lg:top-[20%] xl:right-[10%]
             xl:w-[30rem] xl:h-[30rem] xl:rounded-2xl xl:shadow-lg"
->
+          [class.xl:h-[40rem]] ="passwordField.matches(':focus')">
   <p class="mb-3">In order to use Vital, please log in or register.</p>
 
   <!-- E-mail -->
@@ -52,7 +52,7 @@
          [formControl]="registerForm.controls.repeatPassword"
          [class.input-error]="registerForm.controls.repeatPassword.invalid && registerForm.controls.repeatPassword.touched"
   >
-  <p [hidden]="!(registerForm.invalid && registerForm.controls.email.valid && registerForm.controls.password.valid)">
+  <p class="text-error" [hidden]="!(registerForm.invalid && registerForm.controls.email.valid && registerForm.controls.password.valid)">
     Passwords do not match.</p>
 
   <!-- Register button -->

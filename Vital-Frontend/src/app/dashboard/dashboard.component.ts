@@ -1,11 +1,12 @@
-import {AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {CycleService} from "../services/cycle.service";
 import {Router} from "@angular/router";
 import {MetricService} from "../services/metric.service";
-import {CalendarDayMetric, CycleDay} from "../interfaces/day.interface";
+import {CycleDay} from "../interfaces/day.interface";
 import {DataService} from "../services/data.service";
 import {Subscription} from "rxjs";
 import {CalendarComponent} from "../calendar/calendar.component";
+import {ToastService} from "../services/toast.service";
 
 @Component({
   selector: 'app-dashboard',
@@ -24,7 +25,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
   nextPeriodInDays: number = 0;
   currentCycleDays: CycleDay[] = [];
 
-  constructor(public cycleService: CycleService, public metricService: MetricService, public dataService: DataService, private router: Router) {
+  constructor(public cycleService: CycleService,
+              public metricService: MetricService,
+              public dataService: DataService,
+              private toastService: ToastService,
+              private router: Router) {
     cycleService.getPredictedPeriod().then(() => {
       this.nextPeriodInDays = this.calculateNextPeriodInDays();
     });
@@ -38,12 +43,14 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     this.metricDeletedSubscription = this.metricService.metricDeleted$.subscribe(metricDeleted => {
       if (metricDeleted) {
+        this.showToast('Metric deleted', 'The metric was successfully deleted', 'success');
         this.updateCalendar();
       }
     });
 
     this.metricAddedSubscription = this.metricService.newMetricAdded$.subscribe(newMetricAdded => {
       if (newMetricAdded) {
+        this.showToast('Metric added', 'The metric was successfully added', 'success');
         this.updateCalendar();
       }
     });
@@ -78,7 +85,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
   updateDashboardData(date: Date) {
     // Call the methods to update your dashboard data here
     this.metricService.getUsersMetric(date);
-    // TODO: Update calendar events when a metric is deleted
   }
 
   updateCalendar() {
@@ -86,5 +92,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.calendarComponent && this.calendarComponent.getPredictedPeriodDays();
     this.metricService.setMetricDeleted(false);
     this.metricService.setNewMetricAdded(false);
+  }
+
+  showToast(title: string, message: string, type: 'info' | 'success' | 'error') {
+    this.toastService.show(message, title, type);
   }
 }

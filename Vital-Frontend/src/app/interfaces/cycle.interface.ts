@@ -1,4 +1,4 @@
-import {CalendarDay, CycleDay} from './day.interface';
+import {CycleDay} from './day.interface';
 import {ApplicationUser} from "./user.interface";
 
 export interface Cycle {

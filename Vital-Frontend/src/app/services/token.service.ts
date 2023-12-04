@@ -30,10 +30,16 @@ export class TokenService {
   }
 
   public async login(loginDto: LoginDto) {
-    const request = this.httpClient.post<any>(environment.baseUrl + '/identity/auth/login', loginDto);
-    const response = await firstValueFrom(request);
-    const token = response.token;
-    this.setToken(token);
+    try {
+      const request = this.httpClient.post<any>(environment.baseUrl + '/identity/auth/login', loginDto);
+      const response = await firstValueFrom(request);
+      const token = response.token;
+      this.setToken(token);
+    } catch (e : any) {
+      if (e.status === 400) {
+        throw new Error('Invalid credentials');
+      }
+    }
   }
 
   public async register(registerDto: RegisterDto) {

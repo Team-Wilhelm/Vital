@@ -2,17 +2,15 @@
 lg:grid-cols-6
 lg:gap-4
 
-flex flex-col
-justify-between
-min-h-[calc(100vh-10rem)]
-">
-  <div class="col-span-4 gap-4 grid grid-cols-3">
+flex flex-col">
+  <div class="col-span-4 grid grid-cols-3 order-3 mb-3
+   lg:mb-0 lg:order-none lg:gap-4 ">
     <div class="col-span-1">
       <!-- Upcoming period -->
       <stat-card class="lg:col-span-1 hidden lg:block lg:order-none stats shadow mb-5" cardColor="bg-accent"
                  [redirectLink]="'/analytics'">
         <div class="stat-title break-normal">Estimated next period in</div>
-        <div class="stat-value">{{nextPeriodInDays}} days</div>
+        <div class="stat-value">{{ nextPeriodInDays }} days</div>
         <div class="stat-desc"> Click for a detailed overview ↗</div>
 
       </stat-card>
@@ -25,47 +23,44 @@ min-h-[calc(100vh-10rem)]
     </div>
     <!-- Metrics -->
     <app-card cardTitle="Metrics"
-              class="lg:col-span-2 order-4 lg:order-none h-full justify-between overflow-y-auto card shadow"
+              class="lg:col-span-2
+              h-full justify-between overflow-y-auto card shadow
+              col-span-3"
               [hasPlusButton]="true"
               (plusButtonClicked)="redirectToMetrics()">
-        <div *ngFor="let calendarDayMetric of metricService.loggedMetrics; index as i" class="flex justify-between items-center">
-            <metric-list-item [calendarDayMetric]="calendarDayMetric"
-                              [listIndex]="i"
-                              class="w-full"
-            >
-            </metric-list-item>
-        </div>
+      <div *ngFor="let calendarDayMetric of metricService.loggedMetrics; index as i"
+           class="flex justify-between items-center">
+        <metric-list-item [calendarDayMetric]="calendarDayMetric"
+                          [listIndex]="i"
+                          class="w-full">
+        </metric-list-item>
+      </div>
+      <p *ngIf="metricService.loggedMetrics.length === 0">No metrics logged for today</p>
     </app-card>
   </div>
 
 
-    <!-- Calendar -->
-    <app-card class="text-primary-content lg:col-span-2 lg:row-span-3 order-2 lg:order-none">
-        <calendar #calendarComponent></calendar>
-    </app-card>
+  <!-- Calendar -->
+  <app-card class="text-primary-content order-2 mb-3 lg:order-none lg:mb-0 lg:row-span-2  lg:col-span-2">
+    <calendar #calendarComponent></calendar>
+  </app-card>
 
   <!-- Current cycle -->
   <app-card cardTitle="Week overview"
-            class="lg:col-span-4 lg:row-span-1 order-1 lg:order-none
-            max-h-64 overflow-x-auto card shadow"
-  >
+            class="order-1 max-h-64 mb-3 overflow-x-auto card shadow
+                        lg:order-none lg:col-span-4 lg:row-span-1 lg:mb-0">
     <app-current-cycle>
     </app-current-cycle>
   </app-card>
 
   <!-- Medications -->
   <app-card cardTitle="Medication"
-            class="lg:col-span-4 lg:row-span-2 order-3 lg:order-none">
+            class="order-4
+            lg:col-span-4 lg:row-span-2 lg:order-none">
 
-      <div class="flex-col h-full justify-between max-h-[300px] overflow-y-scroll">
-          <medication-list-item *ngFor="let number of [1,2,3]" medicationName="Lexaurin" medicationDosage="{{number}}"
-                                medicationTime="22:22" [listIndex]="number"/>
-      </div>
+    <div class="flex-col h-full justify-between max-h-[300px] overflow-y-scroll">
+      <medication-list-item *ngFor="let number of [1,2,3]" medicationName="Lexaurin" medicationDosage="{{number}}"
+                            medicationTime="22:22" [listIndex]="number"/>
+    </div>
   </app-card>
-
-  <!-- Slay T-rex
-  <div class="card bg-card hidden lg:block lg:col-span-2 lg:row-span-2 lg:order-none">
-    <figure><img src="assets/OIG.png" alt="Slay T-rex"/></figure>
-  </div>
-  -->
 </div>

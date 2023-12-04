@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, ViewChild} from '@angular/core';
 import {Calendar, CalendarOptions} from '@fullcalendar/core';
 import {FullCalendarComponent} from '@fullcalendar/angular';
 import dayGridPlugin from '@fullcalendar/daygrid';
@@ -10,7 +10,7 @@ import {CycleService} from "../services/cycle.service";
 
 @Component({
   selector: 'calendar',
-  templateUrl: './calendar.component.html',
+  templateUrl: './calendar.component.html'
 })
 export class CalendarComponent implements AfterViewInit {
 
@@ -42,6 +42,30 @@ export class CalendarComponent implements AfterViewInit {
     weekNumberCalculation: 'ISO',
     height: 'auto',
     events: this.eventList,
+    eventMouseEnter: function (info) {
+      info.el.style.cursor = 'pointer';
+      const tooltip = document.createElement('div');
+      tooltip.classList.add('fc-tooltip');
+      tooltip.style.position = 'absolute';
+      tooltip.style.zIndex = '10000';
+      tooltip.style.backgroundColor = 'rgba(0, 0, 0, 0.85)';
+      tooltip.style.color = 'white';
+      tooltip.style.padding = '5px 10px';
+      tooltip.style.borderRadius = '3px';
+      tooltip.style.fontSize = '14px';
+      tooltip.innerText = info.event.extendedProps['description'];
+      document.body.appendChild(tooltip);
+      info.el.onmousemove = (e) => {
+        tooltip.style.left = e.pageX + 10 + 'px';
+        tooltip.style.top = e.pageY + 10 + 'px';
+      };
+    },
+    eventMouseLeave: function () {
+      const tooltip = document.querySelector('.fc-tooltip');
+      if (tooltip) {
+        tooltip.remove();
+      }
+    }
   };
 
   async handleDateClick(arg: DateClickArg) {
@@ -83,7 +107,6 @@ export class CalendarComponent implements AfterViewInit {
       date = new Date(date);
       this.createEvent(date);
     }
-    //console.log('getting events for: ', firstDay, ' to ', lastDay > today ? today : lastDay);
   }
 
   async getPredictedPeriodDays() {
@@ -98,7 +121,9 @@ export class CalendarComponent implements AfterViewInit {
       start: date,
       allDay: true,
       backgroundColor: '#CB9292',
-      borderColor:'#BA6E6E'
+      borderColor:'#BA6E6E',
+      display: 'block',
+      description: 'Period'
       //url: maybe route to add metric page for that day?
     };
     this.calendarApi?.addEvent(newEvent);
@@ -110,7 +135,9 @@ export class CalendarComponent implements AfterViewInit {
       start: date,
       allDay: true,
       backgroundColor: '#DBC2C6',
-      borderColor: '#BA6E6E'
+      borderColor: '#BA6E6E',
+      description: 'Predicted period',
+      display: 'auto'
       //url: maybe route to add metric page for that day?
     };
     this.calendarApi?.addEvent(newEvent);

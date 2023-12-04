@@ -1,14 +1,10 @@
 import {HttpClient} from '@angular/common/http';
-import {Injectable, OnDestroy, OnInit} from "@angular/core";
-import {BehaviorSubject, firstValueFrom, map, Subscription} from "rxjs";
+import {Injectable, OnDestroy} from "@angular/core";
+import {BehaviorSubject, firstValueFrom, Subscription} from "rxjs";
 import {environment} from "../../../environments/environment";
-import {
-  MetricRegisterMetricDto,
-  MetricViewDto
-} from "../interfaces/dtos/metric.dto.interface";
+import {MetricRegisterMetricDto, MetricViewDto} from "../interfaces/dtos/metric.dto.interface";
 import {CalendarDay, CalendarDayMetric} from "../interfaces/day.interface";
 import {DataService} from "./data.service";
-import {aW} from "@fullcalendar/core/internal-common";
 
 @Injectable({
   providedIn: 'root'
