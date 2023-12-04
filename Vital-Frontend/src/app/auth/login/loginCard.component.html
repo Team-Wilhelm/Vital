@@ -11,8 +11,11 @@
            [formControl]="loginForm.controls.email"
            [class.input-error]="loginForm.controls.email.invalid && loginForm.controls.email.touched"
     >
-    <input type="password" placeholder="Password" class="input input-bordered input-primary mb-1" aria-label="Password"
-           [formControl]="loginForm.controls.password">
+    <input type="password" placeholder="Password" class="input input-bordered input-primary" aria-label="Password"
+           [formControl]="loginForm.controls.password"
+            [class.input-error]="invalidCredentials"
+    >
+  <p *ngIf="invalidCredentials" class="text-error">Wrong username or password.</p>
     <a href="#" class="text-accent self-end mb-1">Forgot password?</a>
     <button class="btn btn-accent" (click)="login()">Login</button>
     <p class="text-center">Don't have an account? <a href="javascript:void(0)" class="text-accent" (click)="redirectToRegister()">Register</a>

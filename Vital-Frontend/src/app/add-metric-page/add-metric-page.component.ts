@@ -1,4 +1,4 @@
-import {Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {Component, ElementRef, OnDestroy, ViewChild} from '@angular/core';
 import {DataService} from '../services/data.service';
 import {MetricService} from '../services/metric.service';
 import {CycleService} from "../services/cycle.service";
@@ -54,10 +54,8 @@ export class AddMetricPageComponent implements OnDestroy {
 
   async saveMetrics() {
     // Check if the last logged flow is more than 2 days ago and less than 10 days ago, if so, ask if new cycle has started
-    console.log(this.lastLoggedFlowDate);
     if (this.lastLoggedFlowDate) {
-      const today = new Date();
-      const diffTime = Math.abs(today.getTime() - this.lastLoggedFlowDate.getTime());
+      const diffTime = Math.abs(this.dataService.clickedDate!.getTime() - this.lastLoggedFlowDate.getTime());
       const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
       if (diffDays > 2 && diffDays <= 10) {

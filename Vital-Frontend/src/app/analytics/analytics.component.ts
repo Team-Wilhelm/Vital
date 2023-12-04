@@ -1,4 +1,4 @@
-import {Component, ViewEncapsulation, OnInit} from '@angular/core';
+import {Component, OnInit, ViewEncapsulation} from '@angular/core';
 import Chart from 'chart.js/auto';
 import {CycleService} from "../services/cycle.service";
 import {CycleAnalyticsDto} from '../interfaces/analytics.interface';
@@ -67,7 +67,6 @@ export class AnalyticsComponent implements OnInit {
           }
         }
       }
-
     });
   }
 
