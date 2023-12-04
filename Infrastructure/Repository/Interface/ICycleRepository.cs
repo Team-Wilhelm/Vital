@@ -63,4 +63,20 @@ public interface ICycleRepository
     /// <param name="numberOfCycles"></param>
     /// <returns></returns>
     Task<List<Cycle>> GetRecentCyclesWithDays(Guid userId, int numberOfCycles);
+    
+    /// <summary>
+    /// Retrieves a cycle which contains the specified date.
+    /// </summary>
+    /// <param name="userId"></param>
+    /// <param name="date"></param>
+    /// <returns></returns>
+    Task<Cycle?> GetCycleByDate(Guid userId, DateTimeOffset date);
+
+    /// <summary>
+    /// Retrieves the closest cycle after the specified date.
+    /// </summary>
+    /// <param name="userId"></param>
+    /// <param name="date"></param>
+    /// <returns></returns>
+    Task<Cycle> GetFollowingCycle(Guid userId, DateTimeOffset date);
 }

@@ -59,21 +59,23 @@ public class CalendarDayRepository : ICalendarDayRepository
         return state is null ? null : BuildCalendarDay(state!, sql, new { calendarDayId });
     }
 
-    public async Task<CalendarDay> CreteCycleDay(Guid userId, DateTimeOffset dateTime)
+    public async Task<CalendarDay> CreteCycleDay(Guid userId, DateTimeOffset dateTime, Guid? cycleId)
     {
         var lastCycle = _applicationDbContext.Cycles.Where(c => c.UserId == userId)
             .OrderByDescending(c => c.StartDate)
             .FirstOrDefault();
-        if (lastCycle is null)
+        if (lastCycle is null && cycleId is null)
         {
-            throw new Exception("User had no cycle yet");
+            throw new Exception("User has no cycle yet");
         }
+        
+        cycleId ??= lastCycle!.Id;
 
         // Set time to 12:00:00
         dateTime = new DateTimeOffset(dateTime.Year, dateTime.Month, dateTime.Day, 12, 0, 0, dateTime.Offset);
         var cycleDay = new CycleDay()
         {
-            CycleId = lastCycle.Id,
+            CycleId = cycleId.Value,
             UserId = userId,
             Date = dateTime,
         };
@@ -113,5 +115,12 @@ public class CalendarDayRepository : ICalendarDayRepository
     {
         var sql = @"DELETE FROM ""CalendarDay"" WHERE ""Id"" = @calendarDayId";
         await _db.ExecuteAsync(sql, new { calendarDayId });
+    }
+    
+    public async Task UpdateCycleIds(Guid oldCycleId, Guid newCycleId, DateTimeOffset from, DateTimeOffset to)
+    {
+        var sql = @"UPDATE ""CalendarDay"" SET ""CycleId"" = @newCycleId WHERE ""CycleId"" = @oldCycleId 
+                    AND ""Date"" BETWEEN @from AND @to";
+        await _db.ExecuteAsync(sql, new { oldCycleId, newCycleId, from, to });
     }
 }
