@@ -132,10 +132,16 @@ public class CycleRepository : ICycleRepository
         return _db.QuerySingleOrDefaultAsync<Cycle>(sql, new { UserId = userId, Date = date });
     }
     
-    public Task<Cycle> GetFollowingCycle(Guid userId, DateTimeOffset date)
+    public async Task<Cycle?> GetFollowingCycle(Guid userId, DateTimeOffset date)
     {
         var sql =
             @"SELECT * FROM ""Cycles"" WHERE ""UserId""=@UserId AND CAST(""StartDate"" AS DATE) > CAST(@Date AS DATE) ORDER BY ""StartDate"" LIMIT 1";
-        return _db.QuerySingleOrDefaultAsync<Cycle>(sql, new { UserId = userId, Date = date });
+        var cycle = await _db.QuerySingleOrDefaultAsync<Cycle>(sql, new { UserId = userId, Date = date });
+
+        if (cycle != null)
+        {
+            cycle.CycleDays = GetCycleDaysForCycleAsync(cycle.Id).Result.ToList();
+        }
+        return cycle;
     }
 }

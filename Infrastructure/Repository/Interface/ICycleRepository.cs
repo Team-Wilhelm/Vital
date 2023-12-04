@@ -78,5 +78,5 @@ public interface ICycleRepository
     /// <param name="userId"></param>
     /// <param name="date"></param>
     /// <returns></returns>
-    Task<Cycle> GetFollowingCycle(Guid userId, DateTimeOffset date);
+    Task<Cycle?> GetFollowingCycle(Guid userId, DateTimeOffset date);
 }
