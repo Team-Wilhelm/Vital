@@ -44,7 +44,6 @@ export class RegisterCardComponent implements OnDestroy {
   async register(): Promise<void> {
     if (this.registerForm.invalid) return;
     await this.tokenService.register(this.registerForm.value as RegisterDto);
-    await this.router.navigate(['/']);
   }
 
   passwordMatchValidator(control: AbstractControl) {
@@ -101,7 +100,7 @@ export class RegisterCardComponent implements OnDestroy {
   getEmailErrorMessage(): string {
     const emailControl: AbstractControl = this.registerForm.get('email')!;
     if (emailControl.hasError('required')) {
-      return 'You must enter a value';
+      return '';
     } else if (emailControl.hasError('email')) {
       return 'Please enter a valid email address';
     } else if (emailControl.hasError('usernameTaken')) {
