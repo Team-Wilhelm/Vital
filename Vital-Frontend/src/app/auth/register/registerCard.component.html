@@ -10,7 +10,7 @@
 
   <!-- E-mail -->
   <p [hidden]="!(registerForm.controls.email.invalid && emailField.matches(':focus'))"
-     class="text-error self-center">Please enter a valid e-mail address.</p>
+     class="text-error self-center">{{ getEmailErrorMessage()}}</p>
   <input type="email" placeholder="E-mail address" class="input input-bordered input-primary" aria-label="Email"
          [formControl]="registerForm.controls.email"
          [class.input-error]="registerForm.controls.email.invalid && registerForm.controls.email.touched" #emailField

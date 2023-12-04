@@ -159,7 +159,7 @@ public class CycleService : ICycleService
         //get predicted period days for the next three cycles
         for (var i = 0; i < 3; i++)
         {
-            cycleStartDay = cycleStartDay.Date.AddDays(cycleLength);
+            cycleStartDay = cycleStartDay.Date.AddDays(cycleLength!.Value);
             for (var j = 0; j < periodLength; j++)
             {
                 predictedPeriodDays.Add(cycleStartDay.Date.AddDays(j));

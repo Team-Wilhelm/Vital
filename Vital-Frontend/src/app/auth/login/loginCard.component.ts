@@ -1,5 +1,5 @@
 import {Component, EventEmitter, Output} from "@angular/core";
-import {TokenService} from "../../services/token.service";
+import {UserSessionService} from "../../services/user-session.service";
 import {Router} from "@angular/router";
 import {AbstractControl, FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {LoginDto} from "../../interfaces/Utilities";
@@ -15,7 +15,7 @@ export class LoginCardComponent {
 
   @Output() switchToRegister = new EventEmitter<void>();
 
-  constructor(private tokenService: TokenService, private router: Router) {
+  constructor(private tokenService: UserSessionService, private router: Router) {
     this.loginForm.controls.email.setValue(environment.userEmailAddress);
     this.loginForm.controls.password.setValue(environment.userPassword);
     this.subscribeToPasswordFieldChanged();
