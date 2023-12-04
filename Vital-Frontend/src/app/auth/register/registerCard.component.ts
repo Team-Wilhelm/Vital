@@ -17,6 +17,8 @@ export class RegisterCardComponent implements OnDestroy {
   private passwordSubscription: Subscription | undefined;
   private emailSubscription: Subscription | undefined;
 
+  passwordVisible = false;
+
   readonly registerForm = new FormGroup({
     email: new FormBuilder().control('', [Validators.required, Validators.email]),
     password: new FormBuilder().control('', [Validators.required, PasswordValidator]),
@@ -107,5 +109,9 @@ export class RegisterCardComponent implements OnDestroy {
       return 'This username is already taken';
     }
     return '';
+  }
+
+  togglePasswordVisibility() {
+    this.passwordVisible = !this.passwordVisible;
   }
 }

@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Output} from "@angular/core";
+import {Component, EventEmitter, Output, signal} from "@angular/core";
 import {UserSessionService} from "../../services/user-session.service";
 import {Router} from "@angular/router";
 import {AbstractControl, FormBuilder, FormGroup, Validators} from "@angular/forms";
@@ -12,6 +12,7 @@ import {environment} from "../../../../environments/environment";
 export class LoginCardComponent {
   invalidCredentials = false;
   redirectUrl: string | null = null;
+  passwordVisible = false;
 
   @Output() switchToRegister = new EventEmitter<void>();
 

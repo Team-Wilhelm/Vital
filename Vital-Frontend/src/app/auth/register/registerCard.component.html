@@ -8,18 +8,22 @@
 
   <!-- E-mail -->
   <p [hidden]="!(registerForm.controls.email.invalid && emailField.matches(':focus')) || getEmailErrorMessage() === ''"
-     class="text-error self-center">{{ getEmailErrorMessage()}}</p>
+     class="text-error self-center">{{ getEmailErrorMessage() }}</p>
   <input type="email" placeholder="E-mail address" class="input input-bordered input-primary" aria-label="Email"
          [formControl]="registerForm.controls.email"
          [class.input-error]="registerForm.controls.email.invalid && registerForm.controls.email.touched" #emailField
   >
 
   <!-- Password -->
-  <input type="password" placeholder="Password" class="input input-bordered input-primary mb-1" aria-label="Password"
-         [formControl]="registerForm.controls.password"
-         [class.input-error]="registerForm.controls.password.invalid && registerForm.controls.password.touched"
-         #passwordField
-  >
+  <app-password-input #passwordInput>
+    <input type="password" placeholder="Password" class="input input-bordered input-primary mb-1 w-full"
+           aria-label="Password"
+           [formControl]="registerForm.controls.password"
+           [class.input-error]="registerForm.controls.password.invalid && registerForm.controls.password.touched"
+           [type]="passwordInput.passwordVisible ? 'text' : 'password'"
+           #passwordField
+    >
+  </app-password-input>
   <div [hidden]="!passwordField.matches(':focus')">
     <ul class="list-disc list-inside">
       <li
@@ -51,11 +55,14 @@
   </div>
 
   <!-- Repeat password -->
-  <input type="password" placeholder="Repeat password" class="input input-bordered input-primary mb-1"
-         aria-label="Repeat password"
-         [formControl]="registerForm.controls.repeatPassword"
-         [class.input-error]="registerForm.controls.repeatPassword.invalid && registerForm.controls.repeatPassword.touched"
-  >
+  <app-password-input #passwordInput>
+    <input type="password" placeholder="Repeat password" class="input input-bordered input-primary mb-1 w-full"
+           aria-label="Repeat password"
+           [formControl]="registerForm.controls.repeatPassword"
+           [class.input-error]="registerForm.controls.repeatPassword.invalid && registerForm.controls.repeatPassword.touched"
+           [type]="passwordInput.passwordVisible ? 'text' : 'password'"
+    >
+  </app-password-input>
   <p class="text-error"
      [hidden]="!(registerForm.invalid && registerForm.controls.email.valid && registerForm.controls.password.valid)">
     Passwords do not match.</p>

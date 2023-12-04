@@ -4,18 +4,22 @@
           xl:absolute lg:top-[20%] xl:right-[10%]
           xl:w-[30rem] xl:h-[30rem] xl:rounded-2xl xl:shadow-xl"
 >
-    <p class="mb-3">In order to use Vital, please log in or register.</p>
-    <input type="email" placeholder="E-mail address" class="input input-bordered input-primary" aria-label="Email"
-           [formControl]="loginForm.controls.email"
-           [class.input-error]="loginForm.controls.email.invalid && loginForm.controls.email.touched"
-    >
-    <input type="password" placeholder="Password" class="input input-bordered input-primary" aria-label="Password"
+  <p class="mb-3">In order to use Vital, please log in or register.</p>
+  <input type="email" placeholder="E-mail address" class="input input-bordered input-primary" aria-label="Email"
+         [formControl]="loginForm.controls.email"
+         [class.input-error]="loginForm.controls.email.invalid && loginForm.controls.email.touched"
+  >
+  <app-password-input #passwordInput>
+    <input type="password" placeholder="Password" class="input input-bordered input-primary w-full"
+           aria-label="Password"
            [formControl]="loginForm.controls.password"
-            [class.input-error]="invalidCredentials"
-    >
+           [class.input-error]="invalidCredentials"
+           [type]="passwordInput.passwordVisible ? 'text' : 'password'">
+  </app-password-input>
   <p *ngIf="invalidCredentials" class="text-error">Wrong username or password.</p>
-    <a href="#" class="text-accent self-end mb-1">Forgot password?</a>
-    <button class="btn btn-accent" (click)="login()">Login</button>
-    <p class="text-center">Don't have an account? <a href="javascript:void(0)" class="text-accent" (click)="redirectToRegister()">Register</a>
-    </p>
+  <a href="#" class="text-accent self-end mb-1">Forgot password?</a>
+  <button class="btn btn-accent" (click)="login()">Login</button>
+  <p class="text-center">Don't have an account? <a href="javascript:void(0)" class="text-accent"
+                                                   (click)="redirectToRegister()">Register</a>
+  </p>
 </app-card>

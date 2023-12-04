@@ -29,6 +29,7 @@ import {LoginCardComponent} from "./auth/login/loginCard.component";
 import {ToastComponent} from "./toasts/toast.component";
 import {ProfileComponent} from "./profile/profile.component";
 import {FirstLoginComponent} from "./first-login-page/first-login.component";
+import {PasswordInputComponent} from "./auth/password-input.component";
 
 @NgModule({
   declarations: [
@@ -49,7 +50,8 @@ import {FirstLoginComponent} from "./first-login-page/first-login.component";
     ToastComponent,
     MetricSelectionItemComponent,
     ProfileComponent,
-    FirstLoginComponent
+    FirstLoginComponent,
+    PasswordInputComponent
   ],
     imports: [
         BrowserModule,
