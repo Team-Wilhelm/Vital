@@ -25,5 +25,4 @@ export class AuthComponent {
   toggleFlip() {
     this.flip = (this.flip == 'front') ? 'back' : 'front';
   }
-
 }
