@@ -3,6 +3,7 @@ import {AbstractControl, FormBuilder, FormGroup, Validators} from "@angular/form
 import {PasswordValidator} from "../validators/password.validator";
 import {PasswordRules} from "../interfaces/Utilities";
 import {CycleService} from "../services/cycle.service";
+import {UserService} from "../services/user.service";
 import {PeriodCycleStatsDto} from "../interfaces/analytics.interface";
 
 @Component({
@@ -13,12 +14,14 @@ import {PeriodCycleStatsDto} from "../interfaces/analytics.interface";
 export class ProfileComponent implements OnInit{
 
   public periodCycleStats: PeriodCycleStatsDto | undefined;
-  constructor(private cycleService: CycleService) {
+  public userEmail: string = '';
+  constructor(private cycleService: CycleService, private userService: UserService) {
     this.subscribeToPasswordChanges();
   }
 
   async ngOnInit(): Promise<void>{
     this.periodCycleStats = await this.cycleService.getUserStats();
+    this.userEmail = await this.userService.getUserEmail();
   }
 
   passwordRulesMet: PasswordRules = {
