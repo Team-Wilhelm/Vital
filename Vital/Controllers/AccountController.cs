@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Models.Dto.Identity.Account;
 using Models.Identity;
+using Vital.Core.Context;
 using Vital.Core.Services.Interfaces;
 using Vital.Models.Exception;
 
@@ -13,11 +14,13 @@ public class AccountController : BaseController
 {
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IEmailService _emailService;
+    private readonly CurrentContext _currentContext;
 
-    public AccountController(UserManager<ApplicationUser> userManager, IEmailService emailService)
+    public AccountController(UserManager<ApplicationUser> userManager, IEmailService emailService, CurrentContext currentContext)
     {
         _userManager = userManager;
         _emailService = emailService;
+        _currentContext = currentContext;
     }
     
      /// <summary>
@@ -96,4 +99,24 @@ public class AccountController : BaseController
 
         throw new EmailVerifyException();
     }
+    
+    /// <summary>
+    /// Retrieve email of logged in user
+    /// </summary>
+    /// <returns></returns>
+    /// <exception cref="NotFoundException"></exception>
+    [HttpGet("email")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> GetEmail()
+    {
+        var user = await _userManager.FindByIdAsync(_currentContext.UserId!.Value.ToString());
+        if (user is null)
+        {
+            throw new NotFoundException("No user found.");
+        }
+
+        return Ok(new { user.Email });
+    }
+    
 }
