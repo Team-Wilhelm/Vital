@@ -184,6 +184,18 @@ public class CycleService : ICycleService
         return cycleAnalytics;
     }
 
+    public async Task<PeriodCycleStatsDto> GetPeriodCycleStats(Guid userId)
+    {
+        var currentCycle = await GetCurrentCycle(userId);
+        var currentCycleLength = (DateTimeOffset.UtcNow - currentCycle!.StartDate).Days;
+        return new PeriodCycleStatsDto
+        {
+            CurrentCycleLength = currentCycleLength,
+            AverageCycleLength = (int)_userManager.Users.First(u => u.Id == userId).CycleLength,
+            AveragePeriodLength = (int)_userManager.Users.First(u => u.Id == userId).PeriodLength
+        };
+    }
+
     /// <summary>
     /// Get current cycle for the current user.
     /// </summary>

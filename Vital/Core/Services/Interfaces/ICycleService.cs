@@ -62,4 +62,11 @@ public interface ICycleService
     /// <param name="userId"></param>
     /// <returns></returns>
     Task<List<CycleAnalyticsDto>> GetAnalytics(Guid userId, int numberOfCycles);
+    
+    /// <summary>
+    /// Retrieves the average length of the user's period and cycle and also the length of the current cycle so far.
+    /// </summary>
+    /// <param name="userId"></param>
+    /// <returns></returns>
+    Task<PeriodCycleStatsDto> GetPeriodCycleStats(Guid userId);
 }

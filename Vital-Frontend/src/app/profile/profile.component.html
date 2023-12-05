@@ -11,19 +11,19 @@
         </div>
       </div>
 
-      <div class="stats stats-vertical shadow w-full">
+      <app-card class="stats stats-vertical shadow w-full">
 
         <div class="stat">
           <div class="stat-title">Average period length</div>
-          <div class="stat-value">5 days</div>
+          <div class="stat-value">{{periodCycleStats?.averagePeriodLength}}</div>
         </div>
 
         <div class="stat">
           <div class="stat-title">Average cycle length</div>
-          <div class="stat-value">28 days</div>
+          <div class="stat-value">{{periodCycleStats?.averageCycleLength}}</div>
         </div>
 
-      </div>
+      </app-card>
     </div>
 
   </div>

@@ -133,6 +133,16 @@ public class CycleController : BaseController
         return Ok(cycle);
     }
     
+    [HttpGet("period-cycle-stats")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(PeriodCycleStatsDto))]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetPeriodCycleStats()
+    {
+        var userId = _currentContext.UserId!.Value;
+        var stats = await _cycleService.GetPeriodCycleStats(userId);
+        return Ok(stats);
+    }
+    
     [HttpPost("period-cycle-length")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -145,12 +155,12 @@ public class CycleController : BaseController
         var userId = _currentContext.UserId!.Value;
         var user = await _userManager.FindByIdAsync(userId.ToString());
         user!.PeriodLength = dto.PeriodLength;
-        user!.CycleLength = dto.CycleLength;
+        user.CycleLength = dto.CycleLength;
         await _userManager.UpdateAsync(user);
         return Ok();
     }
     
-    [HttpGet("analytics/{numberOfCycles}")]
+    [HttpGet("analytics/{numberOfCycles:int}")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(CycleAnalyticsDto))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetAnalytics(int numberOfCycles)
