@@ -31,6 +31,7 @@ import {FirstLoginComponent} from "./first-login-page/first-login.component";
 import {PasswordInputComponent} from "./auth/password-input.component";
 import {ApplicationStatCardComponent} from "./stat-card/application-stat-card.component";
 import {StatCardComponent} from "./card/stat-card.component";
+import AccountService from "./services/account.service";
 
 @NgModule({
   declarations: [
@@ -52,7 +53,8 @@ import {StatCardComponent} from "./card/stat-card.component";
     MetricSelectionItemComponent,
     ProfileComponent,
     FirstLoginComponent,
-    PasswordInputComponent
+    PasswordInputComponent,
+    ApplicationStatCardComponent
   ],
     imports: [
         BrowserModule,
@@ -67,7 +69,7 @@ import {StatCardComponent} from "./card/stat-card.component";
     ],
   providers: [
     TokenService,
-    CycleService,
+    AccountService,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthHttpInterceptor,

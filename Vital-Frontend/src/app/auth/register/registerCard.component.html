@@ -55,12 +55,12 @@
   </div>
 
   <!-- Repeat password -->
-  <app-password-input #passwordInput>
+  <app-password-input #repeatPasswordInput>
     <input type="password" placeholder="Repeat password" class="input input-bordered input-primary mb-1 w-full"
            aria-label="Repeat password"
            [formControl]="registerForm.controls.repeatPassword"
            [class.input-error]="registerForm.controls.repeatPassword.invalid && registerForm.controls.repeatPassword.touched"
-           [type]="passwordInput.passwordVisible ? 'text' : 'password'"
+           [type]="repeatPasswordInput.passwordVisible ? 'text' : 'password'"
     >
   </app-password-input>
   <p class="text-error"
