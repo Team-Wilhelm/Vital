@@ -108,7 +108,7 @@ public class MetricService : IMetricService
     public async Task SaveMetrics(Guid userId, List<MetricRegisterMetricDto> metrics)
     {
         var dayList = metrics.Select(m => m.CreatedAt).Distinct().OrderBy(d => d).ToList();
-        if (dayList.Any(date => date > DateTimeOffset.Now))
+        if (dayList.Any(date => date.Date > DateTimeOffset.UtcNow.Date))
         {
             throw new BadRequestException("Cannot log metrics for a future date.");
         }

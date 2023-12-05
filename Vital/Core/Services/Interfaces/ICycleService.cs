@@ -1,5 +1,6 @@
 ﻿using Models;
 using Models.Dto.Cycle;
+using Models.Dto.InitialLogin;
 using Models.Pagination;
 
 namespace Vital.Core.Services.Interfaces;
@@ -31,6 +32,13 @@ public interface ICycleService
     /// <returns>A task that represents the asynchronous operation. 
     /// The task result contains the Cycle object that was added.</returns>
     Task<Cycle> Create();
+    
+    /// <summary>
+    /// Creates a new Cycle object with the specified details.
+    /// </summary>
+    /// <param name="cycle"></param>
+    /// <returns></returns>
+    Task<Cycle> Create(Cycle cycle);
 
     /// <summary>
     /// Updates an existing Cycle object with new values.
@@ -69,4 +77,13 @@ public interface ICycleService
     /// <param name="userId"></param>
     /// <returns></returns>
     Task<PeriodCycleStatsDto> GetPeriodCycleStats(Guid userId);
+
+    /// <summary>
+    /// Sets the average length of a user's cycle and period and creates a current cycle for the user, based on the user's input.
+    /// The flow metrics are also logged based on the last period's start and end dates.
+    /// </summary>
+    /// <param name="userId"></param>
+    /// <param name="initialLoginPostDto"></param>
+    /// <returns></returns>
+    Task SetInitialData(Guid userId, InitialLoginPostDto initialLoginPostDto);
 }
