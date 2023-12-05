@@ -21,6 +21,8 @@ public class CycleTests
     [Fact]
     public async Task Get_Should_be_unauthorized()
     {
+        await Utilities.ClearToken(_client);
+
         var response = await _client.GetAsync("/Cycle");
 
         response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
@@ -29,6 +31,8 @@ public class CycleTests
     [Fact]
     public async Task Get_by_id_Should_be_unauthorized()
     {
+        await Utilities.ClearToken(_client);
+
         var id = Guid.NewGuid();
         var response = await _client.GetAsync($"/Cycle/{id}");
 
@@ -38,6 +42,8 @@ public class CycleTests
     [Fact]
     public async Task Create_Should_be_unauthorized()
     {
+        await Utilities.ClearToken(_client);
+
         var createCycleDto = new CreateCycleDto()
         {
             StartDate = DateTimeOffset.Now,
@@ -51,6 +57,8 @@ public class CycleTests
     [Fact]
     public async Task Update_Should_be_unauthorized()
     {
+        await Utilities.ClearToken(_client);
+
         var id = Guid.NewGuid();
         var updateCycleDto = new UpdateCycleDto()
         {

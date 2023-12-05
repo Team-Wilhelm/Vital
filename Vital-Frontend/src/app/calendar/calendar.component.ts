@@ -138,7 +138,7 @@ export class CalendarComponent implements AfterViewInit {
       backgroundColor: '#DBC2C6',
       borderColor: '#BA6E6E',
       description: 'Predicted period',
-      display: 'auto'
+      display: 'block'
       //url: maybe route to add metric page for that day?
     };
     this.calendarApi?.addEvent(newEvent);

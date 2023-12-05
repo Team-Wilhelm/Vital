@@ -13,7 +13,7 @@ import {CurrentCycleComponent} from "./dashboard/current-cycle/current-cycle.com
 import {MedicationListItemComponent} from "./dashboard/medication-list-item/medication-list-item.component";
 import {HTTP_INTERCEPTORS, HttpClientModule} from "@angular/common/http";
 import {AuthHttpInterceptor} from "./interceptors/auth-http-interceptor";
-import {TokenService} from "./services/token.service";
+import {UserSessionService} from "./services/user-session.service";
 import {CycleService} from "./services/cycle.service";
 import {JWT_OPTIONS, JwtHelperService} from "@auth0/angular-jwt";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
@@ -29,6 +29,8 @@ import {ToastComponent} from "./toasts/toast.component";
 import {ProfileComponent} from "./profile/profile.component";
 import {ApplicationStatCardComponent} from "./stat-card/application-stat-card.component";
 import {StatCardComponent} from "./card/stat-card.component";
+import {FirstLoginComponent} from "./first-login-page/first-login.component";
+import {PasswordInputComponent} from "./auth/password-input.component";
 
 @NgModule({
   declarations: [
@@ -49,7 +51,9 @@ import {StatCardComponent} from "./card/stat-card.component";
     ToastComponent,
     MetricSelectionItemComponent,
     ProfileComponent,
-    ApplicationStatCardComponent
+    ApplicationStatCardComponent,
+    FirstLoginComponent,
+    PasswordInputComponent
   ],
     imports: [
         BrowserModule,
@@ -63,7 +67,7 @@ import {StatCardComponent} from "./card/stat-card.component";
       BrowserAnimationsModule
     ],
   providers: [
-    TokenService,
+    UserSessionService,
     CycleService,
     {
       provide: HTTP_INTERCEPTORS,

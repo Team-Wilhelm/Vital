@@ -1,6 +1,7 @@
 ﻿using System.Net.Mime;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Models.Dto;
 using Models.Dto.Identity.Account;
 using Models.Identity;
 using Vital.Core.Context;
@@ -119,4 +120,45 @@ public class AccountController : BaseController
         return Ok(new { user.Email });
     }
     
+    
+    /// <summary>
+    /// This endpoint is used to check, when the user logs in for the first time, if they have already set their period and cycle lengths.
+    /// </summary>
+    /// <returns></returns>
+    [HttpGet("initial-login")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ApplicationUserInitialLoginDto))]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetCurrentUserCycleLengths()
+    {
+        var userId = _currentContext.UserId!.Value;
+        var user = await _userManager.FindByIdAsync(userId.ToString());
+        return Ok(new ApplicationUserInitialLoginDto()
+        {
+            PeriodLength = user!.PeriodLength,
+            CycleLength = user!.CycleLength
+        });
+    }
+    
+    /// <summary>
+    /// This endpoint is used to set the period and cycle lengths for the user when they log in for the first time.
+    /// </summary>
+    /// <param name="dto"></param>
+    /// <returns></returns>
+    [HttpPut("initial-login")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> SetCurrentUserCycleAndPeriodLengths([FromBody] ApplicationUserInitialLoginDto dto)
+    {
+        if(!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+        var userId = _currentContext.UserId!.Value;
+        var user = await _userManager.FindByIdAsync(userId.ToString());
+        user!.PeriodLength = dto.PeriodLength;
+        user!.CycleLength = dto.CycleLength;
+        await _userManager.UpdateAsync(user);
+        return Ok();
+    }
 }

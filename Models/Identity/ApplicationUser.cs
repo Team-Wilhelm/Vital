@@ -7,9 +7,9 @@ public class ApplicationUser : IdentityUser<Guid>
 {
     public Guid? CurrentCycleId { get; set; }
     
-    [MinLength(1)]
-    public float CycleLength { get; set; } = 28;
+    [Range(0.0, Double.MaxValue, ErrorMessage = "The field {0} must be greater than {1}.")]
+    public float? CycleLength { get; set; } = 28;
     
-    [MinLength(1)]
-    public float PeriodLength { get; set; } = 5;
+    [Range(0.0, Double.MaxValue, ErrorMessage = "The field {0} must be greater than {1}.")]
+    public float? PeriodLength { get; set; } = 5;
 }
