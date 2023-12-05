@@ -16,9 +16,7 @@ export const authGuard = async () => {
 
   // If the user is authenticated, allow them to access the page
   if (tokenService.isAuthenticated()) {
-    // Check if the user has previously logged in and set the length of their cycle and period
     if (await accountService.isFirstLogin()) {
-      // If the user has not previously logged in and set the length of their cycle and period, redirect them to a page, where they can do so
       return router.parseUrl('/initial-login');
     }
     return true;

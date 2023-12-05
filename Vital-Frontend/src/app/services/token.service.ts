@@ -3,8 +3,7 @@ import {JwtHelperService} from "@auth0/angular-jwt";
 import {environment} from "../../../environments/environment";
 import {HttpClient} from "@angular/common/http";
 import {firstValueFrom} from "rxjs";
-import {LoginDto, RegisterDto} from "../interfaces/Utilities";
-import {ApplicationUserInitialLoginDto} from "../interfaces/dtos/user.dto.interface";
+import {LoginDto, RegisterDto} from "../interfaces/utilities.interface";
 
 @Injectable()
 export class TokenService {

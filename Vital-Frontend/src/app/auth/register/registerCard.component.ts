@@ -3,7 +3,7 @@ import {AbstractControl, FormBuilder, FormGroup, Validators} from "@angular/form
 import {TokenService} from "../../services/token.service";
 import {Router} from "@angular/router";
 import {PasswordValidator} from "../../validators/password.validator";
-import {PasswordRules, RegisterDto} from "../../interfaces/Utilities";
+import {PasswordRules, RegisterDto} from "../../interfaces/utilities.interface";
 import {debounceTime, distinctUntilChanged, Subscription} from "rxjs";
 import {em} from "@fullcalendar/core/internal-common";
 import AccountService from "../../services/account.service";

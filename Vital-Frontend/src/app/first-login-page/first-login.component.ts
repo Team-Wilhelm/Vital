@@ -1,6 +1,8 @@
 import {Component} from "@angular/core";
 import {AbstractControl, FormControl, FormGroup, Validators} from "@angular/forms";
 import AccountService from "../services/account.service";
+import {InitialLoginPostDto} from "../interfaces/dtos/user.dto.interface";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'first-login',
@@ -65,7 +67,7 @@ export class FirstLoginComponent {
     lastPeriodEnd: new FormControl(''),
   }, {validators: [this.periodDatesValidator, this.periodStartInFutureValidator, this.periodEndInFutureValidator]});
 
-  constructor(private accountService: AccountService) {
+  constructor(private accountService: AccountService, private router: Router) {
     const today = new Date();
     this.formGroup.controls.lastPeriodStart.setValue(today.toISOString().split('T')[0]);
 
@@ -122,8 +124,24 @@ export class FirstLoginComponent {
     return null;
   }
 
-  submit(): void {
-    console.log(this.formGroup.value);
+  async submit() {
+    if (this.formGroup.invalid) {
+      return;
+    }
+    const formGroupControls = this.formGroup.controls;
+    const loginData = {
+      periodLength: formGroupControls.periodLength.value,
+      cycleLength: formGroupControls.cycleLength.value,
+      lastPeriodStart: new Date(formGroupControls.lastPeriodStart.value!),
+      lastPeriodEnd: formGroupControls.lastPeriodEnd.value === '' ? null : new Date(formGroupControls.lastPeriodEnd.value!)
+    } as InitialLoginPostDto;
+
+    try {
+      await this.accountService.setInitialLoginData(loginData);
+      await this.router.navigate(['/dashboard']);
+    } catch (e) {
+      console.log(e);
+    }
   }
 
   numericInput(event: KeyboardEvent) {

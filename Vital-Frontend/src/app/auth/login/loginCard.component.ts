@@ -2,7 +2,7 @@ import {Component, EventEmitter, Output, signal} from "@angular/core";
 import {TokenService} from "../../services/token.service";
 import {Router} from "@angular/router";
 import {AbstractControl, FormBuilder, FormGroup, Validators} from "@angular/forms";
-import {LoginDto} from "../../interfaces/Utilities";
+import {LoginDto} from "../../interfaces/utilities.interface";
 import {environment} from "../../../../environments/environment";
 import AccountService from "../../services/account.service";
 
