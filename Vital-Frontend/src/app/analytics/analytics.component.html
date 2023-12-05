@@ -1,40 +1,35 @@
-<div class="grid grid-cols-6 gap-4">
+<div class="
+flex flex-col
+lg:grid
+lg:grid-cols-6
+lg:gap-4">
 
 
-  <div class="col-span-4 grid grid-cols-3 gap-4">
+  <div class="col-span-4 grid grid-cols-3 grid-rows-4 gap-4 mb-4 lg:mb-0">
+    <!-- Current/last period length -->
+
+    <app-stat-card class="col-span-1 row-span-1"
+                   title="Current cycle length"
+                   [value]="getCurrentCycleLength()"
+                   unit="days">
+    </app-stat-card>
 
     <!-- Current/last period length -->
-    <app-card class="stats shadow col-span-1 row-span-2" >
-      <div class="stat place-items-center">
-        <div class="stat-figure text-accent">
-        </div>
-        <div class="stat-title">Current cycle length</div>
-        <div class="stat-value text-accent">{{periodCycleStats?.currentCycleLength}}</div>
-      </div>
-    </app-card>
-
-    <!-- Current/last period length -->
-    <app-card class="stats shadow col-span-1 row-span-2" cardColor="bg-accent">
-      <div class="stat place-items-center">
-        <div class="stat-figure">
-        </div>
-        <div class="stat-title">Average period length</div>
-        <div class="stat-value">{{periodCycleStats?.averagePeriodLength}}</div>
-      </div>
-    </app-card>
+    <app-stat-card class="col-span-1 row-span-1" cardBackground="bg-accent"
+                   title="Average period length"
+                   [value]="getAveragePeriodLength()"
+                   unit="days">
+    </app-stat-card>
 
     <!-- Current cycle length -->
-    <app-card class="stats shadow col-span-1 row-span-2">
-      <div class="stat place-items-center">
-        <div class="stat-figure text-accent">
-        </div>
-        <div class="stat-title">Average cycle length</div>
-        <div class="stat-value text-accent">{{periodCycleStats?.averageCycleLength}}</div>
-      </div>
-    </app-card>
+    <app-stat-card class="col-span-1 row-span-1" [accentFont]="true"
+                   title="Average cycle length"
+                   [value]="getAverageCycleLength()"
+                   unit="days">
+    </app-stat-card>
 
     <!-- Graph for recent cycles -->
-    <app-card class="stats shadow col-span-3">
+    <app-card class="stats shadow col-span-3 row-span-3">
       <div class="stat">
         <div class="flex justify-between items-center">
         <h2 class="stat-title">Graph for recent cycles</h2>
@@ -54,7 +49,6 @@
         </div>
       </div>
     </app-card>
-
   </div>
 
   <!-- Calendar -->

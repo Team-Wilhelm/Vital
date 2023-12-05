@@ -103,6 +103,18 @@ export class AnalyticsComponent implements OnInit {
     this.selectedOption = item;
     await this.createChart(item);
   }
+
+  getCurrentCycleLength() : number {
+    return this.periodCycleStats?.currentCycleLength ?? 0;
+  }
+
+  getAverageCycleLength() : number {
+    return this.periodCycleStats?.averageCycleLength ?? 0;
+  }
+
+  getAveragePeriodLength() : number {
+    return this.periodCycleStats?.averagePeriodLength ?? 0;
+  }
 }
 
 

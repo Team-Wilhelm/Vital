@@ -1,9 +1,9 @@
 import {inject} from '@angular/core';
 import {Router} from '@angular/router';
-import {TokenService} from "../services/token.service";
+import {UserSessionService} from "../services/user-session.service";
 
 export const authGuard = () => {
-  const tokenService = inject(TokenService);
+  const tokenService = inject(UserSessionService);
   const router = inject(Router);
 
   // Allow access to login and register without authentication
@@ -18,6 +18,5 @@ export const authGuard = () => {
   }
 
   // Redirect to the login page
-  console.log('User is not authenticated, redirecting to login page');
   return router.parseUrl('/login');
 };

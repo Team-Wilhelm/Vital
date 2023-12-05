@@ -50,7 +50,7 @@ public class AuthTests
     {
         var registerRequest = new RegisterRequestDto()
         {
-            Email = "user@app",
+            Email = "less-than-6-user@app",
             Password = "P@5sw"
         };
 
@@ -67,7 +67,7 @@ public class AuthTests
     {
         var registerRequest = new RegisterRequestDto()
         {
-            Email = "user@app",
+            Email = "no-uppercase-user@app",
             Password = "p@ssw0rd.+"
         };
 
@@ -84,7 +84,7 @@ public class AuthTests
     {
         var registerRequest = new RegisterRequestDto()
         {
-            Email = "user@app",
+            Email = "no-symbol-user@app",
             Password = "Passw0rd"
         };
 
@@ -101,7 +101,7 @@ public class AuthTests
     {
         var registerRequest = new RegisterRequestDto()
         {
-            Email = "user@app",
+            Email = "no-number-user@app",
             Password = "P@ssword.+"
         };
 
@@ -118,7 +118,7 @@ public class AuthTests
     {
         var registerRequest = new RegisterRequestDto()
         {
-            Email = "user@app.com",
+            Email = "successfull-user@app.com",
             Password = "P@ssw0rd.+"
         };
 

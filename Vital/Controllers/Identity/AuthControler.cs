@@ -83,18 +83,38 @@ public class AuthController : BaseController
         var user = new ApplicationUser()
         {
             Email = requestDto.Email,
-            UserName = requestDto.Email
+            UserName = requestDto.Email,
+            CycleLength = null,
+            PeriodLength = null
         };
 
         var result = await _userManager.CreateAsync(user, requestDto.Password);
         if (!result.Succeeded)
         {
-            throw new AuthException("Cannot create user");
+            var identityError = result.Errors?.FirstOrDefault();
+
+            if (identityError == null)
+            {
+                throw new AuthException("Unknown error occurred while creating user.");
+            }
+
+            if (identityError.Code == "DuplicateUserName")
+            {
+                throw new AuthException("Cannot create user. This username is already taken.");
+            }
+            throw new AuthException(identityError.Description);
         }
 
         var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
         await _emailService.SendVerifyEmail(user, token, cancellationToken);
 
         return Ok();
+    }
+    
+    [HttpGet("username-taken/{username}")]
+    public async Task<IActionResult> IsUsernameTaken([FromRoute] string username)
+    {
+        var user = await _userManager.FindByNameAsync(username);
+        return Ok(user != null);
     }
 }
