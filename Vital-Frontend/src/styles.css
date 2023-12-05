@@ -1,0 +1,25 @@
+/* You can add global styles to this file, and also import other style files */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --fc-button-text-color: #000000;
+  --fc-button-bg-color: oklch(var(--p));
+  --fc-button-border-color: hsl(283, 18%, 70%);
+  --fc-button-hover-bg-color: #baabbf;
+  --fc-button-hover-border-color: #baabbf;
+  --fc-button-active-bg-color: #ac9fb1;
+  --fc-button-active-border-color: #ac9fb1;
+  --fc-border-color: #d0d0d0;
+  --fc-bg-event-opacity: 0.5;
+  /*--fc-today-bg-color: hsl(158, 55%, 95%); for some reason deletes the border around */
+}
+
+.fc-toolbar-chunk {
+  @apply flex;
+  @apply inline-flex;
+  @apply justify-between;
+}
+
+

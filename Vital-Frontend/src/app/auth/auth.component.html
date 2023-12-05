@@ -1,0 +1,9 @@
+<div class="flex w-full h-full justify-center items-start xl:relative">
+  <div>
+    <div class="w-full">
+      <!-- Card content goes here -->
+      <app-login-card *ngIf="flip === 'front'" (switchToRegister)="toggleFlip()" ></app-login-card>
+      <app-register-card *ngIf="flip === 'back'" (switchToLogin)="toggleFlip()"></app-register-card>
+    </div>
+  </div>
+</div>

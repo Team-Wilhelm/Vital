@@ -1,0 +1,15 @@
+﻿using Models.Identity;
+using Models.Util;
+
+namespace Models.Days;
+
+public abstract class CalendarDay
+{
+    public Guid Id { get; set; }
+    public DateTimeOffset Date { get; set; }
+    public Guid UserId { get; set; }
+    public ApplicationUser User { get; set; }
+    public string State { get; set; }   //public string State { get; set; } = "CycleDay"; // CycleDay, PregnancyDay, MenopauseDay
+
+    public ICollection<CalendarDayMetric> SelectedMetrics { get; set; } = new List<CalendarDayMetric>();
+}

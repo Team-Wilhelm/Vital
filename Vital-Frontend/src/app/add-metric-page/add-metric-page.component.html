@@ -1,0 +1,49 @@
+<div class="card bg-card">
+  <div class="card-body">
+
+    <!-- Title -->
+    <div class="text-2xl font-medium mb-4 flex justify-between">
+      <p>Log Metrics</p>
+      <button class="btn btn-primary btn-sm" (click)="saveMetrics()">Save</button>
+    </div>
+
+    <!-- Period -->
+    <div class="collapse collapse-arrow bg-base-100 shadow">
+      <input type="radio" name="metrics-accordion" checked="checked"/>
+      <div class="collapse-title text-xl font-medium bg-primary">
+        Period
+      </div>
+      <div class="collapse-content">
+        <metric-selection-item [metric]="metricService.periodMetric"></metric-selection-item>
+      </div>
+    </div>
+
+    <!-- Other metrics -->
+    <div class="collapse collapse-arrow bg-base-100 shadow">
+      <input type="radio" name="metrics-accordion"/>
+      <div class="collapse-title text-xl font-medium bg-primary">
+        Other metrics
+      </div>
+      <div class="collapse-content">
+        <metric-selection-item *ngFor="let metric of metricService.allMetrics" [metric]="metric"/>
+      </div>
+    </div>
+  </div>
+
+  <!-- Your period has started dialog -->
+  <dialog id="newCycleModal" class="modal" #newCycleModal>
+    <div class="modal-box">
+      <h3 class="font-bold text-lg">Would you like to create a new cycle?</h3>
+      <p class="py-4">If you would like to log this period as a part of your current cycle, select no. </p>
+      <p>Otherwise, we will create a new cycle for you.</p>
+      <div class="modal-action">
+        <form method="dialog" class="flex">
+          <!-- if there is a button in form, it will close the modal -->
+          <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+          <button id="yes-button" class="btn bg-base-300 mx-2">Create new cycle</button>
+          <button id="no-button" class="btn btn-primary ">Continue current cycle</button>
+        </form>
+      </div>
+    </div>
+  </dialog>
+</div>

@@ -1,0 +1,66 @@
+<div class="lg:grid
+lg:grid-cols-6
+lg:gap-4
+
+flex flex-col">
+  <div class="col-span-4 grid grid-cols-3 order-3 mb-3
+   lg:mb-0 lg:order-none lg:gap-4 ">
+    <div class="col-span-1">
+      <!-- Upcoming period -->
+      <stat-card class="lg:col-span-1 hidden lg:block lg:order-none stats shadow mb-5" cardColor="bg-primary"
+                 [redirectLink]="'/analytics'">
+        <div class="stat-title break-normal">Estimated next period in</div>
+        <div class="stat-value">{{ nextPeriodInDays }} days</div>
+        <div class="stat-desc"> Click for a detailed overview ↗</div>
+
+      </stat-card>
+
+      <!-- Hot water bottle mascot -->
+      <app-card [isTextContent]="false" cardColor="" [compact]="true" [hoverable]="false"
+                class="hidden lg:block lg:order-none">
+        <figure><img src="assets/hot-water-bottle.png" alt="hot water bottle mascot"/></figure>
+      </app-card>
+    </div>
+    <!-- Metrics -->
+    <app-card cardTitle="Metrics"
+              class="lg:col-span-2
+              h-full justify-between overflow-y-auto card shadow
+              col-span-3"
+              [hasPlusButton]="true"
+              (plusButtonClicked)="redirectToMetrics()">
+      <div *ngFor="let calendarDayMetric of metricService.loggedMetrics; index as i"
+           class="flex justify-between items-center">
+        <metric-list-item [calendarDayMetric]="calendarDayMetric"
+                          [listIndex]="i"
+                          class="w-full">
+        </metric-list-item>
+      </div>
+      <p *ngIf="metricService.loggedMetrics.length === 0">No metrics logged for today</p>
+    </app-card>
+  </div>
+
+
+  <!-- Calendar -->
+  <app-card class="text-primary-content order-2 mb-3 lg:order-none lg:mb-0 lg:row-span-2  lg:col-span-2">
+    <calendar #calendarComponent></calendar>
+  </app-card>
+
+  <!-- Current cycle -->
+  <app-card cardTitle="Week overview"
+            class="order-1 max-h-64 mb-3 overflow-x-auto card shadow
+                        lg:order-none lg:col-span-4 lg:row-span-1 lg:mb-0">
+    <app-current-cycle>
+    </app-current-cycle>
+  </app-card>
+
+  <!-- Medications -->
+  <app-card cardTitle="Medication"
+            class="order-4
+            lg:col-span-4 lg:row-span-2 lg:order-none">
+
+    <div class="flex-col h-full justify-between max-h-[300px] overflow-y-scroll">
+      <medication-list-item *ngFor="let number of [1,2,3]" medicationName="Lexaurin" medicationDosage="{{number}}"
+                            medicationTime="22:22" [listIndex]="number"/>
+    </div>
+  </app-card>
+</div>
