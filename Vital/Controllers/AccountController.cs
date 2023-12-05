@@ -100,7 +100,7 @@ public class AccountController : BaseController
 
         throw new EmailVerifyException();
     }
-    
+
     /// <summary>
     /// This endpoint is used to check, when the user logs in for the first time, if they have already set their period and cycle lengths.
     /// </summary>
@@ -118,7 +118,7 @@ public class AccountController : BaseController
             CycleLength = user!.CycleLength
         });
     }
-    
+
     /// <summary>
     /// This endpoint is used to set the period and cycle lengths for the user when they log in for the first time.
     /// </summary>
@@ -141,4 +141,24 @@ public class AccountController : BaseController
         await _userManager.UpdateAsync(user);
         return Ok();
     }
+
+    /// <summary>
+    /// Retrieve email of logged in user
+    /// </summary>
+    /// <returns></returns>
+    /// <exception cref="NotFoundException"></exception>
+    [HttpGet("email")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> GetEmail()
+    {
+        var user = await _userManager.FindByIdAsync(_currentContext.UserId!.Value.ToString());
+        if (user is null)
+        {
+            throw new NotFoundException("No user found.");
+        }
+
+        return Ok(new { user.Email });
+    }
+
 }

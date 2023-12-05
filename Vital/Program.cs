@@ -31,7 +31,7 @@ builder.Services.Configure<BrevoSettings>(builder.Configuration.GetSection("Brev
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
-    options.UseNpgsql(connectionString ?? throw new Exception("Connection string cannot be null"));
+    options.UseNpgsql(connectionString ?? throw new Exception("Connection string cannot be null"), b => b.MigrationsAssembly("Vital"));
 });
 
 // Use PostgreSQL with Dapper for working with data
