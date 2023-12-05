@@ -12,10 +12,12 @@ export default class AccountService {
   constructor(private httpClient: HttpClient) {
   }
 
-  public async setInitialLoginData(periodLength: number, cycleLength: number): Promise<void> {
+  public async setInitialLoginData(periodLength: number, cycleLength: number,  periodStart: Date, periodEnd?: Date): Promise<void> {
     const request = this.httpClient.put(environment.baseUrl + '/identity/account/initial-login', {
       periodLength: periodLength,
-      cycleLength: cycleLength
+      cycleLength: cycleLength,
+      periodStart: periodStart,
+      periodEnd: periodEnd
     });
     await firstValueFrom(request);
   }
