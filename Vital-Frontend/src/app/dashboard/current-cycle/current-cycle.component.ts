@@ -16,7 +16,7 @@ import {MetricService} from "../../services/metric.service";
 
               <div class="tooltip tooltip-primary" [attr.data-tip]="getTooltip(day)">
                   <div
-                          class="rounded-md overflow-hidden border-[3px] {{getBackgroundColor(day).bgColour}} {{getBackgroundColor(day).borderColour}} p-2 w-10 md:w-12 h-20"
+                          class="rounded-md overflow-hidden border-[3px] {{getBackgroundColor(day).bgColour}} {{getBackgroundColor(day).borderColour}} w-8 sm:p-2 sm:w-10 md:w-12 h-20"
                           [ngStyle]="{'height': getSize(day) + 'px'}">
                   </div>
                   <p class="text-sm sm:text-base md:text-lg lg:text-lg xs:text-xs mt-2">{{ dateString(day) }}</p>

@@ -19,7 +19,6 @@ import {Router} from "@angular/router";
                       </button>
                   </div>
               </div>
-
               <ng-content></ng-content>
           </div>
       </div>
