@@ -8,7 +8,7 @@ import {Component, Input, OnInit} from "@angular/core";
               <div class="flex flex-col items-center justify-center">
                   <div class="text-sm text-slate-500 text-center">{{ title }}</div>
                   <div class="text-3xl sm:text-4xl font-extrabold whitespace-nowrap"
-                       [class.text-bg-accent]="accentFont">{{ value }} {{ unit }}
+                       [class.text-accent]="accentFont">{{ value }} {{ unit }}
                   </div>
               </div>
           </div>
