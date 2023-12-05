@@ -7,7 +7,7 @@ flex flex-col">
    lg:mb-0 lg:order-none lg:gap-4 ">
     <div class="col-span-1">
       <!-- Upcoming period -->
-      <stat-card class="lg:col-span-1 hidden lg:block lg:order-none stats shadow mb-5" cardColor="bg-accent"
+      <stat-card class="lg:col-span-1 hidden lg:block lg:order-none stats shadow mb-5" cardColor="bg-primary"
                  [redirectLink]="'/analytics'">
         <div class="stat-title break-normal">Estimated next period in</div>
         <div class="stat-value">{{ nextPeriodInDays }} days</div>
@@ -45,12 +45,15 @@ flex flex-col">
     <calendar #calendarComponent></calendar>
   </app-card>
 
-  <!-- Current cycle -->
+  <!-- Week overview -->
   <app-card cardTitle="Week overview"
-            class="order-1 max-h-64 mb-3 overflow-x-auto card shadow
-                        lg:order-none lg:col-span-4 lg:row-span-1 lg:mb-0">
+            class="order-1 max-h-64 mb-3 overflow-x-hidden card shadow
+                    lg:order-none lg:col-span-4 lg:row-span-1 lg:mb-0 relative">
     <app-current-cycle>
     </app-current-cycle>
+    <button class="text-gray-600 hover:text-black text-sm block lg:hidden absolute right-2 top-2"
+            routerLink="/analytics">Go to analytics ↗
+    </button>
   </app-card>
 
   <!-- Medications -->

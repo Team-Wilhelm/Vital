@@ -1,17 +1,27 @@
-import {Component} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {AbstractControl, FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {PasswordValidator} from "../validators/password.validator";
 import {PasswordRules} from "../interfaces/Utilities";
+import {CycleService} from "../services/cycle.service";
+import {UserService} from "../services/user.service";
+import {PeriodCycleStatsDto} from "../interfaces/analytics.interface";
 
 @Component({
   selector: 'app-profile',
   templateUrl: './profile.component.html'
 })
 
-export class ProfileComponent {
+export class ProfileComponent implements OnInit{
 
-  constructor() {
+  public periodCycleStats: PeriodCycleStatsDto | undefined;
+  public userEmail: string = '';
+  constructor(private cycleService: CycleService, private userService: UserService) {
     this.subscribeToPasswordChanges();
+  }
+
+  async ngOnInit(): Promise<void>{
+    this.periodCycleStats = await this.cycleService.getUserStats();
+    this.userEmail = await this.userService.getUserEmail();
   }
 
   passwordRulesMet: PasswordRules = {

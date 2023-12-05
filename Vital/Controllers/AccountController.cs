@@ -102,6 +102,26 @@ public class AccountController : BaseController
     }
     
     /// <summary>
+    /// Retrieve email of logged in user
+    /// </summary>
+    /// <returns></returns>
+    /// <exception cref="NotFoundException"></exception>
+    [HttpGet("email")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> GetEmail()
+    {
+        var user = await _userManager.FindByIdAsync(_currentContext.UserId!.Value.ToString());
+        if (user is null)
+        {
+            throw new NotFoundException("No user found.");
+        }
+
+        return Ok(new { user.Email });
+    }
+    
+    
+    /// <summary>
     /// This endpoint is used to check, when the user logs in for the first time, if they have already set their period and cycle lengths.
     /// </summary>
     /// <returns></returns>
