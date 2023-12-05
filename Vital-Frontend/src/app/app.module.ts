@@ -27,10 +27,10 @@ import {RegisterCardComponent} from "./auth/register/registerCard.component";
 import {LoginCardComponent} from "./auth/login/loginCard.component";
 import {ToastComponent} from "./toasts/toast.component";
 import {ProfileComponent} from "./profile/profile.component";
-import {FirstLoginComponent} from "./first-login-page/first-login.component";
-import {PasswordInputComponent} from "./auth/password-input.component";
 import {ApplicationStatCardComponent} from "./stat-card/application-stat-card.component";
 import {StatCardComponent} from "./card/stat-card.component";
+import {FirstLoginComponent} from "./first-login-page/first-login.component";
+import {PasswordInputComponent} from "./auth/password-input.component";
 import AccountService from "./services/account.service";
 
 @NgModule({
@@ -52,6 +52,7 @@ import AccountService from "./services/account.service";
     ToastComponent,
     MetricSelectionItemComponent,
     ProfileComponent,
+    ApplicationStatCardComponent,
     FirstLoginComponent,
     PasswordInputComponent,
     ApplicationStatCardComponent

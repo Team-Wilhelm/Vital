@@ -100,7 +100,7 @@ public class AccountController : BaseController
 
         throw new EmailVerifyException();
     }
-
+    
     /// <summary>
     /// This endpoint is used to check, when the user logs in for the first time, if they have already set their period and cycle lengths.
     /// </summary>
