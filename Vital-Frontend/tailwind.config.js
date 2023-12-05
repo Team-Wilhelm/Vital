@@ -32,6 +32,8 @@ module.exports = {
         'period-day-border':'#BA6E6E',
         'predicted-period-day-border':'#BA6E6E',
         'non-period-day-border':'#EEAF3A',
+        /*Calendar*/
+        'selected-day':'#edebed',
       },
     },
     container: {
