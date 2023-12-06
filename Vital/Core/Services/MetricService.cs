@@ -127,7 +127,7 @@ public class MetricService : IMetricService
             var currentCycle = await _cycleRepository.GetCurrentCycle(userId);
             var metricNames =
                 await _metricRepository.GetMetricNamesByIds(metrics.Select(m => m.MetricsId)
-                    .ToList()); 
+                    .ToList());
 
             // Saving data for the current cycle
             if (cycle is not null && currentCycle is not null && cycle.Id == currentCycle.Id)
@@ -139,10 +139,7 @@ public class MetricService : IMetricService
                 }
 
                 await _metricRepository.SaveMetrics(calendarDay.Id, metrics.Where(m => m.CreatedAt == date).ToList());
-                return;
-            }
-
-            if (cycle is not null)
+            } else if (cycle is not null)
             {
                 // If the cycle is not null, but it's not the current cycle, then we need to check if the metric being savied is 'Flow' and if so, 
                 // check if the metric's date is more than 2 days from the retrieved cycle's last 'Flow' metric date, which should create a new cycle
@@ -153,7 +150,9 @@ public class MetricService : IMetricService
                         .ContinueWith(t => t.Result.OrderByDescending(d => d).FirstOrDefault());
 
                     var followingCycle = await _cycleRepository.GetFollowingCycle(userId, date);
-                    if (date.Date - lastFlowMetricDate.Date > TimeSpan.FromDays(3)) // This case is for handling logging flow, which is less than 2 days from the next logged flow
+                    if (date.Date - lastFlowMetricDate.Date >
+                        TimeSpan.FromDays(
+                            3)) // This case is for handling logging flow, which is less than 2 days from the next logged flow
                     {
                         // If the date is within 2 days of the following cycle's start date, merge the cycle with the following cycle
                         if (followingCycle is not null && followingCycle.StartDate - date <= TimeSpan.FromDays(2))
@@ -166,11 +165,11 @@ public class MetricService : IMetricService
                                 StartDate = date,
                                 EndDate = followingCycle.EndDate
                             });
-                            
+
                             // If the following cycle contains any metrics, which now belong to the new cycle, update their cycle id
                             await _calendarDayRepository.UpdateCycleIds(followingCycle.Id, followingCycle.Id, date,
                                 followingCycle.EndDate ?? DateTimeOffset.UtcNow);
-                            
+
                             // Update the end of the retrieved cycle
                             await _cycleRepository.Update(new Cycle()
                             {
@@ -180,8 +179,7 @@ public class MetricService : IMetricService
                                 EndDate = date.AddDays(-1)
                             });
                             cycle = followingCycle;
-                        }
-                        else if (followingCycle is not null)
+                        } else if (followingCycle is not null)
                         {
                             // Otherwise, create a new cycle with the metric date as the start date and the following cycle's start date as the end date
                             var newCycle = await _cycleRepository.Create(new Cycle()
@@ -191,7 +189,7 @@ public class MetricService : IMetricService
                                 StartDate = date,
                                 EndDate = followingCycle.StartDate.AddDays(-1)
                             });
-                        
+
                             // and update the previous cycle's end date to be the day before the new cycle's start date
                             await _cycleRepository.Update(new Cycle()
                             {
@@ -205,7 +203,6 @@ public class MetricService : IMetricService
                             await _calendarDayRepository.UpdateCycleIds(cycle.Id, newCycle.Id, cycle.StartDate,
                                 cycle.EndDate!.Value);
                             cycle = newCycle;
-                            
                         }
                     }
                 }
@@ -215,16 +212,17 @@ public class MetricService : IMetricService
                 {
                     await SetIsPeriodOnCalendarDay(calendarDay);
                 }
+
                 await _metricRepository.SaveMetrics(calendarDay.Id, metrics.Where(m => m.CreatedAt == date).ToList());
-                return;
             } else
             {
                 // This case means there is no historic cycle (which old enough to contain the logged date), so a new one needs to be created from the metric date up until the following cycle's start date
                 var followingCycle = await _cycleRepository.GetFollowingCycle(userId, date);
-                
+
                 // When the following cycle contains no 'Flow', merge the new cycle with the following cycle (e.g. when the user logs a headache without logging a period)
                 // Also, when the start of the new cycle is less than 2 days from the following cycle's start date, merge the new cycle with the following cycle
-                if (followingCycle is not null && (followingCycle.CycleDays.All(c => c.IsPeriod == false) || followingCycle.StartDate - date <= TimeSpan.FromDays(2)))
+                if (followingCycle is not null && (followingCycle.CycleDays.All(c => c.IsPeriod == false) ||
+                                                   followingCycle.StartDate - date <= TimeSpan.FromDays(2)))
                 {
                     await _cycleRepository.Update(new Cycle()
                     {
@@ -233,11 +231,12 @@ public class MetricService : IMetricService
                         StartDate = date,
                         EndDate = followingCycle.EndDate
                     });
-                    
+
                     // If the following cycle contains any metrics, which now belong to the new cycle, update their cycle id
-                    await _calendarDayRepository.UpdateCycleIds(followingCycle.Id, followingCycle.Id, followingCycle.StartDate,
+                    await _calendarDayRepository.UpdateCycleIds(followingCycle.Id, followingCycle.Id,
+                        followingCycle.StartDate,
                         followingCycle.EndDate ?? DateTimeOffset.UtcNow);
-                    
+
                     cycle = followingCycle;
                 } else
                 {
@@ -249,12 +248,13 @@ public class MetricService : IMetricService
                         EndDate = followingCycle?.StartDate.AddDays(-1)
                     });
                 }
-                
+
                 var calendarDay = await GetOrCreateCalendarDay(userId, date, cycle.Id);
                 if (metricNames.Values.Any(m => m.Contains("Flow")))
                 {
                     await SetIsPeriodOnCalendarDay(calendarDay);
                 }
+
                 await _metricRepository.SaveMetrics(calendarDay.Id, metrics.Where(m => m.CreatedAt == date).ToList());
             }
         }
@@ -267,9 +267,10 @@ public class MetricService : IMetricService
         {
             calendarDay = await _calendarDayRepository.CreteCycleDay(userId, date, cycleId);
         }
+
         return calendarDay;
     }
-    
+
     private async Task SetIsPeriodOnCalendarDay(CalendarDay calendarDay)
     {
         if (calendarDay is not CycleDay day)

@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Infrastructure.Repository.Interface;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 using Models;
 using Models.Days;
@@ -230,9 +231,9 @@ public class CycleService : ICycleService
         return cycle;
     }
 
-    public async Task SetInitialData(Guid userId, InitialLoginPostDto initialLoginPostDto)
+    public async Task SetInitialData(Guid userId, InitialLoginPutDto initialLoginPutDto)
     {
-        var user = await _userManager.FindByIdAsync(userId.ToString());
+        var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId);
         if (user!.CurrentCycleId != null)
         {
             throw new BadRequestException("User has already set their initial data.");
@@ -243,20 +244,20 @@ public class CycleService : ICycleService
         {
             Id = Guid.NewGuid(),
             UserId = userId,
-            StartDate = initialLoginPostDto.LastPeriodStart
+            StartDate = initialLoginPutDto.LastPeriodStart
         };
         await Create(cycle);
         
         // Update user's average cycle and period lengths
-        user!.PeriodLength = initialLoginPostDto.PeriodLength;
-        user!.CycleLength = initialLoginPostDto.CycleLength;
+        user!.PeriodLength = initialLoginPutDto.PeriodLength;
+        user!.CycleLength = initialLoginPutDto.CycleLength;
         user.CurrentCycleId = cycle.Id;
         await _userManager.UpdateAsync(user);
         
         // Log the period days for the cycle
-        var periodDay = initialLoginPostDto.LastPeriodStart;
-        var upperBound = initialLoginPostDto.LastPeriodEnd ??
-                         initialLoginPostDto.LastPeriodStart.AddDays(initialLoginPostDto.PeriodLength);
+        var periodDay = initialLoginPutDto.LastPeriodStart;
+        var upperBound = initialLoginPutDto.LastPeriodEnd ??
+                         initialLoginPutDto.LastPeriodStart.AddDays(initialLoginPutDto.PeriodLength);
         upperBound = upperBound > DateTimeOffset.UtcNow 
             ? DateTimeOffset.UtcNow 
             : upperBound;
