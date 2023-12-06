@@ -77,31 +77,10 @@ public class FirstLoginTests
         var response = await _client.PutAsJsonAsync("/cycle/initial-login", initialLoginPutDto);
         
         var user = await _dbContext.Users.FirstAsync(u => u.Email == username);
-        var cycle = await _dbContext.Cycles.FirstAsync(c => c.UserId == user.Id);
-        
-        // Assert if cycle was successfully created
-        cycle.Should().NotBeNull();
-        cycle.StartDate.Date.Should().Be(initialLoginPutDto.LastPeriodStart.Date);
-        cycle.EndDate.Should().BeNull();
-        
-        // Assert if user is connected to cycle and has correct cycle length
-        user.CurrentCycleId.Should().Be(cycle.Id);
         user.CycleLength.Should().Be(initialLoginPutDto.CycleLength);
         user.PeriodLength.Should().Be(initialLoginPutDto.PeriodLength);
-        
-        // Check if metrics were created for the days between last period start and today
-        var daysBetween = (DateTime.UtcNow - initialLoginPutDto.LastPeriodStart).Days + 1; // + today
-        var metrics = await _dbContext.CalendarDayMetric
-            .Include(cdm => cdm.Metrics)
-            .Include(cdm => cdm.MetricValue)
-            .Where(cdm => cdm.CalendarDay!.UserId == user.Id)
-            .ToListAsync();
-        metrics.Count.Should().Be(daysBetween);
-        metrics.ForEach(m =>
-        {
-            m.Metrics!.Name.Should().Be("Flow");
-        });
-
+        await AssertUserHasCycleAsync(user, initialLoginPutDto);
+        await AssertMetricsWereCreatedAsync(user, initialLoginPutDto);
         response.StatusCode.Should().Be(HttpStatusCode.OK);
         
         await Utilities.ClearToken(_client);
@@ -111,17 +90,29 @@ public class FirstLoginTests
     [Fact]
     public async Task Post_OK_Ended_Period()
     {
-        await Utilities.AuthorizeUserAndSetHeaderAsync(_client);
+        const string username = "user5@application";
+        await RegisterNewUserAndVerifyEmailAsync(username);
+        await Utilities.AuthorizeUserAndSetHeaderAsync(_client, username);
 
-        var initialLoginPostDto = new InitialLoginPutDto()
+        var initialLoginPutDto = new InitialLoginPutDto()
         {
-            CycleLength = 30,
-            PeriodLength = 6,
-            LastPeriodStart = DateTime.UtcNow.AddDays(-7)
+            CycleLength = 29,
+            PeriodLength = 5,
+            LastPeriodStart = DateTime.UtcNow.AddDays(-6),
+            LastPeriodEnd = DateTime.UtcNow.AddDays(-1)
         };
-        var response = await _client.PostAsJsonAsync("/cycle/initial-login", initialLoginPostDto);
-
+        
+        var response = await _client.PutAsJsonAsync("/cycle/initial-login", initialLoginPutDto);
+        
+        var user = await _dbContext.Users.FirstAsync(u => u.Email == username);
+        user.CycleLength.Should().Be(initialLoginPutDto.CycleLength);
+        user.PeriodLength.Should().Be(initialLoginPutDto.PeriodLength);
+        await AssertUserHasCycleAsync(user, initialLoginPutDto);
+        await AssertMetricsWereCreatedAsync(user, initialLoginPutDto);
         response.StatusCode.Should().Be(HttpStatusCode.OK);
+        
+        await Utilities.ClearToken(_client);
+        await RemoveUserAsync(username);
     }
 
     private async Task RegisterNewUserAndVerifyEmailAsync(string email)
@@ -141,8 +132,38 @@ public class FirstLoginTests
     
     private async Task RemoveUserAsync(string email)
     {
-        var user = await _dbContext.Users.FirstAsync(u => u.Email == email);
-        _dbContext.Users.Remove(user);
-        await _dbContext.SaveChangesAsync();
+        var user = await _userManager.Users.FirstAsync(u => u.Email == email);
+        await _userManager.DeleteAsync(user);
+        _dbContext.ChangeTracker.Clear();
+    }
+    
+    private async Task AssertUserHasCycleAsync(ApplicationUser user, InitialLoginPutDto initialLoginPutDto)
+    {
+        var cycle = await _dbContext.Cycles.FirstAsync(c => c.UserId == user.Id);
+        
+        // Assert if cycle was successfully created
+        cycle.Should().NotBeNull();
+        cycle.StartDate.Date.Should().Be(initialLoginPutDto.LastPeriodStart.Date);
+        cycle.EndDate.Should().BeNull();
+        
+        // Assert if user is connected to cycle and has correct cycle length
+        user.CurrentCycleId.Should().Be(cycle.Id);
+    }
+    
+    private async Task AssertMetricsWereCreatedAsync(ApplicationUser user, InitialLoginPutDto initialLoginPutDto)
+    {
+        // Check if metrics were created for the days between last period start and today
+        var upperBound = initialLoginPutDto.LastPeriodEnd ?? DateTime.UtcNow;
+        var daysBetween = (upperBound - initialLoginPutDto.LastPeriodStart).Days + 1; // + today
+        var metrics = await _dbContext.CalendarDayMetric
+            .Include(cdm => cdm.Metrics)
+            .Include(cdm => cdm.MetricValue)
+            .Where(cdm => cdm.CalendarDay!.UserId == user.Id)
+            .ToListAsync();
+        metrics.Count.Should().Be(daysBetween);
+        metrics.ForEach(m =>
+        {
+            m.Metrics!.Name.Should().Be("Flow");
+        });
     }
 }

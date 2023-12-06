@@ -206,7 +206,7 @@ public class CycleController : BaseController
             return BadRequest(ModelState);
         }
 
-        if (putDto.LastPeriodStart < putDto.LastPeriodEnd)
+        if (putDto.LastPeriodStart > putDto.LastPeriodEnd)
         {
             return BadRequest("Last period start date must be before the end date.");
         }
