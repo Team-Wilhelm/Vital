@@ -1,6 +1,7 @@
 import {Component} from "@angular/core";
 import AccountService from "../../services/account.service";
 import {VerifyRequestDto} from "../../interfaces/account/verifyEmailDto.interface";
+import {ActivatedRoute} from "@angular/router";
 
 @Component({
   selector: 'verify-email',
@@ -10,7 +11,18 @@ import {VerifyRequestDto} from "../../interfaces/account/verifyEmailDto.interfac
 export class VerifyEmailComponent {
   dto: VerifyRequestDto = { userId: '', token: '' }; // Declare the model
 
-  constructor(private accountService: AccountService) { } // Inject the service
+  constructor(
+    private accountService: AccountService,  // Inject the service
+    private route: ActivatedRoute  // Inject ActivatedRoute
+  ) { }
+
+  ngOnInit(): void {
+    // Get userId and token from query parameters and update the dto
+    this.route.queryParams.subscribe(params => {
+      this.dto.userId = params['userId'];
+      this.dto.token = decodeURIComponent(params['token']);
+    });
+  }
 
   verifyEmail(): void {
     if (this.dto.userId && this.dto.token) {

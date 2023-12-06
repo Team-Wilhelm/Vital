@@ -1,18 +1,20 @@
 import {Injectable} from "@angular/core";
 import {environment} from "../../../environments/environment";
-import {firstValueFrom} from "rxjs";
+import {firstValueFrom, tap} from "rxjs";
 import {InitialLoginGetDto, InitialLoginPostDto} from "../interfaces/dtos/user.dto.interface";
 import {HttpClient} from "@angular/common/http";
 import {aW} from "@fullcalendar/core/internal-common";
 import {ResetPasswordDto} from "../interfaces/account/resetPasswordDto.interface";
 import {ForgotPasswordDto} from "../interfaces/account/forgotPasswordDto.interface";
 import {VerifyRequestDto} from "../interfaces/account/verifyEmailDto.interface";
+import {ToastService} from "./toast.service";
+import {Router} from "@angular/router";
 
 @Injectable({
   providedIn: 'root'
 })
 export default class AccountService {
-  constructor(private httpClient: HttpClient) {
+  constructor(private httpClient: HttpClient, private toastService: ToastService, private router: Router) {
   }
 
   public async setInitialLoginData(loginData: InitialLoginPostDto): Promise<void> {
@@ -36,17 +38,38 @@ export default class AccountService {
   }
 
   public async verifyEmail(dto: VerifyRequestDto): Promise<void> {
-    const request = this.httpClient.post(environment.baseUrl + '/Account/Verify-Email', dto);
-    await firstValueFrom(request);
+    try {
+      const response = await firstValueFrom(this.httpClient.post(environment.baseUrl + '/Identity/Account/Verify-Email', dto, {observe: 'response'}));
+      if (response.status === 200) {
+        this.toastService.show('Email verified', 'Your email was successfully verified', 'success', 5000);
+      }
+    } catch (error:any) {
+      this.toastService.show(error.error.detail, 'Error', 'error', 5000);
+    }
+    await this.router.navigateByUrl('/')
   }
 
   public async forgotPassword(dto: ForgotPasswordDto): Promise<void> {
-    const request = this.httpClient.post(environment.baseUrl + '/Account/Forgot-Password', dto);
-    await firstValueFrom(request);
+    try {
+      const response = await firstValueFrom(this.httpClient.post(environment.baseUrl + '/Identity/Account/Forgot-Password', dto, {observe: 'response'}));
+      if (response.status === 200) {
+        this.toastService.show('Password reset link sent', 'Check your email for a password reset link', 'success', 5000);
+      }
+    } catch (error:any) {
+      this.toastService.show(error.error.detail, 'Error', 'error', 5000);
+    }
+    await this.router.navigateByUrl('/')
   }
 
   public async resetPassword(dto: ResetPasswordDto): Promise<void> {
-    const request = this.httpClient.post(environment.baseUrl + '/Account/Reset-Password', dto);
-    await firstValueFrom(request);
+    try {
+      const response = await firstValueFrom(this.httpClient.post(environment.baseUrl + '/Identity/Account/Reset-Password', dto, {observe: 'response'}));
+      if (response.status === 200) {
+        this.toastService.show('Password reset', 'Your password was successfully reset', 'success', 5000);
+      }
+    } catch (error:any) {
+      this.toastService.show(error.error.detail, 'Error', 'error', 5000);
+    }
+    await this.router.navigateByUrl('/')
   }
 }
