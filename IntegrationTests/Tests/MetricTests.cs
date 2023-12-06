@@ -96,7 +96,6 @@ public class MetricTests
         // Arrange
         var user = await _dbContext.Users.FirstAsync(u => u.Email == "user@application");
         await Utilities.AuthorizeUserAndSetHeaderAsync(_client, user.Email);
-
         var date = DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ", CultureInfo.InvariantCulture);
         _dbContext.Cycles.RemoveRange(_dbContext.Cycles.Where(c => c.UserId == user.Id && c.EndDate == null));
         await _dbContext.SaveChangesAsync();
@@ -124,6 +123,7 @@ public class MetricTests
     [Fact]
     public async Task Upload_Metrics_BadRequest_Wrong_MetricID()
     {
+        await Utilities.ClearToken(_client);
         // Arrange
         var user = await _dbContext.Users.FirstAsync(u => u.Email == "user@application");
         await Utilities.AuthorizeUserAndSetHeaderAsync(_client, user.Email);
