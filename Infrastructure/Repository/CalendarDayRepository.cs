@@ -44,7 +44,10 @@ public class CalendarDayRepository : ICalendarDayRepository
         foreach (var state in states)
         {
             var calendarDay = BuildCalendarDay(state!, sql, parameters);
-            calendarDays.Add(calendarDay);
+            if (calendarDay is not null)
+            {
+                calendarDays.Add(calendarDay);
+            }
         }
 
         return calendarDays;

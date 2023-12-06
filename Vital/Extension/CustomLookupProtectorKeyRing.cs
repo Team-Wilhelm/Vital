@@ -12,17 +12,16 @@ namespace Vital.Extension
         {
             _keyRingSettings = keyRingSettings;
         }
-        // Indexer to get the key associated with the provided keyId
+
         public string this[string keyId]
         {
             get
             {
                 // Return first keyId from all keys that matches input keyId
-                return GetAllKeyIds().Where(x => x == keyId).FirstOrDefault();
+                return GetAllKeyIds().FirstOrDefault(x => x == keyId) ?? "";
             }
         }
 
-        // Property to get current Key Id
         public string CurrentKeyId
         {
             get
@@ -37,7 +36,6 @@ namespace Vital.Extension
             }
         }
 
-        // Method to get all Key Ids
         public IEnumerable<string> GetAllKeyIds()
         {
             // Create a list to store Key Ids

@@ -19,8 +19,6 @@ public class ExceptionFilter : IAsyncExceptionFilter
     public async Task OnExceptionAsync(ExceptionContext context)
     {
         context.ExceptionHandled = true;
-        const string baseErrorMessage = "Something went wrong";
-        var trace = Activity.Current?.Id ?? context?.HttpContext.TraceIdentifier;
         var exception = context!.Exception;
 
         string errorCode;

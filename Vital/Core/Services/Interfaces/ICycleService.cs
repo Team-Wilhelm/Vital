@@ -50,9 +50,9 @@ public interface ICycleService
     Task<Cycle> Update(Guid id, UpdateCycleDto dto);
 
     /// <summary>
-    /// Gets a list of predicted period days for the specified cycle.
+    /// Gets a list of predicted period days for the specified user
     /// </summary>
-    /// <param name="cycleId">The unique ID of the specified cycle.</param>
+    /// <param name="userId">The unique ID of the specified user.</param>
     /// <returns>A task that represents the asynchronous operation. 
     /// The task result contains a list of PredictedPeriodDayDtos.</returns>
     Task<List<DateTimeOffset>> GetPredictedPeriod(Guid userId);
@@ -68,6 +68,7 @@ public interface ICycleService
     /// Retrieves the last x number cycles for the specified user.
     /// </summary>
     /// <param name="userId"></param>
+    /// <param name="numberOfCycles"></param>
     /// <returns></returns>
     Task<List<CycleAnalyticsDto>> GetAnalytics(Guid userId, int numberOfCycles);
     

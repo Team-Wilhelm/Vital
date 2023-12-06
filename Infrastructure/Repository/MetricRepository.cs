@@ -34,8 +34,7 @@ public class MetricRepository : IMetricRepository
         return list.GroupBy(m => m.Id).Select(g =>
         {
             var groupedMetric = g.First();
-            groupedMetric.Values = g.Select(p => p.Values.FirstOrDefault()).Where(p => p != null).ToList() ??
-                                   new List<MetricValue>();
+            groupedMetric.Values = g.Select(p => p.Values.First()).ToList();
             return groupedMetric;
         }).ToList();
     }
@@ -164,7 +163,7 @@ public class MetricRepository : IMetricRepository
             .Select(g => 
         {
             var groupedMetric = g.First();
-            groupedMetric.Values = g.Select(p => p.Values.FirstOrDefault()).Where(p => p != null).ToList();
+            groupedMetric.Values = g.Select(p => p.Values.First()).ToList();
             return groupedMetric;
         }).ToList();
     }

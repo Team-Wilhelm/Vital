@@ -202,8 +202,8 @@ public class CycleService : ICycleService
         return new PeriodCycleStatsDto
         {
             CurrentCycleLength = currentCycleLength,
-            AverageCycleLength = (int)_userManager.Users.First(u => u.Id == userId).CycleLength,
-            AveragePeriodLength = (int)_userManager.Users.First(u => u.Id == userId).PeriodLength
+            AverageCycleLength = (int) (_userManager.Users.FirstOrDefault(u => u.Id == userId)?.CycleLength ?? 0),
+            AveragePeriodLength = (int) (_userManager.Users.FirstOrDefault(u => u.Id == userId)?.PeriodLength ?? 0)
         };
     }
 

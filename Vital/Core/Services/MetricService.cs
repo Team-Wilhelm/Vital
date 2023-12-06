@@ -64,7 +64,7 @@ public class MetricService : IMetricService
             {
                 Id = calendarDayAdapter.MetricsId,
                 Name = calendarDayAdapter.MetricName,
-                Values = new List<MetricValue?>()
+                Values = new List<MetricValue>()
             };
 
             if (calendarDayAdapter.MetricValueId is not null)

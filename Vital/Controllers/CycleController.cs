@@ -67,9 +67,8 @@ public class CycleController : BaseController
     }
 
     /// <summary>
-    /// Creates a new Cycle object with the specified details.
+    /// Creates a new Cycle
     /// </summary>
-    /// <param name="dto">A CreateCycleDto object containing the details for the new Cycle object.</param>
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(CycleDto))]
     public async Task<IActionResult> Create()
@@ -112,9 +111,8 @@ public class CycleController : BaseController
     }
 
     /// <summary>
-    /// Retrieves a list of predicted period days for a Cycle object.
+    /// Retrieves a list of predicted period days.
     /// </summary>
-    /// <param name="cycleId">The ID of the predicted cycle.</param>
     [HttpGet("predicted-period")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<DateTimeOffset>))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]

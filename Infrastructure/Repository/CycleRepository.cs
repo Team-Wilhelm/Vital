@@ -63,7 +63,7 @@ public class CycleRepository : ICycleRepository
             var periodLength = cycle.CycleDays.Count(cd => cd.IsPeriod);
             return new PeriodAndCycleLengthDto
             {
-                CycleLength = (float)cycleLength?.Days,
+                CycleLength = cycleLength?.Days ?? 0,
                 PeriodLength = periodLength
             };
         });

@@ -26,10 +26,11 @@ public class AccountController : BaseController
         _currentContext = currentContext;
     }
     
-     /// <summary>
+    /// <summary>
     /// Request forgot password
     /// </summary>
     /// <param name="dto"></param>
+    /// <param name="cancellationToken"></param>
     /// <returns></returns>
     [HttpPost("Forgot-Password")]
     public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDto dto, CancellationToken cancellationToken)

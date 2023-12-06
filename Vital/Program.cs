@@ -187,7 +187,9 @@ if (app.Environment.IsDevelopment())
     app.UseStaticFiles();
     app.UseSwagger();
     app.UseSwaggerUI();
-    app.UseReDoc();
+    app.UseReDoc(c => {
+        c.DocumentTitle = "Vital API";
+    });
 } else
 {
     app.UseCors("Production");
