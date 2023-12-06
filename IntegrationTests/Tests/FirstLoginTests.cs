@@ -30,6 +30,13 @@ public class FirstLoginTests
         _dbContext =  _scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
         _userManager = _scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
     }
+    
+    [Fact]
+    public async Task Should_Return_Unauthorized_When_Not_Authorized()
+    {
+        var response = await _client.GetAsync("/cycle/initial-login");
+        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+    }
 
     [Fact]
     public async Task Firs_Login_Should_Have_Null_Data()
