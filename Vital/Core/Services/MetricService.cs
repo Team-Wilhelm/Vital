@@ -113,6 +113,14 @@ public class MetricService : IMetricService
             throw new BadRequestException("Cannot log metrics for a future date.");
         }
 
+        try
+        {
+            await _metricRepository.CheckIfMetricsExist(metrics);
+        } catch (BadRequestException e)
+        {
+            throw new BadRequestException(e.Message);
+        }
+
         foreach (var date in dayList)
         {
             var cycle = await _cycleRepository.GetCycleByDate(userId, date);

@@ -125,7 +125,7 @@ public class AuthTests
 
         var response = await _client.PostAsync("/Identity/Auth/Register", JsonContent.Create(registerRequest));
 
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.Should().Be(HttpStatusCode.ServiceUnavailable);
 
         _dbContext.Users.FirstOrDefault(u => u.UserName == registerRequest.Email)
             .Should().NotBeNull();

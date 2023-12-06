@@ -83,13 +83,20 @@ public class AuthController : BaseController
 
         var user = new ApplicationUser()
         {
+            Id = Guid.NewGuid(),
             Email = requestDto.Email,
             UserName = requestDto.Email,
             CycleLength = null,
             PeriodLength = null
         };
-
-        var result = await _userManager.CreateAsync(user, requestDto.Password);
+        var result = new IdentityResult();
+        try
+        {
+            result = await _userManager.CreateAsync(user, requestDto.Password);
+        } catch (DbUpdateException e)
+        {
+            throw new AuthException("Cannot create user. This username is already taken.");
+        }
         if (!result.Succeeded)
         {
             var identityError = result.Errors?.FirstOrDefault();

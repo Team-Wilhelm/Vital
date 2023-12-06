@@ -31,7 +31,7 @@ public class BrevoEmailDeliveryService : IEmailDeliveryService
             brevoRecipients,
             subject,
             message,
-            true,
+            false,
             token: ct
         );
     }

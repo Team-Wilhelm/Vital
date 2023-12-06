@@ -67,6 +67,12 @@ public class ExceptionFilter : IAsyncExceptionFilter
                     statusCode = StatusCodes.Status503ServiceUnavailable;
                     errorMessage = brevoException.Message;
                     break;
+                
+                case EmailException emailException:
+                    errorCode = "CouldNotSendEmail";
+                    statusCode = StatusCodes.Status503ServiceUnavailable;
+                    errorMessage = emailException.Message;
+                    break;
 
                 // This should never happen in production
                 default:
