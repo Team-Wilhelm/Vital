@@ -19,19 +19,8 @@ using Xunit.Abstractions;
 namespace IntegrationTests.Tests;
 
 [Collection("VitalApi")]
-public class MetricTests
+public class MetricTests(VitalApiFactory vaf) : TestBase(vaf)
 {
-    private readonly HttpClient _client;
-    private readonly ApplicationDbContext _dbContext;
-    private readonly IServiceScope _scope;
-
-    public MetricTests(VitalApiFactory waf)
-    {
-        _client = waf.Client;
-        _scope = waf.Services.CreateScope();
-        _dbContext = _scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-    }
-
     [Fact]
     public async Task Get_Should_be_unauthorized()
     {
@@ -42,7 +31,7 @@ public class MetricTests
 
         response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }
-    
+
     [Fact]
     public async Task UploadMetricForADay_Should_be_unauthorized()
     {
@@ -82,7 +71,7 @@ public class MetricTests
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
         actual?.Count.Should().Be(expected.Count);
-        
+
         // Cleanup
         await Utilities.ClearToken(_client);
     }
@@ -92,13 +81,13 @@ public class MetricTests
     {
         await Utilities.ClearToken(_client);
         // Arrange
-        var user = await _dbContext.Users.FirstAsync(u => u.Email == "user@application");
+        var user = await _dbContext.Users.FirstAsync(u => u.Email == "user3@application");
         await Utilities.AuthorizeUserAndSetHeaderAsync(_client, user.Email);
         var date = DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ", CultureInfo.InvariantCulture);
         _dbContext.Cycles.RemoveRange(_dbContext.Cycles.Where(c => c.UserId == user.Id && c.EndDate == null));
         await _dbContext.SaveChangesAsync();
-        
-        var metric = await _dbContext.Metrics.FirstAsync();
+
+        var metric = await _dbContext.Metrics.FirstAsync(m => m.Name != "Flow");
         var metricValue = await _dbContext.MetricValue.FirstAsync(m => m.MetricsId == metric.Id);
         var metricRegisterMetricDto = new MetricRegisterMetricDto()
         {
@@ -110,10 +99,10 @@ public class MetricTests
         // Act
         var response = await _client.PostAsJsonAsync($"/Metric",
             new List<MetricRegisterMetricDto> { metricRegisterMetricDto });
-        
+
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
-        
+
         // Cleanup
         await Utilities.ClearToken(_client);
     }
@@ -138,10 +127,10 @@ public class MetricTests
         // Act
         var response = await _client.PostAsJsonAsync($"/Metric",
             new List<MetricRegisterMetricDto> { metricRegisterMetricDto });
-        
+
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-        
+
         // Cleanup
         await Utilities.ClearToken(_client);
     }

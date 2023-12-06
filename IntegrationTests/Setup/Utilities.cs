@@ -19,6 +19,7 @@ public static class Utilities
         
         if (authResponse != null)
         {
+            client.DefaultRequestHeaders.Remove("Authorization");
             client.DefaultRequestHeaders.Add("Authorization", $"Bearer {authResponse.Token}");
         }
     }
