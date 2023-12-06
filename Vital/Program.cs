@@ -26,6 +26,7 @@ builder.Host.UseSerilog(
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("Jwt"));
 builder.Services.Configure<GlobalSettings>(builder.Configuration.GetSection("Global"));
 builder.Services.Configure<BrevoSettings>(builder.Configuration.GetSection("Brevo"));
+builder.Services.Configure<KeyRingSettings>(builder.Configuration.GetSection("KeyRing"));
 
 // Use PostgreSQL with EF Core for database management
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
