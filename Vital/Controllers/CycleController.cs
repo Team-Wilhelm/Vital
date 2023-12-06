@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Models;
 using Models.Dto.Cycle;
+using Models.Dto.InitialLogin;
 using Models.Identity;
 using Models.Pagination;
 using Vital.Core.Context;
@@ -168,5 +169,54 @@ public class CycleController : BaseController
         var userId = _currentContext.UserId!.Value;
         var analytics = await _cycleService.GetAnalytics(userId, numberOfCycles);
         return Ok(analytics);
+    }
+    
+    /// <summary>
+    /// This endpoint is used to check, when the user logs in for the first time, if they have already set their period and cycle lengths.
+    /// </summary>
+    /// <returns></returns>
+    [HttpGet("initial-login")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(InitialLoginGetDto))]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetCurrentUserCycleLengths()
+    {
+        var userId = _currentContext.UserId!.Value;
+        var user = await _userManager.FindByIdAsync(userId.ToString());
+        return Ok(new InitialLoginGetDto()
+        {
+            PeriodLength = user!.PeriodLength,
+            CycleLength = user!.CycleLength
+        });
+    }
+
+    /// <summary>
+    /// This endpoint is used to set the period and cycle lengths for the user when they log in for the first time.
+    /// </summary>
+    /// <param name="postDto"></param>
+    /// <returns></returns>
+    [HttpPut("initial-login")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> SetInitialData([FromBody] InitialLoginPostDto postDto)
+    {
+        if(!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
+        if (postDto.LastPeriodStart < postDto.LastPeriodEnd)
+        {
+            return BadRequest("Last period start date must be before the end date.");
+        }
+
+        if (postDto.LastPeriodStart > DateTimeOffset.Now || postDto.LastPeriodEnd > DateTimeOffset.Now)
+        {
+            return BadRequest("Last period start and end dates cannot be in the future.");
+        }
+        
+        var userId = _currentContext.UserId!.Value;
+        await _cycleService.SetInitialData(userId, postDto);
+        return Ok();
     }
 }

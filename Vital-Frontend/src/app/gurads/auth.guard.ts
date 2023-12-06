@@ -1,9 +1,11 @@
 import {inject} from '@angular/core';
 import {Router} from '@angular/router';
-import {UserSessionService} from "../services/user-session.service";
+import {TokenService} from "../services/token.service";
+import AccountService from "../services/account.service";
 
-export const authGuard = () => {
-  const tokenService = inject(UserSessionService);
+export const authGuard = async () => {
+  const tokenService = inject(TokenService);
+  const accountService = inject(AccountService);
   const router = inject(Router);
 
   // Allow access to login and register without authentication
@@ -14,6 +16,9 @@ export const authGuard = () => {
 
   // If the user is authenticated, allow them to access the page
   if (tokenService.isAuthenticated()) {
+    if (await accountService.isFirstLogin()) {
+      return router.parseUrl('/initial-login');
+    }
     return true;
   }
 
