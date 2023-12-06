@@ -2,6 +2,7 @@
 using System.Net.Http.Json;
 using FluentAssertions;
 using IntegrationTests.Setup;
+using Models.Dto.Cycle;
 using Newtonsoft.Json;
 using Xunit.Abstractions;
 
@@ -62,6 +63,141 @@ public class PeriodTests(VitalApiFactory vaf) : TestBase(vaf)
         AssertFutureCyclePredictions(0, (int)Math.Floor(user.PeriodLength!.Value), startDate, actual);
         
         await Utilities.ClearToken(_client);
+    }
+    
+    [Fact]
+    public async Task Get_Period_Cycle_Stats_Unauthorized()
+    {
+        await Utilities.ClearToken(_client);
+        var response = await _client.GetAsync("/cycle/period-cycle-stats");
+
+        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+    }
+    
+    [Fact]
+    public async Task Get_Period_Cycle_Stats_Success()
+    {
+        var user = _userManager.Users.First(u => u.Email == "user2@application");
+        var cycle = _dbContext.Cycles.First(c => c.UserId == user.Id);
+        await Utilities.AuthorizeUserAndSetHeaderAsync(_client, user.Email);
+
+        var response = await _client.GetAsync("/cycle/period-cycle-stats");
+        var actual = await response.Content.ReadFromJsonAsync<PeriodCycleStatsDto>();
+
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        actual.Should().NotBeNull();
+        actual!.AverageCycleLength.Should().Be((int) Math.Floor(user.CycleLength!.Value));
+        actual.AveragePeriodLength.Should().Be((int) Math.Floor(user.PeriodLength!.Value));
+        actual.CurrentCycleLength.Should().Be(DateTime.Now.Subtract(cycle.StartDate.Date).Days);
+        
+        await Utilities.ClearToken(_client);
+    }
+    
+    [Fact]
+    public async Task Set_Period_Cycle_Length_Unauthorized()
+    {
+        await Utilities.ClearToken(_client);
+        var response = await _client.PostAsJsonAsync("/cycle/period-cycle-length", new PeriodAndCycleLengthDto());
+
+        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+    }
+    
+    [Fact]
+    public async Task Set_Period_Cycle_Length_Success()
+    {
+        var user = _userManager.Users.First(u => u.Email == "user2@application");
+        await Utilities.AuthorizeUserAndSetHeaderAsync(_client, user.Email);
+
+        var response = await _client.PostAsJsonAsync("/cycle/period-cycle-length", new PeriodAndCycleLengthDto
+        {
+            CycleLength = 30,
+            PeriodLength = 5
+        });
+
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        user = _userManager.Users.First(u => u.Email == "user2@application");
+        
+        _dbContext.Entry(user).Reload();
+        
+        user.CycleLength.Should().Be(30);
+        user.PeriodLength.Should().Be(5);
+        
+        user = _userManager.Users.First(u => u.Email == "user2@application");
+        user.CycleLength = 28;
+        await _userManager.UpdateAsync(user);
+        await Utilities.ClearToken(_client);
+    }
+
+    [Fact]
+    public async Task Set_Period_Negative_Period_Length()
+    {
+        var user = _userManager.Users.First(u => u.Email == "user2@application");
+        await Utilities.AuthorizeUserAndSetHeaderAsync(_client, user.Email);
+        
+        var response = await _client.PostAsJsonAsync("/cycle/period-cycle-length", new PeriodAndCycleLengthDto
+        {
+            CycleLength = 30,
+            PeriodLength = -1
+        });
+        
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        user = _userManager.Users.First(u => u.Email == "user2@application");
+        user.CycleLength.Should().Be(28);
+        user.PeriodLength.Should().Be(5);
+    }
+    
+    [Fact]
+    public async Task Set_Period_TooHigh_Period_Length()
+    {
+        var user = _userManager.Users.First(u => u.Email == "user2@application");
+        await Utilities.AuthorizeUserAndSetHeaderAsync(_client, user.Email);
+        
+        var response = await _client.PostAsJsonAsync("/cycle/period-cycle-length", new PeriodAndCycleLengthDto
+        {
+            CycleLength = 30,
+            PeriodLength = 101
+        });
+        
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        user = _userManager.Users.First(u => u.Email == "user2@application");
+        user.CycleLength.Should().Be(28);
+        user.PeriodLength.Should().Be(5);
+    }
+    
+    [Fact]
+    public async Task Set_Period_Negative_Cycle_Length()
+    {
+        var user = _userManager.Users.First(u => u.Email == "user2@application");
+        await Utilities.AuthorizeUserAndSetHeaderAsync(_client, user.Email);
+        
+        var response = await _client.PostAsJsonAsync("/cycle/period-cycle-length", new PeriodAndCycleLengthDto
+        {
+            CycleLength = -1,
+            PeriodLength = 5
+        });
+        
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        user = _userManager.Users.First(u => u.Email == "user2@application");
+        user.CycleLength.Should().Be(28);
+        user.PeriodLength.Should().Be(5);
+    }
+    
+    [Fact]
+    public async Task Set_Period_TooHigh_Cycle_Length()
+    {
+        var user = _userManager.Users.First(u => u.Email == "user2@application");
+        await Utilities.AuthorizeUserAndSetHeaderAsync(_client, user.Email);
+        
+        var response = await _client.PostAsJsonAsync("/cycle/period-cycle-length", new PeriodAndCycleLengthDto
+        {
+            CycleLength = 101,
+            PeriodLength = 5
+        });
+        
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        user = _userManager.Users.First(u => u.Email == "user2@application");
+        user.CycleLength.Should().Be(28);
+        user.PeriodLength.Should().Be(5);
     }
     
     #region Utilities
