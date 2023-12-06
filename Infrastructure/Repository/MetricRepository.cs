@@ -180,7 +180,7 @@ public class MetricRepository : IMetricRepository
     {
         // Check if the metric passed is valid
         var metricIds = metrics.Select(m => m.MetricsId).Distinct().ToList();
-        var sql = @"SELECT ""Id"" FROM ""Metrics"" WHERE ""Id"" = ANY(@metricsIds)";
+        var sql = @"SELECT ""Id"" FROM ""Metrics"" WHERE ""Id"" = ANY(@metricIds)";
         var validMetricsIds = await _db.QueryAsync<Guid>(sql, new { metricIds });
         if (validMetricsIds.Count() != metricIds.Count)
         {
@@ -199,7 +199,6 @@ public class MetricRepository : IMetricRepository
                 throw new BadRequestException("The metric value you are trying to log does not exist.");
             }
         }
-
         return true;
     }
 }
