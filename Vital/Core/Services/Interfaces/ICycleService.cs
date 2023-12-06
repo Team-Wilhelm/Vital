@@ -32,13 +32,6 @@ public interface ICycleService
     /// <returns>A task that represents the asynchronous operation. 
     /// The task result contains the Cycle object that was added.</returns>
     Task<Cycle> Create();
-    
-    /// <summary>
-    /// Creates a new Cycle object with the specified details.
-    /// </summary>
-    /// <param name="cycle"></param>
-    /// <returns></returns>
-    Task<Cycle> Create(Cycle cycle);
 
     /// <summary>
     /// Updates an existing Cycle object with new values.

@@ -83,12 +83,6 @@ public class CycleService : ICycleService
 
         return cycle;
     }
-    
-    public async Task<Cycle> Create(Cycle cycle)
-    {
-        await _cycleRepository.Create(cycle);
-        return cycle;
-    }
 
     /// <summary>
     /// Update a cycle by its id.
@@ -243,7 +237,8 @@ public class CycleService : ICycleService
             UserId = userId,
             StartDate = initialLoginPostDto.LastPeriodStart
         };
-        await Create(cycle);
+        
+        await _cycleRepository.Create(cycle);
         
         // Update user's average cycle and period lengths
         user!.PeriodLength = initialLoginPostDto.PeriodLength;
