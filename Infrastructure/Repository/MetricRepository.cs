@@ -117,30 +117,8 @@ public class MetricRepository : IMetricRepository
 
     public async Task SaveMetrics(Guid calendarDayId, List<MetricRegisterMetricDto> metrics)
     {
-        // Check if the metric passed is valid
-        var metricsIds = metrics.Select(m => m.MetricsId).Distinct().ToList();
-        var sql = @"SELECT ""Id"" FROM ""Metrics"" WHERE ""Id"" = ANY(@metricsIds)";
-        var validMetricsIds = await _db.QueryAsync<Guid>(sql, new { metricsIds });
-        if (validMetricsIds.Count() != metricsIds.Count)
-        {
-            throw new BadRequestException("The metric you are trying to log does not exist.");
-        }
-
-        // Check if the metric value passed is valid
-        var metricValuesIds = metrics.Select(m => m.MetricValueId).Distinct().ToList();
-        metricValuesIds.RemoveAll(m => m == null);
-        if (metricValuesIds.Count > 0)
-        {
-            sql = @"SELECT ""Id"" FROM ""MetricValue"" WHERE ""Id"" = ANY(@metricValuesIds)";
-            var validMetricValuesIds = await _db.QueryAsync<Guid>(sql, new { metricValuesIds });
-            if (validMetricValuesIds.Count() != metricValuesIds.Count)
-            {
-                throw new BadRequestException("The metric value you are trying to log does not exist.");
-            }
-        }
-
         // Insert new metrics for the day
-        sql = @"INSERT INTO ""CalendarDayMetric"" (""Id"",""CalendarDayId"", ""MetricsId"", ""MetricValueId"", ""CreatedAt"") VALUES (@Id, @calendarDayId, @metricsId, @metricValueId, @createdAt)";
+        var sql = @"INSERT INTO ""CalendarDayMetric"" (""Id"",""CalendarDayId"", ""MetricsId"", ""MetricValueId"", ""CreatedAt"") VALUES (@Id, @calendarDayId, @metricsId, @metricValueId, @createdAt)";
         foreach (var metricsDto in metrics)
         {
             await _db.ExecuteAsync(sql,
@@ -196,5 +174,31 @@ public class MetricRepository : IMetricRepository
         var sql = @"SELECT ""CalendarDayId"" FROM ""CalendarDayMetric"" WHERE ""Id"" = @calendarDayMetricId";
         var result = await _db.QuerySingleOrDefaultAsync<Guid>(sql, new { calendarDayMetricId });
         return result;
+    }
+
+    public async Task<bool> CheckIfMetricsExist(List<MetricRegisterMetricDto> metrics)
+    {
+        // Check if the metric passed is valid
+        var metricIds = metrics.Select(m => m.MetricsId).Distinct().ToList();
+        var sql = @"SELECT ""Id"" FROM ""Metrics"" WHERE ""Id"" = ANY(@metricIds)";
+        var validMetricsIds = await _db.QueryAsync<Guid>(sql, new { metricIds });
+        if (validMetricsIds.Count() != metricIds.Count)
+        {
+            throw new BadRequestException("The metric you are trying to log does not exist.");
+        }
+
+        // Check if the metric value passed is valid
+        var metricValuesIds = metrics.Select(m => m.MetricValueId).Distinct().ToList();
+        metricValuesIds.RemoveAll(m => m == null);
+        if (metricValuesIds.Count > 0)
+        {
+            sql = @"SELECT ""Id"" FROM ""MetricValue"" WHERE ""Id"" = ANY(@metricValuesIds)";
+            var validMetricValuesIds = await _db.QueryAsync<Guid>(sql, new { metricValuesIds });
+            if (validMetricValuesIds.Count() != metricValuesIds.Count)
+            {
+                throw new BadRequestException("The metric value you are trying to log does not exist.");
+            }
+        }
+        return true;
     }
 }

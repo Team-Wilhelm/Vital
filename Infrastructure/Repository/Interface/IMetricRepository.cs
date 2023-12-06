@@ -18,4 +18,5 @@ public interface IMetricRepository
     Task DeleteMetricEntry(Guid calendarDayMetricId);
     Task<List<Metrics>> GetMetricsForCalendarDayById(Guid calendarDayId);
     Task<Guid> GetCalendarDayIdByCalendarDayMetricId(Guid calendarDayMetricId);
+    Task<bool> CheckIfMetricsExist(List<MetricRegisterMetricDto> metrics);
 }
