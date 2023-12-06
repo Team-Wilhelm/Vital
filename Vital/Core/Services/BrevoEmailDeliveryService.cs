@@ -2,6 +2,7 @@
 using SendWithBrevo;
 using Vital.Configuration;
 using Vital.Core.Services.Interfaces;
+using Vital.Models.Exception;
 
 namespace Vital.Core.Services;
 
@@ -21,7 +22,7 @@ public class BrevoEmailDeliveryService : IEmailDeliveryService
 
         if (_brevoSettings.ApiKey is null or "")
         {
-            throw new Exception("API key is not set.");
+            throw new BrevoException("API key is not set.");
         }
         var client = new BrevoClient(_brevoSettings.ApiKey);
 

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Models.Dto.Identity;
 using Models.Identity;
 using Models.Responses;
@@ -38,7 +39,7 @@ public class AuthController : BaseController
             return BadRequest(ModelState);
         }
 
-        var user = await _userManager.FindByEmailAsync(request.Email);
+        var user = await _userManager.Users.FirstOrDefaultAsync(u => u.UserName == request.Email);
         if (user == null)
         {
             throw new AuthException("Wrong username or password");
@@ -114,7 +115,7 @@ public class AuthController : BaseController
     [HttpGet("username-taken/{username}")]
     public async Task<IActionResult> IsUsernameTaken([FromRoute] string username)
     {
-        var user = await _userManager.FindByNameAsync(username);
+        var user = await _userManager.Users.FirstOrDefaultAsync(u => u.UserName == username);
         return Ok(user != null);
     }
 }

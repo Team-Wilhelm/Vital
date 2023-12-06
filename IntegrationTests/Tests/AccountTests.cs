@@ -76,7 +76,7 @@ public class AccountTests
 
         var response = await _client.PostAsync("/Identity/Account/Forgot-Password", JsonContent.Create(forgotPassordDto));
 
-        response.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
     
     [Fact]

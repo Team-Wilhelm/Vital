@@ -4,6 +4,7 @@ using FluentAssertions;
 using Infrastructure.Data;
 using IntegrationTests.Setup;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Models.Dto.Identity;
 using Models.Identity;
@@ -124,7 +125,7 @@ public class AuthTests
 
         var response = await _client.PostAsync("/Identity/Auth/Register", JsonContent.Create(registerRequest));
 
-        response.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         _dbContext.Users.FirstOrDefault(u => u.UserName == registerRequest.Email)
             .Should().NotBeNull();
@@ -189,7 +190,7 @@ public class AuthTests
         };
         await _userManager.CreateAsync(user, loginRequest.Password);
 
-        _dbContext.Users.FirstOrDefault(u => u.UserName == loginRequest.Email)
+        (await _userManager.Users.FirstOrDefaultAsync(u => u.UserName == loginRequest.Email))
             .Should().NotBeNull();
 
         var response = await _client.PostAsync("/Identity/Auth/Login", JsonContent.Create(loginRequest));
