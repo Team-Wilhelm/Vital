@@ -1,10 +1,12 @@
-﻿using System.Globalization;
+﻿using System.Diagnostics;
+using System.Globalization;
 using System.Net;
 using System.Net.Http.Json;
 using FluentAssertions;
 using Infrastructure.Data;
 using IntegrationTests.Setup;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Models.Dto.Cycle;
@@ -14,6 +16,7 @@ using Models.Identity;
 using Models.Responses;
 using Models.Util;
 using Newtonsoft.Json;
+using Vital.Models.Exception;
 using Xunit.Abstractions;
 
 namespace IntegrationTests.Tests;
@@ -145,6 +148,144 @@ public class MetricTests
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         
+        // Cleanup
+        await Utilities.ClearToken(_client);
+    }
+    
+    [Fact]
+    public async Task SaveMetrics_ThrowsException_FutureDate()
+    {
+        // Arrange
+        var user = await _dbContext.Users.FirstAsync(u => u.Email == "user@application");
+        await Utilities.AuthorizeUserAndSetHeaderAsync(_client, user.Email);
+        var futureDate = DateTime.UtcNow.AddDays(2); // A future date
+
+        var metric = await _dbContext.Metrics.FirstAsync();
+        var metricValue = await _dbContext.MetricValue.FirstAsync(m => m.MetricsId == metric.Id);
+        var metricRegisterMetricDto = new MetricRegisterMetricDto()
+        {
+            MetricValueId = metricValue.Id,
+            MetricsId = metric.Id,
+            CreatedAt = futureDate
+        };
+
+        // Act
+        var response = await _client.PostAsJsonAsync($"/Metric", new List<MetricRegisterMetricDto> { metricRegisterMetricDto });
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        var problemDetails = await response.Content.ReadFromJsonAsync<ProblemDetails>();
+        problemDetails?.Title.Should().Be("Bad Request");
+        problemDetails?.Detail.Should().Contain("Cannot log metrics for a future date.");
+
+        // Cleanup
+        await Utilities.ClearToken(_client);
+    }
+    
+    [Fact]
+    public async Task SaveMetrics_No_Historic_Data_Success()
+    {
+        await Utilities.ClearToken(_client);
+        // Arrange
+        var user = await _dbContext.Users.FirstAsync(u => u.Email == "user@application");
+        await Utilities.AuthorizeUserAndSetHeaderAsync(_client, user.Email);
+        
+        // Date before existing cycle
+        var dateBeforeCurrentCycle = DateTime.UtcNow.AddMonths(-2); 
+
+        // Adding the Flow metric triggers creation of new cycle.
+        var flowMetric = await _dbContext.Metrics.FirstAsync(m => m.Name.Contains("Flow")); 
+        var metricValue = await _dbContext.MetricValue.FirstAsync(m => m.MetricsId == flowMetric.Id);
+        var metricRegisterMetricDto = new MetricRegisterMetricDto()
+        {
+            MetricValueId = metricValue.Id,
+            MetricsId = flowMetric.Id,
+            CreatedAt = dateBeforeCurrentCycle
+        };
+
+        // Act
+        var response = await _client.PostAsJsonAsync($"/Metric", new List<MetricRegisterMetricDto> { metricRegisterMetricDto });
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        // Check that a new cycle was created before the current cycle
+        var currentCycleId = await _dbContext.Users
+            .Where(u => u.Id == user.Id)
+            .Select(u => u.CurrentCycleId)
+            .FirstOrDefaultAsync();
+        var currentCycleStartDate = await _dbContext.Cycles
+            .Where(c => c.UserId == user.Id && c.EndDate == null)
+            .Select(c => c.StartDate)
+            .FirstOrDefaultAsync();
+        var previousCycle = await _dbContext.Cycles
+            .Where(c => c.UserId == user.Id && c.EndDate <= currentCycleStartDate)
+            .OrderByDescending(c => c.EndDate)
+            .FirstOrDefaultAsync();
+        
+        previousCycle.Should().NotBeNull();
+        Debug.Assert(user.CurrentCycleId != null, "user.CurrentCycleId != null");
+        previousCycle?.Id.Should().NotBe((Guid)user.CurrentCycleId); //User always has a current cycle
+
+        // Cleanup
+        await Utilities.ClearToken(_client);
+    }
+    
+    [Fact]
+    public async Task SaveMetrics_Historic_Data_Success()
+    {
+        await Utilities.ClearToken(_client);
+        // Arrange
+        var user = await _dbContext.Users.FirstAsync(u => u.Email == "user@application");
+        await Utilities.AuthorizeUserAndSetHeaderAsync(_client, user.Email);
+        
+        // Date before current cycle
+        var dateBeforeCurrentCycle = DateTime.UtcNow.AddMonths(-2); 
+
+        // Create a historic cycle
+        var historicFlowMetric = await _dbContext.Metrics.FirstAsync(m => m.Name.Contains("Flow")); 
+        var historicMetricValue = await _dbContext.MetricValue.FirstAsync(m => m.MetricsId == historicFlowMetric.Id);
+        var historicMetricRegisterMetricDto = new MetricRegisterMetricDto()
+        {
+            MetricValueId = historicFlowMetric.Id,
+            MetricsId = historicMetricValue.Id,
+            CreatedAt = dateBeforeCurrentCycle
+        };
+        
+        // Create a cycle that starts after the start of the historic cycle and before the current cycle
+        var flowMetric = await _dbContext.Metrics.FirstAsync(m => m.Name.Contains("Flow"));
+        var metricValue = await _dbContext.MetricValue.FirstAsync(m => m.MetricsId == flowMetric.Id);
+        var metricRegisterMetricDto = new MetricRegisterMetricDto()
+        {
+            MetricValueId = metricValue.Id,
+            MetricsId = flowMetric.Id,
+            CreatedAt = dateBeforeCurrentCycle.AddMonths(1)
+        };
+
+        // Act
+        var response = await _client.PostAsJsonAsync($"/Metric", new List<MetricRegisterMetricDto> { metricRegisterMetricDto });
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        // Check that a new cycle was created before the current cycle
+        // get historic cycle id based on date
+        var historicCycleId = await _dbContext.Cycles
+            .Where(c => c.UserId == user.Id && c.StartDate == dateBeforeCurrentCycle)
+            .Select(c => c.Id)
+            .FirstOrDefaultAsync();
+        var currentCycleId = user.CurrentCycleId;
+        // get cycle that starts after the historic cycle and before the current cycle
+        var newCycle = await _dbContext.Cycles
+            .Where(c => c.UserId == user.Id && c.StartDate > dateBeforeCurrentCycle && c.StartDate < DateTime.UtcNow)
+            .OrderByDescending(c => c.EndDate)
+            .FirstOrDefaultAsync();
+        
+        newCycle.Should().NotBeNull();
+        newCycle?.Id.Should().NotBe(historicCycleId);
+        //TODO why does current cycle have the same id as new cycle?
+        newCycle?.Id.Should().NotBe((Guid)currentCycleId!); //User always has a current cycle
+
         // Cleanup
         await Utilities.ClearToken(_client);
     }
