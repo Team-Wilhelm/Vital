@@ -8,6 +8,9 @@ import {AuthComponent} from "./auth/auth.component";
 import {ProfileComponent} from "./profile/profile.component";
 import {FirstLoginComponent} from "./first-login-page/first-login.component";
 import {initialLoginGuard} from "./gurads/initial-login.guard";
+import {ForgotPasswordComponent} from "./auth/forgot-password/forgot-password.component";
+import {ResetPasswordComponent} from "./auth/reset-password/reset-password.component";
+import {VerifyEmailComponent} from "./auth/verify-email/verify-email.component";
 
 const routes: Routes = [
   {path: '', redirectTo: 'dashboard', pathMatch: 'full'},
@@ -39,6 +42,9 @@ const routes: Routes = [
     canActivate: [authGuard]
   },
   {path: 'login', component: AuthComponent},
+  {path: 'forgot-password', component: ForgotPasswordComponent},
+  {path: 'reset-password', component: ResetPasswordComponent},
+  {path: 'verify-email', component: VerifyEmailComponent},
   {path: '**', redirectTo: 'dashboard'}
 ];
 
