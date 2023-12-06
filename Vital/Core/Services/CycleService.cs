@@ -129,6 +129,7 @@ public class CycleService : ICycleService
 
     /// <summary>
     /// Calculates remaining days in current cycle and predicted period days for the next three cycles.
+    /// The predicted period days are in ascending order.
     /// </summary>
     /// <param name="userId"></param>
     /// <returns></returns>
@@ -157,7 +158,7 @@ public class CycleService : ICycleService
         var difference = periodLength - periodElapsed;
         
         //Add predicted days after latest period day until cycle length is reached
-        for (var i = 0; i < difference; i++)
+        for (var i = 0; i <= difference; i++)
         {
             var dayToAdd = latestPeriodDay.AddDays(i + 1);
             if (dayToAdd.Date > today)
@@ -175,7 +176,8 @@ public class CycleService : ICycleService
                 predictedPeriodDays.Add(cycleStartDay.Date.AddDays(j));
             }
         }
-        return predictedPeriodDays;
+        
+        return predictedPeriodDays.OrderBy(d => d).ToList();
     }
 
     public async Task<List<CycleAnalyticsDto>> GetAnalytics(Guid userId, int numberOfCycles)

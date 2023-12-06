@@ -21,14 +21,12 @@ namespace IntegrationTests.Tests;
 [Collection("VitalApi")]
 public class MetricTests
 {
-    private readonly ITestOutputHelper _testOutputHelper;
     private readonly HttpClient _client;
     private readonly ApplicationDbContext _dbContext;
     private readonly IServiceScope _scope;
 
-    public MetricTests(VitalApiFactory waf, ITestOutputHelper testOutputHelper)
+    public MetricTests(VitalApiFactory waf)
     {
-        _testOutputHelper = testOutputHelper;
         _client = waf.Client;
         _scope = waf.Services.CreateScope();
         _dbContext = _scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
@@ -140,7 +138,6 @@ public class MetricTests
         // Act
         var response = await _client.PostAsJsonAsync($"/Metric",
             new List<MetricRegisterMetricDto> { metricRegisterMetricDto });
-        _testOutputHelper.WriteLine(await response.Content.ReadAsStringAsync());
         
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
