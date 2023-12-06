@@ -1,11 +1,12 @@
 import {Component, EventEmitter, OnDestroy, Output} from "@angular/core";
 import {AbstractControl, FormBuilder, FormGroup, Validators} from "@angular/forms";
-import {UserSessionService} from "../../services/user-session.service";
+import {TokenService} from "../../services/token.service";
 import {Router} from "@angular/router";
 import {PasswordValidator} from "../../validators/password.validator";
-import {PasswordRules, RegisterDto} from "../../interfaces/Utilities";
+import {PasswordRules, RegisterDto} from "../../interfaces/utilities.interface";
 import {debounceTime, distinctUntilChanged, Subscription} from "rxjs";
 import {em} from "@fullcalendar/core/internal-common";
+import AccountService from "../../services/account.service";
 
 @Component({
   selector: 'app-register-card',
@@ -33,9 +34,13 @@ export class RegisterCardComponent implements OnDestroy {
     specialCondition: false
   };
 
-  constructor(private tokenService: UserSessionService, private router: Router) {
+  constructor(private tokenService: TokenService, private accountService: AccountService) {
     this.subscribeToPasswordChanges();
     this.subscribeToEmailChanges();
+
+    this.registerForm.controls.email.setValue('1julka1il@gmail.com');
+    this.registerForm.controls.password.setValue('P@ssw0rd.+');
+    this.registerForm.controls.repeatPassword.setValue('P@ssw0rd.+');
   }
 
   ngOnDestroy(): void {
@@ -51,7 +56,8 @@ export class RegisterCardComponent implements OnDestroy {
   passwordMatchValidator(control: AbstractControl) {
     const g = control as FormGroup;
     return g.get('password')?.value === g.get('repeatPassword')?.value
-      ? null : {'mismatch': true};
+      ? null
+      : {'mismatch': true};
   }
 
   subscribeToPasswordChanges(): void {
@@ -91,7 +97,7 @@ export class RegisterCardComponent implements OnDestroy {
   checkIfUsernameIsTaken(email: string): void {
     if (email === null || email === '' || email === undefined) return;
 
-    this.tokenService.checkIfUsernameIsTaken(email)
+    this.accountService.checkIfUsernameIsTaken(email)
       .then(r => {
         if (r) {
           this.registerForm.get('email')?.setErrors({usernameTaken: true});
@@ -109,9 +115,5 @@ export class RegisterCardComponent implements OnDestroy {
       return 'This username is already taken';
     }
     return '';
-  }
-
-  togglePasswordVisibility() {
-    this.passwordVisible = !this.passwordVisible;
   }
 }

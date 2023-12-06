@@ -1,9 +1,10 @@
 import {Component, EventEmitter, Output, signal} from "@angular/core";
-import {UserSessionService} from "../../services/user-session.service";
+import {TokenService} from "../../services/token.service";
 import {Router} from "@angular/router";
 import {AbstractControl, FormBuilder, FormGroup, Validators} from "@angular/forms";
-import {LoginDto} from "../../interfaces/Utilities";
+import {LoginDto} from "../../interfaces/utilities.interface";
 import {environment} from "../../../../environments/environment";
+import AccountService from "../../services/account.service";
 
 @Component({
   selector: 'app-login-card',
@@ -16,7 +17,7 @@ export class LoginCardComponent {
 
   @Output() switchToRegister = new EventEmitter<void>();
 
-  constructor(private tokenService: UserSessionService, private router: Router) {
+  constructor(private tokenService: TokenService, private accountService: AccountService, private router: Router) {
     this.loginForm.controls.email.setValue(environment.userEmailAddress);
     this.loginForm.controls.password.setValue(environment.userPassword);
     this.subscribeToPasswordFieldChanged();
@@ -36,6 +37,10 @@ export class LoginCardComponent {
     try {
       await this.tokenService.login(this.loginForm.value as LoginDto);
       if (this.tokenService.isAuthenticated()) {
+        if (await this.accountService.isFirstLogin()) {
+          await this.router.navigate(['/initial-login']);
+          return;
+        }
         await this.router.navigate([this.redirectUrl || '/dashboard']);
       }
     } catch (e : any) {

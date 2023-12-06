@@ -128,7 +128,7 @@ public class CycleRepository : ICycleRepository
     public Task<Cycle?> GetCycleByDate(Guid userId, DateTimeOffset date)
     {
         var sql =
-            @"SELECT * FROM ""Cycles"" WHERE ""UserId""=@UserId AND CAST(""StartDate"" AS DATE) <= CAST(@Date AS DATE) AND CAST(""EndDate"" AS DATE) >= CAST(@Date as DATE)";
+            @"SELECT * FROM ""Cycles"" WHERE ""UserId""=@UserId AND CAST(""StartDate"" AS DATE) <= CAST(@Date AS DATE) AND (CAST(""EndDate"" AS DATE) >= CAST(@Date as DATE) OR ""EndDate"" IS NULL)";
         return _db.QuerySingleOrDefaultAsync<Cycle>(sql, new { UserId = userId, Date = date });
     }
     

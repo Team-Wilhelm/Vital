@@ -5,6 +5,8 @@ using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 using Models;
 using Models.Days;
 using Models.Dto.Cycle;
+using Models.Dto.InitialLogin;
+using Models.Dto.Metrics;
 using Models.Identity;
 using Models.Pagination;
 using Vital.Core.Context;
@@ -20,15 +22,17 @@ public class CycleService : ICycleService
     private readonly CurrentContext _currentContext;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly ICalendarDayRepository _calendarDayRepository;
+    private readonly IMetricService _metricService;
 
     public CycleService(ICycleRepository cycleRepository, ICalendarDayRepository calendarDayRepository, IMapper mapper,
-        CurrentContext currentContext, UserManager<ApplicationUser> userManager)
+        CurrentContext currentContext, UserManager<ApplicationUser> userManager, IMetricService metricService)
     {
         _cycleRepository = cycleRepository;
         _calendarDayRepository = calendarDayRepository;
         _mapper = mapper;
         _currentContext = currentContext;
         _userManager = userManager;
+        _metricService = metricService;
     }
 
     /// <summary>
@@ -77,6 +81,12 @@ public class CycleService : ICycleService
         };
         await _cycleRepository.Create(cycle);
 
+        return cycle;
+    }
+    
+    public async Task<Cycle> Create(Cycle cycle)
+    {
+        await _cycleRepository.Create(cycle);
         return cycle;
     }
 
@@ -216,5 +226,54 @@ public class CycleService : ICycleService
         cycle.CycleDays = cycleDays;
 
         return cycle;
+    }
+
+    public async Task SetInitialData(Guid userId, InitialLoginPostDto initialLoginPostDto)
+    {
+        var user = await _userManager.FindByIdAsync(userId.ToString());
+        if (user!.CurrentCycleId != null)
+        {
+            throw new BadRequestException("User has already set their initial data.");
+        }
+        
+        // Create a new cycle for the user based on their last period date (it won't have an end date, as it's ongoing)
+        var cycle = new Cycle()
+        {
+            Id = Guid.NewGuid(),
+            UserId = userId,
+            StartDate = initialLoginPostDto.LastPeriodStart
+        };
+        await Create(cycle);
+        
+        // Update user's average cycle and period lengths
+        user!.PeriodLength = initialLoginPostDto.PeriodLength;
+        user!.CycleLength = initialLoginPostDto.CycleLength;
+        user.CurrentCycleId = cycle.Id;
+        await _userManager.UpdateAsync(user);
+        
+        // Log the period days for the cycle
+        var periodDay = initialLoginPostDto.LastPeriodStart;
+        var upperBound = initialLoginPostDto.LastPeriodEnd ??
+                         initialLoginPostDto.LastPeriodStart.AddDays(initialLoginPostDto.PeriodLength);
+        upperBound = upperBound > DateTimeOffset.UtcNow 
+            ? DateTimeOffset.UtcNow 
+            : upperBound;
+        
+        var metrics = new List<MetricRegisterMetricDto>();
+        var metricId = (await _metricService.GetAllMetrics())
+            .First(m => m.Name == "Flow")
+            .Id;
+        
+        while (periodDay <= upperBound)
+        {
+           metrics.Add(new MetricRegisterMetricDto()
+           {
+               MetricsId = metricId,
+               CreatedAt = periodDay,
+           });
+           periodDay = periodDay.AddDays(1);
+        }
+        
+        await _metricService.SaveMetrics(userId, metrics);
     }
 }

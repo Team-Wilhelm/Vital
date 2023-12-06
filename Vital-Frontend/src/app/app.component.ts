@@ -1,6 +1,6 @@
 import {Component} from '@angular/core';
 import {Router} from "@angular/router";
-import {UserSessionService} from "./services/user-session.service";
+import {TokenService} from "./services/token.service";
 
 @Component({
   selector: 'app-root',
@@ -9,7 +9,7 @@ import {UserSessionService} from "./services/user-session.service";
 export class AppComponent {
   title = 'Vital';
 
-  constructor(public tokenService: UserSessionService, private router: Router) {
+  constructor(public tokenService: TokenService, private router: Router) {
   }
 
   async profile() {

@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {AbstractControl, FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {PasswordValidator} from "../validators/password.validator";
-import {PasswordRules} from "../interfaces/Utilities";
+import {PasswordRules} from "../interfaces/utilities.interface";
 import {CycleService} from "../services/cycle.service";
 import {UserService} from "../services/user.service";
 import {PeriodCycleStatsDto} from "../interfaces/analytics.interface";
