@@ -41,8 +41,8 @@ public class FirstLoginTests
     [Fact]
     public async Task Firs_Login_Should_Have_Null_Data()
     {
-        await RegisterNewUserAndVerifyEmailAsync("user3@application");
-        await Utilities.AuthorizeUserAndSetHeaderAsync(_client, "user3@application");
+        await RegisterNewUserAndVerifyEmailAsync("temp@application");
+        await Utilities.AuthorizeUserAndSetHeaderAsync(_client, "temp@application");
 
         var response = await _client.GetAsync("/cycle/initial-login");
         var actual = await response.Content.ReadFromJsonAsync<InitialLoginGetDto>();
@@ -52,7 +52,7 @@ public class FirstLoginTests
         result.Should().BeTrue();
 
         await Utilities.ClearToken(_client);
-        await RemoveUserAsync("user3@application");
+        await RemoveUserAsync("temp@application");
     }
 
     [Fact]
@@ -72,7 +72,7 @@ public class FirstLoginTests
     [Fact]
     public async Task Post_OK_OnGoing_Period()
     {
-        const string username = "user4@application";
+        const string username = "temp@application";
         await RegisterNewUserAndVerifyEmailAsync(username);
         await Utilities.AuthorizeUserAndSetHeaderAsync(_client, username);
 
@@ -99,7 +99,7 @@ public class FirstLoginTests
     [Fact]
     public async Task Post_OK_Ended_Period()
     {
-        const string username = "user5@application";
+        const string username = "temp@application";
         await RegisterNewUserAndVerifyEmailAsync(username);
         await Utilities.AuthorizeUserAndSetHeaderAsync(_client, username);
 
@@ -127,7 +127,7 @@ public class FirstLoginTests
     [Fact]
     public async Task Post_BadRequest_Invalid_CycleLength()
     {
-        const string username = "user6@application";
+        const string username = "temp@application";
         await RegisterNewUserAndVerifyEmailAsync(username);
         await Utilities.AuthorizeUserAndSetHeaderAsync(_client, username);
 
@@ -153,7 +153,7 @@ public class FirstLoginTests
     [Fact]
     public async Task Post_BadRequest_Invalid_PeriodLength()
     {
-        const string username = "user7@application";
+        const string username = "temp@application";
         await RegisterNewUserAndVerifyEmailAsync(username);
         await Utilities.AuthorizeUserAndSetHeaderAsync(_client, username);
 
@@ -179,7 +179,7 @@ public class FirstLoginTests
     [Fact]
     public async Task Post_BadRequest_Invalid_LastPeriodStart()
     {
-        const string username = "user8@application";
+        const string username = "temp@application";
         await RegisterNewUserAndVerifyEmailAsync(username);
         await Utilities.AuthorizeUserAndSetHeaderAsync(_client, username);
 
@@ -206,7 +206,7 @@ public class FirstLoginTests
     [Fact]
     public async Task Post_BadRequest_Invalid_LastPeriodEnd()
     {
-        const string username = "user9@application";
+        const string username = "temp@application";
         await RegisterNewUserAndVerifyEmailAsync(username);
         await Utilities.AuthorizeUserAndSetHeaderAsync(_client, username);
 
@@ -234,7 +234,7 @@ public class FirstLoginTests
     [Fact]
     public async Task Post_BadRequest_Invalid_Period_Start_After_Period_End()
     {
-        const string username = "user10@application";
+        const string username = "temp@application";
         await RegisterNewUserAndVerifyEmailAsync(username);
         await Utilities.AuthorizeUserAndSetHeaderAsync(_client, username);
 
