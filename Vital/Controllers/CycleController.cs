@@ -3,6 +3,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Models;
 using Models.Dto.Cycle;
 using Models.Dto.InitialLogin;
@@ -192,31 +193,31 @@ public class CycleController : BaseController
     /// <summary>
     /// This endpoint is used to set the period and cycle lengths for the user when they log in for the first time.
     /// </summary>
-    /// <param name="postDto"></param>
+    /// <param name="putDto"></param>
     /// <returns></returns>
     [HttpPut("initial-login")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> SetInitialData([FromBody] InitialLoginPostDto postDto)
+    public async Task<IActionResult> SetInitialData([FromBody] InitialLoginPutDto putDto)
     {
         if(!ModelState.IsValid)
         {
             return BadRequest(ModelState);
         }
 
-        if (postDto.LastPeriodStart < postDto.LastPeriodEnd)
+        if (putDto.LastPeriodStart < putDto.LastPeriodEnd)
         {
             return BadRequest("Last period start date must be before the end date.");
         }
 
-        if (postDto.LastPeriodStart > DateTimeOffset.Now || postDto.LastPeriodEnd > DateTimeOffset.Now)
+        if (putDto.LastPeriodStart > DateTimeOffset.Now || putDto.LastPeriodEnd > DateTimeOffset.Now)
         {
             return BadRequest("Last period start and end dates cannot be in the future.");
         }
         
         var userId = _currentContext.UserId!.Value;
-        await _cycleService.SetInitialData(userId, postDto);
+        await _cycleService.SetInitialData(userId, putDto);
         return Ok();
     }
 }

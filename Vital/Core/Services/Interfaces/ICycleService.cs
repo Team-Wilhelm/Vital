@@ -83,7 +83,7 @@ public interface ICycleService
     /// The flow metrics are also logged based on the last period's start and end dates.
     /// </summary>
     /// <param name="userId"></param>
-    /// <param name="initialLoginPostDto"></param>
+    /// <param name="initialLoginPutDto"></param>
     /// <returns></returns>
-    Task SetInitialData(Guid userId, InitialLoginPostDto initialLoginPostDto);
+    Task SetInitialData(Guid userId, InitialLoginPutDto initialLoginPutDto);
 }

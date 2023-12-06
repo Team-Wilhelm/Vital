@@ -6,7 +6,8 @@ namespace IntegrationTests.Setup;
 
 public static class Utilities
 {
-    public static async Task AuthorizeUserAndSetHeaderAsync(HttpClient client, string email = "user@application", string password = "P@ssw0rd.+")
+    public static async Task AuthorizeUserAndSetHeaderAsync(HttpClient client, string email = "user@application",
+        string password = "P@ssw0rd.+")
     {
         var loginRequestDto = new LoginRequestDto()
         {
@@ -16,13 +17,14 @@ public static class Utilities
         
         var response = await client.PostAsJsonAsync("/identity/auth/login", loginRequestDto);
         var authResponse = await response.Content.ReadFromJsonAsync<AuthResponse>();
-        
+
         if (authResponse != null)
         {
+            client.DefaultRequestHeaders.Remove("Authorization");
             client.DefaultRequestHeaders.Add("Authorization", $"Bearer {authResponse.Token}");
         }
     }
-    
+
     public static Task ClearToken(HttpClient client)
     {
         client.DefaultRequestHeaders.Remove("Authorization");
