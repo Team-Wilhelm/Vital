@@ -13,7 +13,8 @@ public class TestDbInitializer
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly RoleManager<ApplicationRole> _roleManager;
 
-    public TestDbInitializer(ApplicationDbContext context, UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager)
+    public TestDbInitializer(ApplicationDbContext context, UserManager<ApplicationUser> userManager,
+        RoleManager<ApplicationRole> roleManager)
     {
         _context = context;
         _userManager = userManager;
@@ -22,7 +23,7 @@ public class TestDbInitializer
 
     public async Task Init()
     {
-         if (_roleManager.Roles.SingleOrDefault(r => r.Name == "User") == null)
+        if (_roleManager.Roles.SingleOrDefault(r => r.Name == "User") == null)
         {
             await _roleManager.CreateAsync(new ApplicationRole
             {
@@ -47,7 +48,7 @@ public class TestDbInitializer
             UserId = Guid.Parse("ADFEAD4C-823B-41E5-9C7E-C84AA04192A4"),
             StartDate = DateTimeOffset.UtcNow.AddDays(-10),
         });
-        
+
         // User 2 with a current period
         var user2 = new ApplicationUser()
         {
@@ -56,17 +57,17 @@ public class TestDbInitializer
             Email = "user2@application",
             EmailConfirmed = true,
         };
-        
+
         await _userManager.CreateAsync(user2, "P@ssw0rd.+");
         await _userManager.AddToRoleAsync(user2, "User");
-        
+
         await _context.Cycles.AddAsync(new Cycle()
         {
             Id = Guid.Parse("EA2DCAC0-47C5-4406-BA1C-FA870EE5577E"),
             UserId = Guid.Parse("B1F0B1F0-B1F0-B1F0-B1F0-B1F0B1F0B1F0"),
             StartDate = DateTimeOffset.UtcNow.AddDays(-2),
         });
-
+        
         // Add metrics
         await _context.Metrics.AddRangeAsync(
             new Metrics()
@@ -74,26 +75,26 @@ public class TestDbInitializer
                 Id = Guid.Parse("d56807fe-05ca-4901-a564-68f14e31b241"),
                 Name = "Flow",
                 Values = new List<MetricValue>()
-            {
-                new()
                 {
-                    Id = Guid.Parse("c5cd051e-2990-4171-8e2f-268b0bfc59e0"),
-                    Name = "Light",
-                    MetricsId = Guid.Parse("d56807fe-05ca-4901-a564-68f14e31b241")
+                    new()
+                    {
+                        Id = Guid.Parse("c5cd051e-2990-4171-8e2f-268b0bfc59e0"),
+                        Name = "Light",
+                        MetricsId = Guid.Parse("d56807fe-05ca-4901-a564-68f14e31b241")
+                    },
+                    new()
+                    {
+                        Id = Guid.Parse("24d4c8aa-614d-467f-9afb-9e2f744cf151"),
+                        Name = "Moderate",
+                        MetricsId = Guid.Parse("d56807fe-05ca-4901-a564-68f14e31b241")
+                    },
+                    new()
+                    {
+                        Id = Guid.Parse("b5bf508b-9cd5-4c9c-aa64-63bc9cbafe3b"),
+                        Name = "Heavy",
+                        MetricsId = Guid.Parse("d56807fe-05ca-4901-a564-68f14e31b241")
+                    },
                 },
-                new()
-                {
-                    Id = Guid.Parse("24d4c8aa-614d-467f-9afb-9e2f744cf151"),
-                    Name = "Moderate",
-                    MetricsId = Guid.Parse("d56807fe-05ca-4901-a564-68f14e31b241")
-                },
-                new()
-                {
-                    Id = Guid.Parse("b5bf508b-9cd5-4c9c-aa64-63bc9cbafe3b"),
-                    Name = "Heavy",
-                    MetricsId = Guid.Parse("d56807fe-05ca-4901-a564-68f14e31b241")
-                },
-            },
             }, new Metrics()
             {
                 Id = Guid.Parse("51DA609D-4477-47B8-B1B5-E4298A729D03"),
@@ -124,10 +125,9 @@ public class TestDbInitializer
                         Name = "Severe",
                         MetricsId = Guid.Parse("51DA609D-4477-47B8-B1B5-E4298A729D03")
                     }
-
                 }
             }
-            );
+        );
 
         // Add cycle days for user 1
         await _context.CycleDays.AddAsync(new CycleDay()
@@ -183,7 +183,6 @@ public class TestDbInitializer
                     CreatedAt = DateTimeOffset.UtcNow.AddDays(-3).AddHours(-3)
                 }
             }
-
         });
         await _context.CycleDays.AddAsync(new CycleDay()
         {
@@ -221,18 +220,18 @@ public class TestDbInitializer
             }
         });
         await _context.CycleDays.AddAsync(new CycleDay()
-            {
-                Id = Guid.NewGuid(),
-                UserId = Guid.Parse("ADFEAD4C-823B-41E5-9C7E-C84AA04192A4"),
-                Date = DateTimeOffset.UtcNow,
-                IsPeriod = false,
-                CycleId = Guid.Parse("2AF6BC6C-B3C0-4E77-97D9-9FA6D36C4A0A")
+        {
+            Id = Guid.NewGuid(),
+            UserId = Guid.Parse("ADFEAD4C-823B-41E5-9C7E-C84AA04192A4"),
+            Date = DateTimeOffset.UtcNow,
+            IsPeriod = false,
+            CycleId = Guid.Parse("2AF6BC6C-B3C0-4E77-97D9-9FA6D36C4A0A")
         });
-       
+
         // Link cycle to user's current cycle
         user1.CurrentCycleId = Guid.Parse("2AF6BC6C-B3C0-4E77-97D9-9FA6D36C4A0A");
         await _userManager.UpdateAsync(user1);
-        
+
         // Add cycle days for user 2
         await _context.CycleDays.AddAsync(new CycleDay()
         {
@@ -245,7 +244,7 @@ public class TestDbInitializer
             {
                 new()
                 {
-                    CalendarDayId =  Guid.Parse("EFE6886A-374D-48E2-A3E7-16637865ED74"),
+                    CalendarDayId = Guid.Parse("EFE6886A-374D-48E2-A3E7-16637865ED74"),
                     MetricsId = Guid.Parse("d56807fe-05ca-4901-a564-68f14e31b241"), // Flow
                     MetricValueId = Guid.Parse("24d4c8aa-614d-467f-9afb-9e2f744cf151"), // Moderate
                     CreatedAt = DateTimeOffset.UtcNow.AddDays(-1).AddHours(-1)
@@ -263,18 +262,18 @@ public class TestDbInitializer
             {
                 new()
                 {
-                    CalendarDayId =  Guid.Parse("F0121084-6054-4278-AA9A-246A7AEFD11A"),
+                    CalendarDayId = Guid.Parse("F0121084-6054-4278-AA9A-246A7AEFD11A"),
                     MetricsId = Guid.Parse("d56807fe-05ca-4901-a564-68f14e31b241"), // Flow
                     MetricValueId = Guid.Parse("24d4c8aa-614d-467f-9afb-9e2f744cf151"), // Moderate
                     CreatedAt = DateTimeOffset.UtcNow
                 }
             }
         });
-        
+
         // Link cycle to user's current cycle
         user2.CurrentCycleId = Guid.Parse("EA2DCAC0-47C5-4406-BA1C-FA870EE5577E");
         await _userManager.UpdateAsync(user2);
-        
+
         await _context.SaveChangesAsync();
     }
 }

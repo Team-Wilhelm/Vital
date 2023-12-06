@@ -2,7 +2,7 @@
 
 namespace Models.Dto.InitialLogin;
 
-public class InitialLoginPostDto
+public class InitialLoginPutDto
 {
     [Range(0.0, 100, ErrorMessage = "The field {0} must be greater than {1}.")]
     public required float CycleLength { get; set; }
