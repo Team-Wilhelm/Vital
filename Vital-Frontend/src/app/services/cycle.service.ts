@@ -23,7 +23,13 @@ export class CycleService {
   }
 
   async getAnalytics(numberOfCycles: number) {
-    return firstValueFrom(this.httpClient.get<CycleAnalyticsDto[]>(environment.baseUrl + '/cycle/analytics/' + numberOfCycles));
+    const result = await firstValueFrom(this.httpClient.get<CycleAnalyticsDto[]>(environment.baseUrl + '/cycle/analytics/' + numberOfCycles));
+    result.forEach(cycle => {
+      cycle.startDate = new Date(cycle.startDate);
+      cycle.endDate = new Date(cycle.endDate);
+      cycle.periodDays = cycle.periodDays ? cycle.periodDays.map(day => new Date(day)) : [];
+    });
+    return result;
   }
 
   async getUserStats() {

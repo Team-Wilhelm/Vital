@@ -25,9 +25,7 @@ export class AnalyticsComponent implements OnInit {
   }
 
   async createChart(numberOfCycles: number) {
-
     this.analytics = await this.cycleService.getAnalytics(numberOfCycles);
-    if (this.analytics.length == 0) return;
 
     this.allCycleDays = this.getTotalCycleDays(this.analytics);
     this.allPeriodDays = this.getTotalPeriodDays(this.analytics);
@@ -35,13 +33,12 @@ export class AnalyticsComponent implements OnInit {
 
     if (this.chart) {
       this.chart.destroy();
-      this.chart = null;
     }
 
-    const chart = new Chart('Cycle analytics', {
+    const chart = new Chart('myChart', {
       type: 'bar',
       data: {
-        labels: this.allCycleDays,
+        labels:this.getCycleLabels(),
         datasets: [
           {
             label: "Period",
@@ -80,23 +77,25 @@ export class AnalyticsComponent implements OnInit {
         }
       }
     });
+
+    this.chart = chart;
   }
 
   async ngOnInit(): Promise<void> {
-    await this.createChart(5); //TODO: make this come from user input
+    await this.createChart(2); //TODO: make this come from user input
     this.periodCycleStats = await this.cycleService.getUserStats();
   }
 
   getTotalCycleDays(cycleAnalytics: CycleAnalyticsDto[]) {
-    return cycleAnalytics.map(a => a.EndDate.getTime() - a.StartDate.getTime());
+    return cycleAnalytics.map(a => a.endDate.getTime() - a.startDate.getTime());
   }
 
   getTotalPeriodDays(cycleAnalytics: CycleAnalyticsDto[]) {
-    return cycleAnalytics.map(a => a.PeriodDays.length);
+    return cycleAnalytics.map(a => a.periodDays.length);
   }
 
   getNonPeriodDays(cycleAnalytics: CycleAnalyticsDto[]) {
-    return cycleAnalytics.map(a => a.EndDate.getTime() - (a.PeriodDays.length * 86400000) - a.StartDate.getTime());
+    return cycleAnalytics.map(a => a.endDate.getTime() - (a.periodDays.length * 86400000) - a.startDate.getTime());
   }
 
   async onOptionsSelected(item: number) {
@@ -104,16 +103,20 @@ export class AnalyticsComponent implements OnInit {
     await this.createChart(item);
   }
 
-  getCurrentCycleLength() : number {
+  getCurrentCycleLength(): number {
     return this.periodCycleStats?.currentCycleLength ?? 0;
   }
 
-  getAverageCycleLength() : number {
+  getAverageCycleLength(): number {
     return this.periodCycleStats?.averageCycleLength ?? 0;
   }
 
-  getAveragePeriodLength() : number {
+  getAveragePeriodLength(): number {
     return this.periodCycleStats?.averagePeriodLength ?? 0;
+  }
+
+  getCycleLabels(): string[] {
+    return this.analytics.map(a => a.startDate.toLocaleDateString());
   }
 }
 
