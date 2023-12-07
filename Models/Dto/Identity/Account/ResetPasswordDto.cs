@@ -1,4 +1,4 @@
-namespace Models.Dto.Identity.Account;
+﻿namespace Models.Dto.Identity.Account;
 
 public class ResetPasswordDto
 {

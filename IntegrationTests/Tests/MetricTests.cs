@@ -4,16 +4,10 @@ using System.Net.Http.Json;
 using FluentAssertions;
 using Infrastructure.Data;
 using IntegrationTests.Setup;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Models.Dto.Cycle;
-using Models.Dto.Identity;
 using Models.Dto.Metrics;
-using Models.Identity;
-using Models.Responses;
 using Models.Util;
-using Newtonsoft.Json;
 using Xunit.Abstractions;
 
 namespace IntegrationTests.Tests;

@@ -2,6 +2,8 @@
 using System.Net.Http.Json;
 using FluentAssertions;
 using IntegrationTests.Setup;
+ing Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.DependencyInjection;
 using Models.Dto.Identity.Account;
 using Models.Identity;
 

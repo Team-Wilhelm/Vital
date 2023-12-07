@@ -6,7 +6,6 @@ using IntegrationTests.Setup;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Models.Dto.Identity;
 using Models.Dto.InitialLogin;
 using Models.Identity;
 using Xunit.Abstractions;
@@ -27,10 +26,10 @@ public class FirstLoginTests
         _testOutputHelper = testOutputHelper;
         _client = waf.Client;
         _scope = waf.Services.CreateScope();
-        _dbContext =  _scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        _dbContext = _scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
         _userManager = _scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
     }
-    
+
     [Fact]
     public async Task Should_Return_Unauthorized_When_Not_Authorized()
     {
@@ -65,10 +64,10 @@ public class FirstLoginTests
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
         result.Should().BeFalse();
-        
+
         await Utilities.ClearToken(_client);
     }
-    
+
     [Fact]
     public async Task Post_OK_OnGoing_Period()
     {
@@ -82,20 +81,20 @@ public class FirstLoginTests
             PeriodLength = 6,
             LastPeriodStart = DateTime.UtcNow.AddDays(-5)
         };
-        
+
         var response = await _client.PutAsJsonAsync("/cycle/initial-login", initialLoginPutDto);
-        
+
         var user = await _dbContext.Users.FirstAsync(u => u.Email == username);
         user.CycleLength.Should().Be(initialLoginPutDto.CycleLength);
         user.PeriodLength.Should().Be(initialLoginPutDto.PeriodLength);
         await AssertUserHasCycleAsync(user, initialLoginPutDto);
         await AssertMetricsWereCreatedAsync(user, initialLoginPutDto);
         response.StatusCode.Should().Be(HttpStatusCode.OK);
-        
+
         await Utilities.ClearToken(_client);
         await RemoveUserAsync(username);
     }
-    
+
     [Fact]
     public async Task Post_OK_Ended_Period()
     {
@@ -110,20 +109,20 @@ public class FirstLoginTests
             LastPeriodStart = DateTime.UtcNow.AddDays(-6),
             LastPeriodEnd = DateTime.UtcNow.AddDays(-1)
         };
-        
+
         var response = await _client.PutAsJsonAsync("/cycle/initial-login", initialLoginPutDto);
-        
+
         var user = await _dbContext.Users.FirstAsync(u => u.Email == username);
         user.CycleLength.Should().Be(initialLoginPutDto.CycleLength);
         user.PeriodLength.Should().Be(initialLoginPutDto.PeriodLength);
         await AssertUserHasCycleAsync(user, initialLoginPutDto);
         await AssertMetricsWereCreatedAsync(user, initialLoginPutDto);
         response.StatusCode.Should().Be(HttpStatusCode.OK);
-        
+
         await Utilities.ClearToken(_client);
         await RemoveUserAsync(username);
     }
-    
+
     [Fact]
     public async Task Post_BadRequest_Invalid_CycleLength()
     {
@@ -138,18 +137,18 @@ public class FirstLoginTests
             LastPeriodStart = DateTime.UtcNow.AddDays(-6),
             LastPeriodEnd = DateTime.UtcNow.AddDays(-1)
         };
-        
+
         var response = await _client.PutAsJsonAsync("/cycle/initial-login", initialLoginPutDto);
-        
+
         var user = await _dbContext.Users.FirstAsync(u => u.Email == username);
         user.CycleLength.Should().BeNull();
         user.PeriodLength.Should().BeNull();
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-        
+
         await Utilities.ClearToken(_client);
         await RemoveUserAsync(username);
     }
-    
+
     [Fact]
     public async Task Post_BadRequest_Invalid_PeriodLength()
     {
@@ -164,18 +163,18 @@ public class FirstLoginTests
             LastPeriodStart = DateTime.UtcNow.AddDays(-6),
             LastPeriodEnd = DateTime.UtcNow.AddDays(-1)
         };
-        
+
         var response = await _client.PutAsJsonAsync("/cycle/initial-login", initialLoginPutDto);
-        
+
         var user = await _dbContext.Users.FirstAsync(u => u.Email == username);
         user.CycleLength.Should().BeNull();
         user.PeriodLength.Should().BeNull();
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-        
+
         await Utilities.ClearToken(_client);
         await RemoveUserAsync(username);
     }
-    
+
     [Fact]
     public async Task Post_BadRequest_Invalid_LastPeriodStart()
     {
@@ -189,20 +188,20 @@ public class FirstLoginTests
             PeriodLength = 5,
             LastPeriodStart = DateTime.UtcNow.AddDays(1)
         };
-        
+
         var response = await _client.PutAsJsonAsync("/cycle/initial-login", initialLoginPutDto);
         var responseContent = await response.Content.ReadAsStringAsync();
-        
+
         var user = await _dbContext.Users.FirstAsync(u => u.Email == username);
         user.CycleLength.Should().BeNull();
         user.PeriodLength.Should().BeNull();
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         responseContent.Should().Be("Last period start and end dates cannot be in the future.");
-        
+
         await Utilities.ClearToken(_client);
         await RemoveUserAsync(username);
     }
-    
+
     [Fact]
     public async Task Post_BadRequest_Invalid_LastPeriodEnd()
     {
@@ -217,20 +216,20 @@ public class FirstLoginTests
             LastPeriodStart = DateTime.UtcNow.AddDays(-6),
             LastPeriodEnd = DateTime.UtcNow.AddDays(1)
         };
-        
+
         var response = await _client.PutAsJsonAsync("/cycle/initial-login", initialLoginPutDto);
         var responseContent = await response.Content.ReadAsStringAsync();
-        
+
         var user = await _dbContext.Users.FirstAsync(u => u.Email == username);
         user.CycleLength.Should().BeNull();
         user.PeriodLength.Should().BeNull();
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         responseContent.Should().Be("Last period start and end dates cannot be in the future.");
-        
+
         await Utilities.ClearToken(_client);
         await RemoveUserAsync(username);
     }
-    
+
     [Fact]
     public async Task Post_BadRequest_Invalid_Period_Start_After_Period_End()
     {
@@ -245,16 +244,16 @@ public class FirstLoginTests
             LastPeriodStart = DateTime.UtcNow.AddDays(-3),
             LastPeriodEnd = DateTime.UtcNow.AddDays(-6)
         };
-        
+
         var response = await _client.PutAsJsonAsync("/cycle/initial-login", initialLoginPutDto);
         var responseContent = await response.Content.ReadAsStringAsync();
-        
+
         var user = await _dbContext.Users.FirstAsync(u => u.Email == username);
         user.CycleLength.Should().BeNull();
         user.PeriodLength.Should().BeNull();
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         responseContent.Should().Be("Last period start date must be before the end date.");
-        
+
         await Utilities.ClearToken(_client);
         await RemoveUserAsync(username);
     }
@@ -274,27 +273,27 @@ public class FirstLoginTests
         await _userManager.AddToRoleAsync(user, "User");
         _dbContext.ChangeTracker.Clear();
     }
-    
+
     private async Task RemoveUserAsync(string email)
     {
         var user = await _userManager.Users.FirstAsync(u => u.Email == email);
         await _userManager.DeleteAsync(user);
         _dbContext.ChangeTracker.Clear();
     }
-    
+
     private async Task AssertUserHasCycleAsync(ApplicationUser user, InitialLoginPutDto initialLoginPutDto)
     {
         var cycle = await _dbContext.Cycles.FirstAsync(c => c.UserId == user.Id);
-        
+
         // Assert if cycle was successfully created
         cycle.Should().NotBeNull();
         cycle.StartDate.Date.Should().Be(initialLoginPutDto.LastPeriodStart.Date);
         cycle.EndDate.Should().BeNull();
-        
+
         // Assert if user is connected to cycle and has correct cycle length
         user.CurrentCycleId.Should().Be(cycle.Id);
     }
-    
+
     private async Task AssertMetricsWereCreatedAsync(ApplicationUser user, InitialLoginPutDto initialLoginPutDto)
     {
         // Check if metrics were created for the days between last period start and today

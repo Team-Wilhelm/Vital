@@ -63,7 +63,7 @@ public class CycleRepository : ICycleRepository
             var periodLength = cycle.CycleDays.Count(cd => cd.IsPeriod);
             return new PeriodAndCycleLengthDto
             {
-                CycleLength = (float)cycleLength?.Days,
+                CycleLength = cycleLength?.Days ?? 0,
                 PeriodLength = periodLength
             };
         });
@@ -131,7 +131,7 @@ public class CycleRepository : ICycleRepository
             @"SELECT * FROM ""Cycles"" WHERE ""UserId""=@UserId AND CAST(""StartDate"" AS DATE) <= CAST(@Date AS DATE) AND (CAST(""EndDate"" AS DATE) >= CAST(@Date as DATE) OR ""EndDate"" IS NULL)";
         return _db.QuerySingleOrDefaultAsync<Cycle>(sql, new { UserId = userId, Date = date });
     }
-    
+
     public async Task<Cycle?> GetFollowingCycle(Guid userId, DateTimeOffset date)
     {
         var sql =
