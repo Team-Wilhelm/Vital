@@ -31,8 +31,6 @@ export class AnalyticsComponent implements OnInit {
     this.allPeriodDays = this.getTotalPeriodDays(this.analytics);
     this.allNonPeriodDays = this.getNonPeriodDays(this.analytics);
 
-    console.log(this.allPeriodDays);
-
     if (this.chart) {
       this.chart.destroy();
     }
@@ -40,7 +38,7 @@ export class AnalyticsComponent implements OnInit {
     const chart = new Chart('myChart', {
       type: 'bar',
       data: {
-        labels:this.getCycleLabels(),
+        labels: this.getCycleLabels(),
         datasets: [
           {
             label: "Period",
@@ -89,7 +87,20 @@ export class AnalyticsComponent implements OnInit {
   }
 
   getTotalCycleDays(cycleAnalytics: CycleAnalyticsDto[]) {
-    return cycleAnalytics.map(a => a.endDate.getTime() - a.startDate.getTime());
+    return cycleAnalytics.map(a => {
+      const endTime = a.endDate.getTime();
+      const startTime = a.startDate.getTime();
+
+      const timeDiff = endTime - startTime;
+
+      // The number of milliseconds in one day
+      const oneDay = 1000 * 60 * 60 * 24;
+
+      // Convert time difference into days
+      const daysBetween = Math.ceil(timeDiff / oneDay);
+
+      return daysBetween;
+    });
   }
 
   getTotalPeriodDays(cycleAnalytics: CycleAnalyticsDto[]) {
@@ -97,7 +108,28 @@ export class AnalyticsComponent implements OnInit {
   }
 
   getNonPeriodDays(cycleAnalytics: CycleAnalyticsDto[]) {
-    return cycleAnalytics.map(a => a.endDate.getTime() - (a.periodDays.length * 86400000) - a.startDate.getTime());
+    return cycleAnalytics.map(a => {
+
+      const endTime = a.endDate.getTime();
+
+      // Convert periodDays length into milliseconds
+      const periodDaysMilliseconds = a.periodDays.length * 24 * 60 * 60 * 1000;
+
+      const startTime = a.startDate.getTime();
+
+      const totalCycleDaysMilliseconds = endTime - startTime;
+
+      // Calculate non-period days in milliseconds
+      const nonPeriodDaysMilliseconds = totalCycleDaysMilliseconds - periodDaysMilliseconds;
+
+      // The number of milliseconds in one day
+      const oneDay = 24 * 60 * 60 * 1000;
+
+      // Convert milliseconds into days
+      const nonPeriodDays = Math.ceil(nonPeriodDaysMilliseconds / oneDay);
+
+      return nonPeriodDays;
+    });
   }
 
   async onOptionsSelected(item: number) {

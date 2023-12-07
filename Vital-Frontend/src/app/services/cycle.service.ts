@@ -29,6 +29,7 @@ export class CycleService {
       cycle.endDate = cycle.endDate ? new Date(cycle.endDate) : new Date();
       cycle.periodDays = cycle.periodDays.map(day => new Date(day));
     });
+    result.sort((a, b) => b.startDate.getTime() - a.startDate.getTime()); // sort from oldest to newest
     return result;
   }
 

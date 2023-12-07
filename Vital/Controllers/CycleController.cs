@@ -161,8 +161,14 @@ public class CycleController : BaseController
     [HttpGet("analytics/{numberOfCycles:int}")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(CycleAnalyticsDto))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetAnalytics(int numberOfCycles)
     {
+        if (numberOfCycles < 1)
+        {
+            return BadRequest("Number of cycles must be greater than 0.");
+        }
+        
         var userId = _currentContext.UserId!.Value;
         var analytics = await _cycleService.GetAnalytics(userId, numberOfCycles);
         return Ok(analytics);
