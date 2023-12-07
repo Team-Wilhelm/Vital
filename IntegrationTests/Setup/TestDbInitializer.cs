@@ -13,8 +13,7 @@ public class TestDbInitializer
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly RoleManager<ApplicationRole> _roleManager;
 
-    public TestDbInitializer(ApplicationDbContext context, UserManager<ApplicationUser> userManager,
-        RoleManager<ApplicationRole> roleManager)
+    public TestDbInitializer(ApplicationDbContext context, UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager)
     {
         _context = context;
         _userManager = userManager;
@@ -66,6 +65,25 @@ public class TestDbInitializer
             Id = Guid.Parse("EA2DCAC0-47C5-4406-BA1C-FA870EE5577E"),
             UserId = Guid.Parse("B1F0B1F0-B1F0-B1F0-B1F0-B1F0B1F0B1F0"),
             StartDate = DateTimeOffset.UtcNow.AddDays(-2),
+        });
+        
+        // User 3 with no logged metrics
+        var user3 = new ApplicationUser()
+        {
+            Id = Guid.Parse("C1F0C1F0-B1F0-B1F0-B1F0-B1F0B1F0B1F0"),
+            UserName = "user3@application",
+            Email = "user3@application",
+            EmailConfirmed = true,
+        };
+        
+        await _userManager.CreateAsync(user3, "P@ssw0rd.+");
+        await _userManager.AddToRoleAsync(user3, "User");
+        
+        await _context.Cycles.AddAsync(new Cycle()
+        {
+            Id = Guid.Parse("A2E8D29E-6734-4EF5-9155-93EF6C995EF8"),
+            UserId = Guid.Parse("C1F0C1F0-B1F0-B1F0-B1F0-B1F0B1F0B1F0"),
+            StartDate = DateTimeOffset.UtcNow.AddDays(-2)
         });
 
         // Add metrics
@@ -208,7 +226,7 @@ public class TestDbInitializer
             UserId = Guid.Parse("ADFEAD4C-823B-41E5-9C7E-C84AA04192A4"),
             Date = DateTimeOffset.UtcNow.AddDays(-1),
             CycleId = Guid.Parse("2AF6BC6C-B3C0-4E77-97D9-9FA6D36C4A0A"),
-            IsPeriod = false,
+            IsPeriod = true,
             SelectedMetrics = new List<CalendarDayMetric>()
             {
                 new()

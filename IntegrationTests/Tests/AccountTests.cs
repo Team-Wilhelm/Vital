@@ -1,31 +1,15 @@
 ﻿using System.Net;
 using System.Net.Http.Json;
 using FluentAssertions;
-using Infrastructure.Data;
 using IntegrationTests.Setup;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.DependencyInjection;
 using Models.Dto.Identity.Account;
 using Models.Identity;
 
 namespace IntegrationTests.Tests;
 
 [Collection("VitalApi")]
-public class AccountTests
+public class AccountTests(VitalApiFactory vaf) : TestBase(vaf)
 {
-    private readonly HttpClient _client;
-    private readonly ApplicationDbContext _dbContext;
-    private readonly IServiceScope _scope;
-    private readonly UserManager<ApplicationUser> _userManager;
-
-    public AccountTests(VitalApiFactory waf)
-    {
-        _client = waf.Client;
-        _scope = waf.Services.CreateScope();
-        _dbContext = _scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-        _userManager = _scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-    }
-
     [Fact]
     public async Task Forgot_Password_input_not_address_return_400()
     {
@@ -34,7 +18,8 @@ public class AccountTests
             Email = "userapp"
         };
 
-        var response = await _client.PostAsync("/Identity/Account/Forgot-Password", JsonContent.Create(forgotPassordDto));
+        var response =
+            await _client.PostAsync("/Identity/Account/Forgot-Password", JsonContent.Create(forgotPassordDto));
 
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
@@ -49,7 +34,8 @@ public class AccountTests
 
         _dbContext.Users.FirstOrDefault(u => u.UserName == forgotPassordDto.Email).Should().BeNull();
 
-        var response = await _client.PostAsync("/Identity/Account/Forgot-Password", JsonContent.Create(forgotPassordDto));
+        var response =
+            await _client.PostAsync("/Identity/Account/Forgot-Password", JsonContent.Create(forgotPassordDto));
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
@@ -73,7 +59,8 @@ public class AccountTests
 
         _dbContext.Users.FirstOrDefault(u => u.UserName == forgotPassordDto.Email).Should().NotBeNull();
 
-        var response = await _client.PostAsync("/Identity/Account/Forgot-Password", JsonContent.Create(forgotPassordDto));
+        var response =
+            await _client.PostAsync("/Identity/Account/Forgot-Password", JsonContent.Create(forgotPassordDto));
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
@@ -88,7 +75,8 @@ public class AccountTests
             Token = "token",
         };
 
-        var response = await _client.PostAsync("/Identity/Account/Reset-Password", JsonContent.Create(resetPasswordDto));
+        var response =
+            await _client.PostAsync("/Identity/Account/Reset-Password", JsonContent.Create(resetPasswordDto));
 
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
@@ -103,7 +91,8 @@ public class AccountTests
             Token = null,
         };
 
-        var response = await _client.PostAsync("/Identity/Account/Reset-Password", JsonContent.Create(resetPasswordDto));
+        var response =
+            await _client.PostAsync("/Identity/Account/Reset-Password", JsonContent.Create(resetPasswordDto));
 
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
@@ -120,7 +109,8 @@ public class AccountTests
 
         _dbContext.Users.FirstOrDefault(u => u.Id == resetPasswordDto.UserId).Should().BeNull();
 
-        var response = await _client.PostAsync("/Identity/Account/Reset-Password", JsonContent.Create(resetPasswordDto));
+        var response =
+            await _client.PostAsync("/Identity/Account/Reset-Password", JsonContent.Create(resetPasswordDto));
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
@@ -145,7 +135,8 @@ public class AccountTests
 
         _dbContext.Users.FirstOrDefault(u => u.Id == resetPasswordDto.UserId).Should().NotBeNull();
 
-        var response = await _client.PostAsync("/Identity/Account/Reset-Password", JsonContent.Create(resetPasswordDto));
+        var response =
+            await _client.PostAsync("/Identity/Account/Reset-Password", JsonContent.Create(resetPasswordDto));
 
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
@@ -170,7 +161,8 @@ public class AccountTests
 
         _dbContext.Users.FirstOrDefault(u => u.Id == resetPasswordDto.UserId).Should().NotBeNull();
 
-        var response = await _client.PostAsync("/Identity/Account/Reset-Password", JsonContent.Create(resetPasswordDto));
+        var response =
+            await _client.PostAsync("/Identity/Account/Reset-Password", JsonContent.Create(resetPasswordDto));
 
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
@@ -198,7 +190,8 @@ public class AccountTests
         };
 
 
-        var response = await _client.PostAsync("/Identity/Account/Reset-Password", JsonContent.Create(resetPasswordDto));
+        var response =
+            await _client.PostAsync("/Identity/Account/Reset-Password", JsonContent.Create(resetPasswordDto));
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
