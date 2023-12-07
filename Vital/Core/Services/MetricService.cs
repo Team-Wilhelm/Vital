@@ -61,7 +61,7 @@ public class MetricService : IMetricService
             {
                 Id = calendarDayAdapter.MetricsId,
                 Name = calendarDayAdapter.MetricName,
-                Values = new List<MetricValue?>()
+                Values = new List<MetricValue>()
             };
 
             if (calendarDayAdapter.MetricValueId is not null)
@@ -278,11 +278,6 @@ public class MetricService : IMetricService
     private async Task<CalendarDay> GetOrCreateCalendarDay(Guid userId, DateTimeOffset date, Guid cycleId)
     {
         var calendarDay = await _calendarDayRepository.GetByDate(userId, date) ?? await _calendarDayRepository.CreteCycleDay(userId, date, cycleId);
-        var calendarDay = await _calendarDayRepository.GetByDate(userId, date);
-        if (calendarDay is null)
-        {
-            calendarDay = await _calendarDayRepository.CreteCycleDay(userId, date, cycleId);
-        }
 
         return calendarDay;
     }
