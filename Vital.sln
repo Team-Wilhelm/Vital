@@ -1,5 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
+#
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vital", "Vital\Vital.csproj", "{B4DD5FC8-6C88-49C1-8B89-59F75B65EB0C}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "items", "items", "{C0DF739F-8720-48CB-A88B-8455C5C1F81E}"
@@ -20,6 +21,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTests", "UnitTests\UnitTests.csproj", "{C0F3941A-6912-4AAF-84DC-7AB0977334E8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntegrationTests", "IntegrationTests\IntegrationTests.csproj", "{D90D944B-989D-44DF-A4DF-3411A7B0EA8D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlaywrightTests", "PlaywrightTests\PlaywrightTests.csproj", "{8D4A2410-01AF-475A-B4C3-4D4D0C966E44}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -47,9 +50,14 @@ Global
 		{D90D944B-989D-44DF-A4DF-3411A7B0EA8D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D90D944B-989D-44DF-A4DF-3411A7B0EA8D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D90D944B-989D-44DF-A4DF-3411A7B0EA8D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8D4A2410-01AF-475A-B4C3-4D4D0C966E44}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8D4A2410-01AF-475A-B4C3-4D4D0C966E44}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8D4A2410-01AF-475A-B4C3-4D4D0C966E44}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8D4A2410-01AF-475A-B4C3-4D4D0C966E44}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{C0F3941A-6912-4AAF-84DC-7AB0977334E8} = {21BAAA55-61DC-43D8-84E8-7819EC214C87}
 		{D90D944B-989D-44DF-A4DF-3411A7B0EA8D} = {21BAAA55-61DC-43D8-84E8-7819EC214C87}
+		{8D4A2410-01AF-475A-B4C3-4D4D0C966E44} = {21BAAA55-61DC-43D8-84E8-7819EC214C87}
 	EndGlobalSection
 EndGlobal
