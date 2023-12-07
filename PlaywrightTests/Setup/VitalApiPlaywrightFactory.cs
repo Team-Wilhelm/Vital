@@ -1,23 +1,24 @@
 ﻿using System.Data;
 using System.Data.Common;
+using System.Net;
+using System.Net.Sockets;
 using Infrastructure.Data;
 using IntegrationTests.Setup;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.AspNetCore.SpaServices.AngularCli;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Npgsql;
+using PlaywrightSharp;
 using Respawn;
 using Testcontainers.PostgreSql;
 using Vital;
 
 namespace PlaywrightTests.Setup;
 
-public class VitalApiWthSpaFactory : WebApplicationFactory<IApiAssemblyMarker>
+public class VitalApiPlaywrightFactory : WebApplicationFactory<IApiAssemblyMarker>, IAsyncLifetime
 {
     private DbConnection _dbConnection = null!;
     private Respawner _respawner = null!;
@@ -29,12 +30,18 @@ public class VitalApiWthSpaFactory : WebApplicationFactory<IApiAssemblyMarker>
             .WithUsername("root")
             .WithPassword("password")
             .Build();
-
+    
+   // Playwright
+    private IPlaywright Playwright { get; set; }
+    public IBrowser Browser { get; private set; }
+    public string BaseUrl { get; } = $"http://localhost:4200";
     public HttpClient Client { get; private set; } = null!;
     public ApplicationDbContext DbContext { get; set; } = null!;
-
+    
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
+        builder.UseUrls("http://localhost:5261");
+        
         builder.ConfigureTestServices(services =>
         {
             // Remove all available DbContextOptions<ApplicationDbContext> services
@@ -47,8 +54,7 @@ public class VitalApiWthSpaFactory : WebApplicationFactory<IApiAssemblyMarker>
             // Add IDbConnection to dependency injection
             services.AddScoped<IDbConnection>(container =>
             {
-                var connection =
-                    new NpgsqlConnection(connectionString ?? throw new Exception("Connection string cannot be null"));
+                var connection = new NpgsqlConnection(connectionString ?? throw new Exception("Connection string cannot be null"));
                 connection.Open();
                 return connection;
             });
@@ -61,7 +67,8 @@ public class VitalApiWthSpaFactory : WebApplicationFactory<IApiAssemblyMarker>
             services.AddScoped<TestDbInitializer>();
         });
     }
-
+    
+    
     public async Task InitializeAsync()
     {
         await _dbContainer.StartAsync();
@@ -83,20 +90,28 @@ public class VitalApiWthSpaFactory : WebApplicationFactory<IApiAssemblyMarker>
         // Add TestDbInitializer
         _dbInitializer = scope.ServiceProvider.GetRequiredService<TestDbInitializer>();
         await _dbInitializer.Init();
-    }
-
-    public async Task ResetDatabaseAsync()
-    {
-        await _respawner.ResetAsync(_dbConnection);
+        
+        // Playwright
+        Playwright = await PlaywrightSharp.Playwright.CreateAsync();
+        Browser = await Playwright.Chromium.LaunchAsync(new LaunchOptions()
+        {
+            Headless = false
+        });
     }
 
     public new async Task DisposeAsync()
     {
         await _dbContainer.StopAsync();
+        await Browser.CloseAsync();
+        Playwright.Dispose();
     }
 
-    public async Task SeedDatabaseAsync()
+    private static int GetRandomUnusedPort()
     {
-        await _dbInitializer.Init();
+        var listener = new TcpListener(IPAddress.Any, 0);
+        listener.Start();
+        var port = ((IPEndPoint)listener.LocalEndpoint).Port;
+        listener.Stop();
+        return port;
     }
 }

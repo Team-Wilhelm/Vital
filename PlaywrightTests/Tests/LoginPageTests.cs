@@ -1,69 +1,69 @@
-using System.Diagnostics;
-using System.Text.RegularExpressions;
-using Microsoft.Playwright;
-using Microsoft.Playwright.NUnit;
+using PlaywrightSharp;
 using PlaywrightTests.Setup;
 
 namespace PlaywrightTests;
 
-[TestFixture]
-public class Tests : PageTest
+
+public class LoginPageTests : IClassFixture<VitalApiPlaywrightFactory>
 {
-    private readonly VitalApiWthSpaFactory _vaf;
+    private readonly VitalApiPlaywrightFactory _vaf;
 
-    public Tests()
+    public LoginPageTests(VitalApiPlaywrightFactory vaf)
     {
-        _vaf = new VitalApiWthSpaFactory();
+        _vaf = vaf;
     }
 
-    [SetUp]
-    public void Setup()
-    {
-    }
-    
-    [OneTimeSetUp]
-    public async Task OneTimeSetup()
-    {
-        await _vaf.InitializeAsync();
-    }
-
-    [Test]
+    [Fact]
     public async Task Loading_The_Page_Should_Land_on_Login()
     {
-        await Page.GotoAsync("http://localhost:4200");
+        var page = await _vaf.Browser.NewPageAsync();
+        await page.GoToAsync(_vaf.BaseUrl);
 
-        await Expect(Page).ToHaveTitleAsync(new Regex("Vital"));
-        await Expect(Page).ToHaveURLAsync(new Regex("/login"));
+        GetTile(page).Should().Be("Vital");
+        page.Url.Should().Be(_vaf.BaseUrl + "/login");
     }
     
     //TODO: Figure out how to get the backend to run on localhost:5261, otherwise the calls to the backend will fail
-    /*[Test]
+    [Fact]
     public async Task Login_Should_Redirect_To_Dashboard_With_Correct_Credentials()
     {
-        await Page.GotoAsync("http://localhost:4200/login");
-        await Expect(Page).ToHaveTitleAsync(new Regex("Vital"));
+        var page = await _vaf.Browser.NewPageAsync();
+        await page.GoToAsync(_vaf.BaseUrl + "/login");
+        GetTile(page).Should().Be("Vital");
         
-        await Page.GetByPlaceholder("E-mail address").FillAsync("user@application");
-        await Page.GetByPlaceholder("Password").FillAsync("P@ssw0rd.+");
-        await Page.GetByRole(AriaRole.Button, new() { Name = "Login" }).ClickAsync();
-        
-        // Add a pause before checking the URL
-        await Task.Delay(TimeSpan.FromMilliseconds(6000));
+        //await page.FillAsync(GetByPlaceholder(page, "E-mail address"), "user@application");
+        await page.FillAsync("input[placeholder='Password']", "P@ssw0rd.+");
+        await page.FillAsync("input[placeholder='E-mail address']", "user@application");    
+        await page.ClickAsync("button:has-text('Login')");
+
         while (true)
         {
-            Task.Delay(TimeSpan.FromMilliseconds(1000));
+            await Task.Delay(500);
+
         }
-        
-        await Expect(Page).ToHaveURLAsync(new Regex("/dashboard"));
+        page.Url.Should().Be(_vaf.BaseUrl + "/dashboard");
     }
-    */
+
     
-    [Test]
+    [Fact]
     public async Task Dashboard_Unathorized_Redirect_To_Login()
     {
-        await Page.GotoAsync("http://localhost:4200/dashboard");
+        var page = await _vaf.Browser.NewPageAsync();
+        await page.GoToAsync(_vaf.BaseUrl + "/dashboard");
         
-        await Expect(Page).ToHaveTitleAsync(new Regex("Vital"));
-        await Expect(Page).ToHaveURLAsync(new Regex("/login"));
+        GetTile(page).Should().Be("Vital");
+        page.Url.Should().Be(_vaf.BaseUrl + "/login");
+    }
+    
+    
+
+    private string GetTile(IPage page)
+    {
+        return page.GetTitleAsync().Result;
+    }
+    
+    private IElementHandle GetByPlaceholder(IPage page, string placeholder)
+    {
+        return page.QuerySelectorAsync($"[placeholder=\"{placeholder}\"]").Result;
     }
 }
