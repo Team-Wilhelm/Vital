@@ -36,11 +36,8 @@ public class LoginPageTests : IClassFixture<VitalApiPlaywrightFactory>
         await page.FillAsync("input[placeholder='E-mail address']", "user@application");    
         await page.ClickAsync("button:has-text('Login')");
 
-        while (true)
-        {
-            await Task.Delay(500);
-
-        }
+        await Task.Delay(60000);
+        
         page.Url.Should().Be(_vaf.BaseUrl + "/dashboard");
     }
 
@@ -56,7 +53,6 @@ public class LoginPageTests : IClassFixture<VitalApiPlaywrightFactory>
     }
     
     
-
     private string GetTile(IPage page)
     {
         return page.GetTitleAsync().Result;

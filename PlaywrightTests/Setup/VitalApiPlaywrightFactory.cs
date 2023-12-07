@@ -1,5 +1,6 @@
 ﻿using System.Data;
 using System.Data.Common;
+using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
 using Infrastructure.Data;
@@ -23,6 +24,7 @@ public class VitalApiPlaywrightFactory : WebApplicationFactory<IApiAssemblyMarke
     private DbConnection _dbConnection = null!;
     private Respawner _respawner = null!;
     public TestDbInitializer _dbInitializer = null!;
+    private Process? _apiProcess;
 
     private readonly PostgreSqlContainer _dbContainer =
         new PostgreSqlBuilder()
@@ -30,18 +32,19 @@ public class VitalApiPlaywrightFactory : WebApplicationFactory<IApiAssemblyMarke
             .WithUsername("root")
             .WithPassword("password")
             .Build();
-    
-   // Playwright
+
+    // Playwright
     private IPlaywright Playwright { get; set; }
     public IBrowser Browser { get; private set; }
     public string BaseUrl { get; } = $"http://localhost:4200";
     public HttpClient Client { get; private set; } = null!;
     public ApplicationDbContext DbContext { get; set; } = null!;
+
     
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         builder.UseUrls("http://localhost:5261");
-        
+
         builder.ConfigureTestServices(services =>
         {
             // Remove all available DbContextOptions<ApplicationDbContext> services
@@ -68,7 +71,6 @@ public class VitalApiPlaywrightFactory : WebApplicationFactory<IApiAssemblyMarke
         });
     }
     
-    
     public async Task InitializeAsync()
     {
         await _dbContainer.StartAsync();
@@ -91,6 +93,23 @@ public class VitalApiPlaywrightFactory : WebApplicationFactory<IApiAssemblyMarke
         _dbInitializer = scope.ServiceProvider.GetRequiredService<TestDbInitializer>();
         await _dbInitializer.Init();
         
+
+        // Start the API
+        _apiProcess = new Process
+        {
+            StartInfo =
+            {
+                FileName = "dotnet",
+                Arguments = "run --project ../Vital/Vital.csproj --urls http://localhost:5261",
+                WorkingDirectory = "../../../",
+                RedirectStandardOutput = true,
+                RedirectStandardError = true
+            }
+        };
+
+        _apiProcess.Start();
+        await _apiProcess.StandardOutput.ReadLineAsync(); // Wait till server starts
+
         // Playwright
         Playwright = await PlaywrightSharp.Playwright.CreateAsync();
         Browser = await Playwright.Chromium.LaunchAsync(new LaunchOptions()
@@ -98,20 +117,14 @@ public class VitalApiPlaywrightFactory : WebApplicationFactory<IApiAssemblyMarke
             Headless = false
         });
     }
-
+    
     public new async Task DisposeAsync()
     {
         await _dbContainer.StopAsync();
         await Browser.CloseAsync();
         Playwright.Dispose();
-    }
 
-    private static int GetRandomUnusedPort()
-    {
-        var listener = new TcpListener(IPAddress.Any, 0);
-        listener.Start();
-        var port = ((IPEndPoint)listener.LocalEndpoint).Port;
-        listener.Stop();
-        return port;
+        if (_apiProcess != null && !_apiProcess.HasExited)
+            _apiProcess.Kill();
     }
 }
