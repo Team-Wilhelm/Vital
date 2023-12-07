@@ -70,9 +70,17 @@ export class AnalyticsComponent implements OnInit {
         scales: {
           x: {
             stacked: true,
+            title: {
+              display: true,
+              text: 'Days'
+            }
           },
           y: {
-            stacked: true
+            stacked: true,
+            title: {
+              display: true,
+              text: 'Cycle start date'
+            }
           }
         }
       }
