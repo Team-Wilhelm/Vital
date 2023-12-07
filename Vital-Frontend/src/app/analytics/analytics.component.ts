@@ -31,6 +31,8 @@ export class AnalyticsComponent implements OnInit {
     this.allPeriodDays = this.getTotalPeriodDays(this.analytics);
     this.allNonPeriodDays = this.getNonPeriodDays(this.analytics);
 
+    console.log(this.allPeriodDays);
+
     if (this.chart) {
       this.chart.destroy();
     }
@@ -82,7 +84,7 @@ export class AnalyticsComponent implements OnInit {
   }
 
   async ngOnInit(): Promise<void> {
-    await this.createChart(2); //TODO: make this come from user input
+    await this.createChart(3);
     this.periodCycleStats = await this.cycleService.getUserStats();
   }
 
