@@ -123,7 +123,7 @@ public class PeriodTests(VitalApiFactory vaf) : TestBase(vaf)
         user.PeriodLength.Should().Be(5);
         
         user = _userManager.Users.First(u => u.Email == "user2@application");
-        user.CycleLength = 28;
+        user.CycleLength = 28; // Reset so the rest of the tests don't fail
         await _userManager.UpdateAsync(user);
         await Utilities.ClearToken(_client);
     }
