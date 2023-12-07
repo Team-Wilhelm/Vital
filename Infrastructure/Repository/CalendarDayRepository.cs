@@ -71,7 +71,7 @@ public class CalendarDayRepository : ICalendarDayRepository
         {
             throw new Exception("User has no cycle yet");
         }
-        
+
         cycleId ??= lastCycle!.Id;
 
         // Set time to 12:00:00
@@ -107,19 +107,19 @@ public class CalendarDayRepository : ICalendarDayRepository
         var calendarDays = await _db.QueryAsync<CycleDay>(sql, new { startDate, endDate, userId });
         return calendarDays;
     }
-    
+
     public async Task SetIsPeriod(Guid cycleDayId, bool isPeriod)
     {
         var sql = @"UPDATE ""CalendarDay"" SET ""IsPeriod"" = @isPeriod WHERE ""Id"" = @calendarDayId";
         await _db.ExecuteAsync(sql, new { calendarDayId = cycleDayId, isPeriod });
     }
-    
+
     public async Task Delete(Guid calendarDayId)
     {
         var sql = @"DELETE FROM ""CalendarDay"" WHERE ""Id"" = @calendarDayId";
         await _db.ExecuteAsync(sql, new { calendarDayId });
     }
-    
+
     public async Task UpdateCycleIds(Guid oldCycleId, Guid newCycleId, DateTimeOffset from, DateTimeOffset to)
     {
         var sql = @"UPDATE ""CalendarDay"" SET ""CycleId"" = @newCycleId WHERE ""CycleId"" = @oldCycleId 

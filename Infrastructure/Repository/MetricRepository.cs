@@ -82,14 +82,14 @@ public class MetricRepository : IMetricRepository
         var parsedDates = result.Select(dateString => DateTimeOffset.Parse(dateString));
         return parsedDates;
     }
-    
+
     public async Task<ICollection<CalendarDayMetric>> Get(Guid userId, DateTimeOffset date)
     {
         // Because the data in the database is stored in UTC, but we want to retrieve it in the user's timezone,
         // we need to convert the date to UTC and add/subtract the offset + 24 hours to retrieve the correct data for the user's timezone.
         // For example, if the user is trying to retrieve the data for 2023-11-27+01:00, we need to get anything between 2023-11-26T23:00:00Z and 2023-11-27T22:59:59Z
         var start = date.UtcDateTime;
-        var end = date.UtcDateTime.AddDays(1); 
+        var end = date.UtcDateTime.AddDays(1);
         var sql = $@"SELECT
                 CDM.*,
                 ""Metrics"".*,
@@ -128,14 +128,14 @@ public class MetricRepository : IMetricRepository
                 });
         }
     }
-    
+
     public async Task<Dictionary<Guid, string>> GetMetricNamesByIds(List<Guid> metricIds)
     {
         var sql = @"SELECT ""Id"", ""Name"" FROM ""Metrics"" WHERE ""Id"" = ANY(@metricIds)";
         var result = await _db.QueryAsync<Metrics>(sql, new { metricIds });
         return result.ToDictionary(m => m.Id, m => m.Name);
     }
-   
+
     public async Task DeleteMetricEntry(Guid calendarDayMetricId)
     {
         var sql = @"DELETE FROM ""CalendarDayMetric"" WHERE ""Id"" = @calendarDayMetricId";
@@ -155,12 +155,12 @@ public class MetricRepository : IMetricRepository
             metrics.Values.Add(value);
             return metrics;
         }, new { calendarDayId });
-        
+
         // Group the metrics by their id and select the first one, since all of the elements in the group are the same, to prevent duplicates
         // Then, combine all the values from the group and add them to the metric
         return list
-            .GroupBy(m => m.Id) 
-            .Select(g => 
+            .GroupBy(m => m.Id)
+            .Select(g =>
         {
             var groupedMetric = g.First();
             groupedMetric.Values = g.Select(p => p.Values.First()).ToList();

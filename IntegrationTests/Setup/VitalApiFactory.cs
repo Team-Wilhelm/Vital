@@ -2,13 +2,11 @@
 using System.Data.Common;
 using Infrastructure.Data;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Models.Identity;
 using Npgsql;
 using Respawn;
 using Testcontainers.PostgreSql;
@@ -54,7 +52,7 @@ public class VitalApiFactory : WebApplicationFactory<IApiAssemblyMarker>, IAsync
             // Add new ApplicationDbContext service with UseNpgsql
             services.AddDbContext<ApplicationDbContext>(x =>
                 x.UseNpgsql(connectionString));
-            
+
             // Add TestDbInitializer
             services.AddScoped<TestDbInitializer>();
         });
@@ -77,7 +75,7 @@ public class VitalApiFactory : WebApplicationFactory<IApiAssemblyMarker>, IAsync
             DbAdapter = DbAdapter.Postgres,
             SchemasToInclude = new[] { "public" }
         });
-        
+
         // Add TestDbInitializer
         _dbInitializer = scope.ServiceProvider.GetRequiredService<TestDbInitializer>();
         await _dbInitializer.Init();
@@ -92,7 +90,7 @@ public class VitalApiFactory : WebApplicationFactory<IApiAssemblyMarker>, IAsync
     {
         await _dbContainer.StopAsync();
     }
-    
+
     public async Task SeedDatabaseAsync()
     {
         await _dbInitializer.Init();

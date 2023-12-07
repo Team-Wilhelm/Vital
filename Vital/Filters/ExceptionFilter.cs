@@ -1,5 +1,4 @@
-using System.Diagnostics;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Vital.Models.Exception;
 
@@ -40,32 +39,32 @@ public class ExceptionFilter : IAsyncExceptionFilter
                     statusCode = StatusCodes.Status400BadRequest;
                     errorMessage = authenticationException.Message;
                     break;
-                
+
                 case ResetPasswordException resetPasswordException:
                     errorCode = "CouldNotResetPassword";
                     statusCode = StatusCodes.Status400BadRequest;
                     errorMessage = resetPasswordException.Message;
                     break;
-                
+
                 case BadRequestException badRequestException:
                     errorCode = "Bad Request";
                     statusCode = StatusCodes.Status400BadRequest;
                     errorMessage = badRequestException.Message;
                     context.HttpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
                     break;
-                    
+
                 case EmailVerifyException emailVerifyException:
                     errorCode = "CouldNotVerify";
                     statusCode = StatusCodes.Status400BadRequest;
                     errorMessage = emailVerifyException.Message;
                     break;
-                
+
                 case BrevoException brevoException:
                     errorCode = "CouldNotSendEmail";
                     statusCode = StatusCodes.Status503ServiceUnavailable;
                     errorMessage = brevoException.Message;
                     break;
-                
+
                 case EmailException emailException:
                     errorCode = "CouldNotSendEmail";
                     statusCode = StatusCodes.Status503ServiceUnavailable;

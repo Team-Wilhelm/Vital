@@ -67,7 +67,7 @@ public class TestDbInitializer
             UserId = Guid.Parse("B1F0B1F0-B1F0-B1F0-B1F0-B1F0B1F0B1F0"),
             StartDate = DateTimeOffset.UtcNow.AddDays(-2),
         });
-        
+
         // Add metrics
         await _context.Metrics.AddRangeAsync(
             new Metrics()

@@ -4,16 +4,10 @@ using System.Net.Http.Json;
 using FluentAssertions;
 using Infrastructure.Data;
 using IntegrationTests.Setup;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Models.Dto.Cycle;
-using Models.Dto.Identity;
 using Models.Dto.Metrics;
-using Models.Identity;
-using Models.Responses;
 using Models.Util;
-using Newtonsoft.Json;
 using Xunit.Abstractions;
 
 namespace IntegrationTests.Tests;
@@ -44,7 +38,7 @@ public class MetricTests
 
         response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }
-    
+
     [Fact]
     public async Task UploadMetricForADay_Should_be_unauthorized()
     {
@@ -84,7 +78,7 @@ public class MetricTests
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
         actual?.Count.Should().Be(expected.Count);
-        
+
         // Cleanup
         await Utilities.ClearToken(_client);
     }
@@ -99,7 +93,7 @@ public class MetricTests
         var date = DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ", CultureInfo.InvariantCulture);
         _dbContext.Cycles.RemoveRange(_dbContext.Cycles.Where(c => c.UserId == user.Id && c.EndDate == null));
         await _dbContext.SaveChangesAsync();
-        
+
         var metric = await _dbContext.Metrics.FirstAsync();
         var metricValue = await _dbContext.MetricValue.FirstAsync(m => m.MetricsId == metric.Id);
         var metricRegisterMetricDto = new MetricRegisterMetricDto()
@@ -112,10 +106,10 @@ public class MetricTests
         // Act
         var response = await _client.PostAsJsonAsync($"/Metric",
             new List<MetricRegisterMetricDto> { metricRegisterMetricDto });
-        
+
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
-        
+
         // Cleanup
         await Utilities.ClearToken(_client);
     }
@@ -141,10 +135,10 @@ public class MetricTests
         var response = await _client.PostAsJsonAsync($"/Metric",
             new List<MetricRegisterMetricDto> { metricRegisterMetricDto });
         _testOutputHelper.WriteLine(await response.Content.ReadAsStringAsync());
-        
+
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-        
+
         // Cleanup
         await Utilities.ClearToken(_client);
     }

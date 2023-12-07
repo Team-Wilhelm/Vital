@@ -3,13 +3,7 @@ using System.Net.Http.Json;
 using FluentAssertions;
 using Infrastructure.Data;
 using IntegrationTests.Setup;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.DependencyInjection;
 using Models.Dto.Cycle;
-using Models.Dto.Identity;
-using Models.Dto.InitialLogin;
-using Models.Identity;
-using Xunit.Abstractions;
 
 namespace IntegrationTests.Tests;
 

@@ -122,7 +122,7 @@ public class AuthController : BaseController
 
         return Ok();
     }
-    
+
     /// <summary>
     /// Check if username is taken
     /// </summary>

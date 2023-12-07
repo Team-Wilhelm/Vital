@@ -55,13 +55,13 @@ public class CalendarDayAdapter
     /// Date when the calendar day metric was created
     /// </summary>
     public DateTimeOffset CreatedAt { get; set; }
-    
+
     // Metrics
     /// <summary>
     /// Name of the metric
     /// </summary>
     public string MetricName { get; set; } = null!;
-    
+
     // MetricValue
     /// <summary>
     /// Name of the metric value

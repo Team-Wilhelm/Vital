@@ -1,10 +1,7 @@
 ﻿using System.Net.Mime;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Models;
-using Models.Dto;
 using Models.Dto.Identity.Account;
-using Models.Dto.InitialLogin;
 using Models.Identity;
 using Vital.Core.Context;
 using Vital.Core.Services.Interfaces;
@@ -25,7 +22,7 @@ public class AccountController : BaseController
         _emailService = emailService;
         _currentContext = currentContext;
     }
-    
+
     /// <summary>
     /// Request forgot password
     /// </summary>
@@ -39,7 +36,7 @@ public class AccountController : BaseController
         {
             return BadRequest(ModelState);
         }
-        
+
         var user = await _userManager.FindByEmailAsync(dto.Email);
 
         if (user is not null)
@@ -63,7 +60,7 @@ public class AccountController : BaseController
         {
             return BadRequest(ModelState);
         }
-        
+
         var user = await _userManager.FindByIdAsync(dto.UserId.ToString());
 
         if (user is not null)
@@ -78,7 +75,7 @@ public class AccountController : BaseController
 
         return Ok();
     }
-    
+
     /// <summary>
     /// Verify users email
     /// </summary>
@@ -90,13 +87,16 @@ public class AccountController : BaseController
     [Consumes(MediaTypeNames.Application.Json)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> VerifyEmail([FromBody] VerifyRequestDto dto) {
+    public async Task<IActionResult> VerifyEmail([FromBody] VerifyRequestDto dto)
+    {
         var user = await _userManager.FindByIdAsync(dto.UserId.ToString());
 
-        if (user is not null) {
+        if (user is not null)
+        {
             var result = await _userManager.ConfirmEmailAsync(user, dto.Token);
 
-            if (result.Succeeded) {
+            if (result.Succeeded)
+            {
                 return Ok();
             }
         }

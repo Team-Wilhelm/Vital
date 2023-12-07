@@ -53,7 +53,7 @@ public class DbInitializer
             UserId = Guid.Parse("ADFEAD4C-823B-41E5-9C7E-C84AA04192A4"),
             StartDate = new DateTimeOffset(utcNow.AddDays(-5).Date, TimeSpan.Zero).AddHours(12)
         });
-        
+
         // User 2 with a current period
         var user2 = new ApplicationUser()
         {
@@ -62,10 +62,10 @@ public class DbInitializer
             Email = "user2@app",
             EmailConfirmed = true,
         };
-        
+
         await _userManager.CreateAsync(user2, "P@ssw0rd.+");
         await _userManager.AddToRoleAsync(user2, "User");
-        
+
         await _context.Cycles.AddAsync(new Cycle()
         {
             Id = Guid.Parse("EA2DCAC0-47C5-4406-BA1C-FA870EE5577E"),
@@ -227,18 +227,18 @@ public class DbInitializer
             }
         });
         await _context.CycleDays.AddAsync(new CycleDay()
-            {
-                Id = Guid.NewGuid(),
-                UserId = Guid.Parse("ADFEAD4C-823B-41E5-9C7E-C84AA04192A4"),
-                Date =  new DateTimeOffset(utcNow.Year, utcNow.Month, utcNow.Day, 12, 0, 0, TimeSpan.Zero),
-                IsPeriod = false,
-                CycleId = Guid.Parse("2AF6BC6C-B3C0-4E77-97D9-9FA6D36C4A0A")
+        {
+            Id = Guid.NewGuid(),
+            UserId = Guid.Parse("ADFEAD4C-823B-41E5-9C7E-C84AA04192A4"),
+            Date = new DateTimeOffset(utcNow.Year, utcNow.Month, utcNow.Day, 12, 0, 0, TimeSpan.Zero),
+            IsPeriod = false,
+            CycleId = Guid.Parse("2AF6BC6C-B3C0-4E77-97D9-9FA6D36C4A0A")
         });
-       
+
         // Link cycle to user's current cycle
         user1.CurrentCycleId = Guid.Parse("2AF6BC6C-B3C0-4E77-97D9-9FA6D36C4A0A");
         await _userManager.UpdateAsync(user1);
-        
+
         // Add cycle days for user 2
         await _context.CycleDays.AddAsync(new CycleDay()
         {
@@ -262,7 +262,7 @@ public class DbInitializer
         {
             Id = Guid.Parse("F0121084-6054-4278-AA9A-246A7AEFD11A"),
             UserId = Guid.Parse("b1f0b1f0-b1f0-b1f0-b1f0-b1f0b1f0b1f0"),
-            Date =  new DateTimeOffset(utcNow.Year, utcNow.Month, utcNow.Day, 12, 0, 0, TimeSpan.Zero),
+            Date = new DateTimeOffset(utcNow.Year, utcNow.Month, utcNow.Day, 12, 0, 0, TimeSpan.Zero),
             IsPeriod = true,
             CycleId = Guid.Parse("EA2DCAC0-47C5-4406-BA1C-FA870EE5577E"),
             SelectedMetrics = new List<CalendarDayMetric>()
@@ -276,11 +276,11 @@ public class DbInitializer
                 }
             }
         });
-        
+
         // Link cycle to user's current cycle
         user2.CurrentCycleId = Guid.Parse("EA2DCAC0-47C5-4406-BA1C-FA870EE5577E");
         await _userManager.UpdateAsync(user2);
-        
+
         await _context.SaveChangesAsync();
     }
 }

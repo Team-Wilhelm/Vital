@@ -187,7 +187,8 @@ if (app.Environment.IsDevelopment())
     app.UseStaticFiles();
     app.UseSwagger();
     app.UseSwaggerUI();
-    app.UseReDoc(c => {
+    app.UseReDoc(c =>
+    {
         c.DocumentTitle = "Vital API";
     });
 } else

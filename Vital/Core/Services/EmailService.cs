@@ -26,7 +26,7 @@ If you did not request this email, please ignore it.
 
         await SendEmailAsync(recipients, subject, message, cancellationToken);
     }
-    
+
     public async Task SendForgotPasswordEmailAsync(ApplicationUser user, string token, CancellationToken cancellationToken)
     {
         var recipients = new List<string>() { user.UserName! };

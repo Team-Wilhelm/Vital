@@ -63,7 +63,7 @@ public interface ICycleRepository
     /// <param name="numberOfCycles"></param>
     /// <returns></returns>
     Task<List<Cycle>> GetRecentCyclesWithDays(Guid userId, int numberOfCycles);
-    
+
     /// <summary>
     /// Retrieves a cycle which contains the specified date.
     /// </summary>

@@ -1,13 +1,10 @@
-﻿using System.Globalization;
-using AutoMapper;
+﻿using AutoMapper;
 using Infrastructure.Adapters;
 using Infrastructure.Repository.Interface;
 using Models;
 using Models.Days;
-using Models.Dto.Cycle;
 using Models.Dto.Metrics;
 using Models.Util;
-using Org.BouncyCastle.Asn1.X509;
 using Vital.Core.Services.Interfaces;
 using Vital.Models.Exception;
 
