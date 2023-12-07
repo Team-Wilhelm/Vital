@@ -2,7 +2,6 @@
 using Infrastructure.Repository.Interface;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 using Models;
 using Models.Days;
 using Models.Dto.Cycle;
@@ -67,12 +66,12 @@ public class CycleService : ICycleService
         {
             throw new NotFoundException("No user found.");
         }
-        
+
         var periodAndCycleLength = await CalculatePeriodAndCycleLength();
         user.CycleLength = periodAndCycleLength.CycleLength;
         user.PeriodLength = periodAndCycleLength.PeriodLength;
         await _userManager.UpdateAsync(user);
-        
+
         var cycle = new Cycle
         {
             StartDate = DateTimeOffset.Now,
@@ -84,7 +83,7 @@ public class CycleService : ICycleService
 
         return cycle;
     }
-    
+
     public async Task<Cycle> Create(Cycle cycle)
     {
         await _cycleRepository.Create(cycle);
@@ -111,7 +110,7 @@ public class CycleService : ICycleService
 
         return cycle;
     }
-    
+
     /// <summary>
     /// Calculates average period and cycle length for the current user based on up to last three cycles.
     /// </summary>
@@ -141,22 +140,22 @@ public class CycleService : ICycleService
         {
             throw new NotFoundException("No current cycle found.");
         }
-        
+
         var today = DateTime.UtcNow.Date;
         var predictedPeriodDays = new List<DateTimeOffset>();
         var user = _userManager.Users.First(u => u.Id == userId);
         var cycleLength = user.CycleLength;
         var periodLength = user.PeriodLength;
         var cycleStartDay = currentCycle.StartDate.Date;
-        
+
         //get latest period day for current cycle and add predicted days based on period length
         var latestPeriodDay = currentCycle.CycleDays.Where(d => d.IsPeriod).OrderBy(d => d.Date).Last().Date;
 
         //Only add predicted period days if latest period day is less than three cycles ago
         if ((today - latestPeriodDay).TotalDays >= 3 * cycleLength) return predictedPeriodDays;
-        var periodElapsed = (latestPeriodDay - cycleStartDay).Days +1;
+        var periodElapsed = (latestPeriodDay - cycleStartDay).Days + 1;
         var difference = periodLength - periodElapsed;
-        
+
         //Add predicted days after latest period day until cycle length is reached
         for (var i = 0; i < difference; i++)
         {
@@ -166,7 +165,7 @@ public class CycleService : ICycleService
                 predictedPeriodDays.Add(dayToAdd);
             }
         }
-        
+
         //get predicted period days for the next three cycles
         for (var i = 0; i < 3; i++)
         {
@@ -185,7 +184,7 @@ public class CycleService : ICycleService
         var cycleAnalytics = cycleList.Select(cycle => new CycleAnalyticsDto
         {
             StartDate = cycle.StartDate,
-            EndDate = (DateTimeOffset)cycle.EndDate!, 
+            EndDate = (DateTimeOffset)cycle.EndDate!,
             PeriodDays = cycle.CycleDays
                 .Where(cd => cd.IsPeriod)
                 .Select(cd => cd.Date)
@@ -202,8 +201,8 @@ public class CycleService : ICycleService
         return new PeriodCycleStatsDto
         {
             CurrentCycleLength = currentCycleLength,
-            AverageCycleLength = (int)_userManager.Users.First(u => u.Id == userId).CycleLength,
-            AveragePeriodLength = (int)_userManager.Users.First(u => u.Id == userId).PeriodLength
+            AverageCycleLength = (int)(_userManager.Users.FirstOrDefault(u => u.Id == userId)?.CycleLength ?? 0),
+            AveragePeriodLength = (int)(_userManager.Users.FirstOrDefault(u => u.Id == userId)?.PeriodLength ?? 0)
         };
     }
 
@@ -236,7 +235,7 @@ public class CycleService : ICycleService
         {
             throw new BadRequestException("User has already set their initial data.");
         }
-        
+
         // Create a new cycle for the user based on their last period date (it won't have an end date, as it's ongoing)
         var cycle = new Cycle()
         {
@@ -245,36 +244,36 @@ public class CycleService : ICycleService
             StartDate = initialLoginPutDto.LastPeriodStart
         };
         await Create(cycle);
-        
+
         // Update user's average cycle and period lengths
         user!.PeriodLength = initialLoginPutDto.PeriodLength;
         user!.CycleLength = initialLoginPutDto.CycleLength;
         user.CurrentCycleId = cycle.Id;
         await _userManager.UpdateAsync(user);
-        
+
         // Log the period days for the cycle
         var periodDay = initialLoginPutDto.LastPeriodStart;
         var upperBound = initialLoginPutDto.LastPeriodEnd ??
                          initialLoginPutDto.LastPeriodStart.AddDays(initialLoginPutDto.PeriodLength);
-        upperBound = upperBound > DateTimeOffset.UtcNow 
-            ? DateTimeOffset.UtcNow 
+        upperBound = upperBound > DateTimeOffset.UtcNow
+            ? DateTimeOffset.UtcNow
             : upperBound;
-        
+
         var metrics = new List<MetricRegisterMetricDto>();
         var metricId = (await _metricService.GetAllMetrics())
             .First(m => m.Name == "Flow")
             .Id;
-        
+
         while (periodDay <= upperBound)
         {
-           metrics.Add(new MetricRegisterMetricDto()
-           {
-               MetricsId = metricId,
-               CreatedAt = periodDay,
-           });
-           periodDay = periodDay.AddDays(1);
+            metrics.Add(new MetricRegisterMetricDto()
+            {
+                MetricsId = metricId,
+                CreatedAt = periodDay,
+            });
+            periodDay = periodDay.AddDays(1);
         }
-        
+
         await _metricService.SaveMetrics(userId, metrics);
     }
 }

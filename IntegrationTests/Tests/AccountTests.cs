@@ -5,7 +5,6 @@ using Infrastructure.Data;
 using IntegrationTests.Setup;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
-using Models.Dto.Identity;
 using Models.Dto.Identity.Account;
 using Models.Identity;
 
@@ -54,7 +53,7 @@ public class AccountTests
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
-    
+
     [Fact]
     public async Task Forgot_Password_return_500()
     {
@@ -62,7 +61,7 @@ public class AccountTests
         {
             Email = "forgot-password@app.com"
         };
-        
+
         var user = new ApplicationUser()
         {
             Email = forgotPassordDto.Email,
@@ -78,7 +77,7 @@ public class AccountTests
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
-    
+
     [Fact]
     public async Task Reset_Password_input_password_null_return_400()
     {
@@ -93,7 +92,7 @@ public class AccountTests
 
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
-    
+
     [Fact]
     public async Task Reset_Password_input_token_null_return_400()
     {
@@ -108,7 +107,7 @@ public class AccountTests
 
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
-    
+
     [Fact]
     public async Task Reset_Password_user_not_found_return_200()
     {
@@ -125,7 +124,7 @@ public class AccountTests
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
-    
+
     [Fact]
     public async Task Reset_Password_invalid_token_return_400()
     {
@@ -136,21 +135,21 @@ public class AccountTests
             EmailConfirmed = true
         };
         await _userManager.CreateAsync(user, "P@ssw0rd.+");
-        
+
         var resetPasswordDto = new ResetPasswordDto()
         {
             UserId = user.Id,
             NewPassword = "P@ssw0rd.+",
             Token = "token",
         };
-        
+
         _dbContext.Users.FirstOrDefault(u => u.Id == resetPasswordDto.UserId).Should().NotBeNull();
 
         var response = await _client.PostAsync("/Identity/Account/Reset-Password", JsonContent.Create(resetPasswordDto));
 
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
-    
+
     [Fact]
     public async Task Reset_Password_invalid_password_return_400()
     {
@@ -161,21 +160,21 @@ public class AccountTests
             EmailConfirmed = true
         };
         await _userManager.CreateAsync(user, "P@ssw0rd.+");
-        
+
         var resetPasswordDto = new ResetPasswordDto()
         {
             UserId = user.Id,
             NewPassword = "invalid-password",
             Token = await _userManager.GeneratePasswordResetTokenAsync(user)
         };
-        
+
         _dbContext.Users.FirstOrDefault(u => u.Id == resetPasswordDto.UserId).Should().NotBeNull();
 
         var response = await _client.PostAsync("/Identity/Account/Reset-Password", JsonContent.Create(resetPasswordDto));
 
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
-    
+
     [Fact]
     public async Task Reset_Password_return_200()
     {
@@ -189,7 +188,7 @@ public class AccountTests
 
         user = _dbContext.Users.FirstOrDefault(u => u.Id == user.Id);
         user.Should().NotBeNull();
-        
+
         var token = await _userManager.GeneratePasswordResetTokenAsync(user);
         var resetPasswordDto = new ResetPasswordDto()
         {
@@ -197,13 +196,13 @@ public class AccountTests
             NewPassword = "P@ssw0rd.+",
             Token = token
         };
-        
+
 
         var response = await _client.PostAsync("/Identity/Account/Reset-Password", JsonContent.Create(resetPasswordDto));
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
-    
+
     [Fact]
     public async Task Verify_email_user_not_found_return_400()
     {
@@ -214,12 +213,12 @@ public class AccountTests
         };
 
         _dbContext.Users.FirstOrDefault(u => u.Id == verifyRequestDto.UserId).Should().BeNull();
-        
+
         var response = await _client.PostAsync("/Identity/Account/Verify-Email", JsonContent.Create(verifyRequestDto));
 
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
-    
+
     [Fact]
     public async Task Verify_email_user_invalid_token_return_400()
     {
@@ -233,7 +232,7 @@ public class AccountTests
 
         user = _dbContext.Users.FirstOrDefault(u => u.Id == user.Id);
         user.Should().NotBeNull();
-        
+
         var verifyRequestDto = new VerifyRequestDto()
         {
             UserId = user.Id,
@@ -244,7 +243,7 @@ public class AccountTests
 
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
-    
+
     [Fact]
     public async Task Verify_email_user_already_verified_return_200()
     {
@@ -258,7 +257,7 @@ public class AccountTests
 
         user = _dbContext.Users.FirstOrDefault(u => u.Id == user.Id);
         user.Should().NotBeNull();
-        
+
         var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
         var verifyRequestDto = new VerifyRequestDto()
         {
@@ -270,7 +269,7 @@ public class AccountTests
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
-    
+
     [Fact]
     public async Task Verify_email_return_200()
     {
@@ -284,7 +283,7 @@ public class AccountTests
 
         user = _dbContext.Users.FirstOrDefault(u => u.Id == user.Id);
         user.Should().NotBeNull();
-        
+
         var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
         var verifyRequestDto = new VerifyRequestDto()
         {

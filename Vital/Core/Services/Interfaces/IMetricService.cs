@@ -1,6 +1,5 @@
 ﻿using Models;
 using Models.Days;
-using Models.Dto.Cycle;
 using Models.Dto.Metrics;
 using Models.Util;
 

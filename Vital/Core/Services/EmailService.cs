@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Options;
+﻿using System.Text.Encodings.Web;
+using System.Web;
+using Microsoft.Extensions.Options;
 using Models.Identity;
 using Vital.Configuration;
 using Vital.Core.Services.Interfaces;
@@ -16,7 +18,7 @@ public class EmailService(IEmailDeliveryService emailDeliveryService, IOptions<G
         var verifyMessageContent = $@"
 <p>
 Hello, {user.UserName},
-to verify your email click: <a style=""padding: 5px 15px; text-decoration:none; border-radius: 5px; background-color: #d1c1d7; color: #100e11"" href=""{globalSettings.Value.FrontEndUrl}/email-verify?userId={user.Id}&token={token}""> Verify email </a>  
+to verify your email click: <a style=""padding: 5px 15px; text-decoration:none; border-radius: 5px; background-color: #d1c1d7; color: #100e11"" href=""{globalSettings.Value.FrontEndUrl}/verify-email?userId={user.Id}&token={HttpUtility.UrlEncode(token)}""> Verify email </a>  
 </p> 
 <p> 
 If you did not request this email, please ignore it. 
@@ -26,7 +28,7 @@ If you did not request this email, please ignore it.
 
         await SendEmailAsync(recipients, subject, message, cancellationToken);
     }
-    
+
     public async Task SendForgotPasswordEmailAsync(ApplicationUser user, string token, CancellationToken cancellationToken)
     {
         var recipients = new List<string>() { user.UserName! };
@@ -35,7 +37,7 @@ If you did not request this email, please ignore it.
         var verifyMessageContent = $@"
 <p>
 Hello, {user.UserName}, 
-to verify your email click: <a style=""""padding: 5px 15px; text-decoration:none; border-radius: 5px; background-color: #d1c1d7; color: #100e11"""" href=""""{globalSettings.Value.FrontEndUrl}/reset-password?userId={user.Id}&token={token}> Reset password </a>
+to verify your email click: <a style=""padding: 5px 15px; text-decoration:none; border-radius: 5px; background-color: #d1c1d7; color: #100e11"" href=""{globalSettings.Value.FrontEndUrl}/reset-password?userId={user.Id}&token={HttpUtility.UrlEncode(token)}""> Reset password </a>
 </p>
 <p>
 If you did not request this email, please ignore it.

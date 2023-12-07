@@ -17,7 +17,7 @@
            [type]="passwordInput.passwordVisible ? 'text' : 'password'">
   </app-password-input>
   <p *ngIf="invalidCredentials" class="text-error">Wrong username or password.</p>
-  <a href="#" class="text-accent self-end mb-1">Forgot password?</a>
+  <a href="forgot-password" class="text-accent self-end mb-1">Forgot password?</a>
   <button class="btn btn-accent" (click)="login()">Login</button>
   <p class="text-center">Don't have an account? <a href="javascript:void(0)" class="text-accent"
                                                    (click)="redirectToRegister()">Register</a>

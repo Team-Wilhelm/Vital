@@ -11,14 +11,13 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
 {
     // Data models
 
-    public DbSet<Cycle> Cycles { get; set; }
-    public DbSet<CycleDay> CycleDays { get; set; }
-    public DbSet<MenopauseDay> MenopauseDays { get; set; }
-    public DbSet<PregnancyDay> PregnancyDays { get; set; }
-
-    public DbSet<Metrics> Metrics { get; set; }
-    public DbSet<MetricValue> MetricValue { get; set; }
-    public DbSet<CalendarDayMetric> CalendarDayMetric { get; set; }
+    public DbSet<Cycle> Cycles { get; set; } = null!;
+    public DbSet<CycleDay> CycleDays { get; set; } = null!;
+    public DbSet<MenopauseDay> MenopauseDays { get; set; } = null!;
+    public DbSet<PregnancyDay> PregnancyDays { get; set; } = null!;
+    public DbSet<Metrics> Metrics { get; set; } = null!;
+    public DbSet<MetricValue> MetricValue { get; set; } = null!;
+    public DbSet<CalendarDayMetric> CalendarDayMetric { get; set; } = null!;
 
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
         : base(options)
