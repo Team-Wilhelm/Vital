@@ -278,9 +278,15 @@ public class MetricService : IMetricService
     private async Task<CalendarDay> GetOrCreateCalendarDay(Guid userId, DateTimeOffset date, Guid cycleId)
     {
         var calendarDay = await _calendarDayRepository.GetByDate(userId, date) ?? await _calendarDayRepository.CreteCycleDay(userId, date, cycleId);
+        var calendarDay = await _calendarDayRepository.GetByDate(userId, date);
+        if (calendarDay is null)
+        {
+            calendarDay = await _calendarDayRepository.CreteCycleDay(userId, date, cycleId);
+        }
+
         return calendarDay;
     }
-    
+
     private async Task SetIsPeriodOnCalendarDay(CalendarDay calendarDay)
     {
         if (calendarDay is not CycleDay day)

@@ -2,8 +2,20 @@
 
 public class KeyRingSettings
 {
-    public string Key { get; set; }
-    public string R { get; set; }
-    public string G { get; set; }
-    public string B { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public string Key { get; set; } = null!;
+    /// <summary>
+    /// 
+    /// </summary>
+    public string R { get; set; } = null!;
+    /// <summary>
+    /// 
+    /// </summary>
+    public string G { get; set; } = null!;
+    /// <summary>
+    /// 
+    /// </summary>
+    public string B { get; set; } = null!;
 }

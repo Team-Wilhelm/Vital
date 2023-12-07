@@ -1,4 +1,4 @@
-namespace Vital.Models.Exception;
+﻿namespace Vital.Models.Exception;
 
 public class ResetPasswordException : AppException
 {

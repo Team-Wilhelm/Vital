@@ -17,7 +17,7 @@ public static class IdentityBuilder
             options.Password.RequireNonAlphanumeric = true;
             options.Password.RequireUppercase = true;
             options.Password.RequiredLength = 6;
-            
+
             options.Stores.ProtectPersonalData = true;
         })
             .AddRoles<ApplicationRole>()

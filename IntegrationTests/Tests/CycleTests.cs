@@ -8,16 +8,8 @@ using Models.Dto.Cycle;
 namespace IntegrationTests.Tests;
 
 [Collection("VitalApi")]
-public class CycleTests
+public class CycleTests(VitalApiFactory vaf) : TestBase(vaf)
 {
-    private readonly HttpClient _client;
-    private readonly ApplicationDbContext _dbContext;
-    public CycleTests(VitalApiFactory waf)
-    {
-        _client = waf.Client;
-        _dbContext = waf.DbContext;
-    }
-
     [Fact]
     public async Task Get_Should_be_unauthorized()
     {
@@ -69,5 +61,4 @@ public class CycleTests
 
         response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }
-
 }
