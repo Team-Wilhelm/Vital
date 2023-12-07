@@ -9,6 +9,9 @@ using Vital.Models.Exception;
 
 namespace Vital.Controllers.Identity;
 
+/// <summary>
+/// Controller responsible for user authentication
+/// </summary>
 [Route("/Identity/[controller]")]
 public class AuthController : BaseController
 {
@@ -70,7 +73,8 @@ public class AuthController : BaseController
     /// <summary>
     /// Register user
     /// </summary>
-    /// <param name="requestDto"></param>
+    /// <param name="requestDto">Request</param>
+    /// <param name="cancellationToken"></param>
     /// <returns></returns>
     /// <exception cref="Exception"></exception>
     [HttpPost("Register")]
@@ -89,11 +93,11 @@ public class AuthController : BaseController
             CycleLength = null,
             PeriodLength = null
         };
-        var result = new IdentityResult();
+        IdentityResult result;
         try
         {
             result = await _userManager.CreateAsync(user, requestDto.Password);
-        } catch (DbUpdateException e)
+        } catch (DbUpdateException)
         {
             throw new AuthException("Cannot create user. This username is already taken.");
         }
@@ -118,7 +122,12 @@ public class AuthController : BaseController
 
         return Ok();
     }
-    
+
+    /// <summary>
+    /// Check if username is taken
+    /// </summary>
+    /// <param name="username">Username to lookup</param>
+    /// <returns></returns>
     [HttpGet("username-taken/{username}")]
     public async Task<IActionResult> IsUsernameTaken([FromRoute] string username)
     {

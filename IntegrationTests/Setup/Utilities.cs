@@ -14,7 +14,7 @@ public static class Utilities
             Email = email,
             Password = password
         };
-        
+
         var response = await client.PostAsJsonAsync("/identity/auth/login", loginRequestDto);
         var authResponse = await response.Content.ReadFromJsonAsync<AuthResponse>();
 

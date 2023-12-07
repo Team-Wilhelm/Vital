@@ -1,8 +1,6 @@
-﻿using System.Runtime.InteropServices.JavaScript;
-using AutoMapper;
+﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Models.Dto.Cycle;
 using Models.Dto.Metrics;
 using Models.Util;
 using Vital.Core.Context;
@@ -10,6 +8,12 @@ using Vital.Core.Services.Interfaces;
 
 namespace Vital.Controllers;
 
+/// <summary>
+/// Controller for handling metric-related API endpoints.
+/// </summary>
+/// <remarks>
+/// This controller requires authorization.
+/// </remarks>
 [Authorize]
 public class MetricController : BaseController
 {
@@ -101,7 +105,7 @@ public class MetricController : BaseController
         var periodDays = await _metricService.GetPeriodDays(userId, fromDate, toDate);
         return Ok(periodDays);
     }
-    
+
     /// <summary>
     /// Deletes a metric entry.
     /// </summary>
