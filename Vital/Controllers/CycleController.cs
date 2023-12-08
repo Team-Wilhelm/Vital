@@ -5,12 +5,12 @@ using Microsoft.AspNetCore.Mvc;
 using Models;
 using Models.Dto.Cycle;
 using Models.Dto.InitialLogin;
+using Models.Exception;
 using Models.Identity;
 using Models.Pagination;
 using Vital.Core.Context;
 using Vital.Core.Services.Interfaces;
 using Vital.Extension.Mapping;
-using Vital.Models.Exception;
 
 namespace Vital.Controllers;
 
@@ -84,7 +84,7 @@ public class CycleController : BaseController
             });
         }
         var cycle = await _cycleService.Create();
-        user!.CurrentCycleId = cycle.Id;
+        user.CurrentCycleId = cycle.Id;
         await _userManager.UpdateAsync(user);
         return Created("", cycle);
     }
@@ -168,7 +168,7 @@ public class CycleController : BaseController
         {
             return BadRequest("Number of cycles must be greater than 0.");
         }
-        
+
         var userId = _currentContext.UserId!.Value;
         var analytics = await _cycleService.GetAnalytics(userId, numberOfCycles);
         return Ok(analytics);
@@ -188,7 +188,7 @@ public class CycleController : BaseController
         return Ok(new InitialLoginGetDto()
         {
             PeriodLength = user!.PeriodLength,
-            CycleLength = user!.CycleLength
+            CycleLength = user.CycleLength
         });
     }
 

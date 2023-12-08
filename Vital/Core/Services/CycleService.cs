@@ -7,11 +7,11 @@ using Models.Days;
 using Models.Dto.Cycle;
 using Models.Dto.InitialLogin;
 using Models.Dto.Metrics;
+using Models.Exception;
 using Models.Identity;
 using Models.Pagination;
 using Vital.Core.Context;
 using Vital.Core.Services.Interfaces;
-using Vital.Models.Exception;
 
 namespace Vital.Core.Services;
 
@@ -176,7 +176,7 @@ public class CycleService : ICycleService
                 predictedPeriodDays.Add(cycleStartDay.Date.AddDays(j));
             }
         }
-        
+
         return predictedPeriodDays.OrderBy(d => d).ToList();
     }
 
@@ -248,8 +248,8 @@ public class CycleService : ICycleService
         await Create(cycle);
 
         // Update user's average cycle and period lengths
-        user!.PeriodLength = initialLoginPutDto.PeriodLength;
-        user!.CycleLength = initialLoginPutDto.CycleLength;
+        user.PeriodLength = initialLoginPutDto.PeriodLength;
+        user.CycleLength = initialLoginPutDto.CycleLength;
         user.CurrentCycleId = cycle.Id;
         await _userManager.UpdateAsync(user);
 

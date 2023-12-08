@@ -55,7 +55,7 @@ public class TestDbInitializer
             StartDate = DateTimeOffset.UtcNow.AddDays(-41),
             EndDate = DateTimeOffset.UtcNow.AddDays(-11),
         });
-        
+
         await _context.Cycles.AddAsync(new Cycle()
         {
             Id = Guid.Parse("4C4881F4-BB78-492B-A34A-6B834CB1F15C"),
@@ -82,7 +82,7 @@ public class TestDbInitializer
             UserId = Guid.Parse("B1F0B1F0-B1F0-B1F0-B1F0-B1F0B1F0B1F0"),
             StartDate = DateTimeOffset.UtcNow.AddDays(-2),
         });
-        
+
         // User 3 with no logged metrics
         var user3 = new ApplicationUser()
         {
@@ -91,10 +91,10 @@ public class TestDbInitializer
             Email = "user3@application",
             EmailConfirmed = true,
         };
-        
+
         await _userManager.CreateAsync(user3, "P@ssw0rd.+");
         await _userManager.AddToRoleAsync(user3, "User");
-        
+
         await _context.Cycles.AddAsync(new Cycle()
         {
             Id = Guid.Parse("A2E8D29E-6734-4EF5-9155-93EF6C995EF8"),

@@ -6,13 +6,13 @@ using Models.Identity;
 
 namespace IntegrationTests.Tests;
 
-public abstract class TestBase 
+public abstract class TestBase
 {
     protected readonly HttpClient _client;
     protected readonly IServiceScope _scope;
     protected readonly ApplicationDbContext _dbContext;
     protected readonly UserManager<ApplicationUser> _userManager;
-    
+
     protected TestBase(VitalApiFactory vaf)
     {
         _client = vaf.Client;

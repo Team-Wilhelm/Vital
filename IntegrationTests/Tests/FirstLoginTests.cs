@@ -8,26 +8,22 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Models.Dto.InitialLogin;
 using Models.Identity;
-using Xunit.Abstractions;
 
 namespace IntegrationTests.Tests;
 
 [Collection("VitalApi")]
 public class FirstLoginTests
 {
-    private readonly ITestOutputHelper _testOutputHelper;
     private readonly HttpClient _client;
     private readonly ApplicationDbContext _dbContext;
-    private readonly IServiceScope _scope;
     private readonly UserManager<ApplicationUser> _userManager;
 
-    public FirstLoginTests(VitalApiFactory waf, ITestOutputHelper testOutputHelper)
+    public FirstLoginTests(VitalApiFactory waf)
     {
-        _testOutputHelper = testOutputHelper;
         _client = waf.Client;
-        _scope = waf.Services.CreateScope();
-        _dbContext = _scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-        _userManager = _scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+        var scope = waf.Services.CreateScope();
+        _dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        _userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
     }
 
     [Fact]

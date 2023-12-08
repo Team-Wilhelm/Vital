@@ -4,20 +4,18 @@ using Infrastructure.Adapters;
 using Infrastructure.Repository.Interface;
 using Models;
 using Models.Dto.Metrics;
+using Models.Exception;
 using Models.Util;
-using Vital.Models.Exception;
 
 namespace Infrastructure.Repository;
 
 public class MetricRepository : IMetricRepository
 {
     private readonly IDbConnection _db;
-    private readonly ICalendarDayRepository _calendarDayRepository;
 
-    public MetricRepository(IDbConnection db, ICalendarDayRepository calendarDayRepository)
+    public MetricRepository(IDbConnection db)
     {
         _db = db;
-        _calendarDayRepository = calendarDayRepository;
     }
 
     public async Task<List<Metrics>> GetAllMetrics()

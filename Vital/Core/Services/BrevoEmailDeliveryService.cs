@@ -1,8 +1,8 @@
 ﻿using Microsoft.Extensions.Options;
+using Models.Exception;
 using SendWithBrevo;
 using Vital.Configuration;
 using Vital.Core.Services.Interfaces;
-using Vital.Models.Exception;
 
 namespace Vital.Core.Services;
 
@@ -31,7 +31,6 @@ public class BrevoEmailDeliveryService : IEmailDeliveryService
             brevoRecipients,
             subject,
             message,
-            false,
             token: ct
         );
     }

@@ -2,10 +2,10 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Models.Dto.Identity.Account;
+using Models.Exception;
 using Models.Identity;
 using Vital.Core.Context;
 using Vital.Core.Services.Interfaces;
-using Vital.Models.Exception;
 
 namespace Vital.Controllers;
 
@@ -69,7 +69,7 @@ public class AccountController : BaseController
 
             if (!result.Succeeded)
             {
-                throw new ResetPasswordException(result.Errors?.FirstOrDefault()?.Description ?? "");
+                throw new ResetPasswordException(result.Errors.FirstOrDefault()?.Description ?? "");
             }
         }
 

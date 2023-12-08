@@ -2,13 +2,10 @@
 using System.Net;
 using System.Net.Http.Json;
 using FluentAssertions;
-using Infrastructure.Data;
 using IntegrationTests.Setup;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Models.Dto.Metrics;
 using Models.Util;
-using Xunit.Abstractions;
 
 namespace IntegrationTests.Tests;
 
@@ -53,10 +50,10 @@ public class MetricTests(VitalApiFactory vaf) : TestBase(vaf)
         var expected = _dbContext.CalendarDayMetric
             .Include(cdm => cdm.Metrics)
             .Include(cdm => cdm.MetricValue)
-            .Where(cdm => cdm.CalendarDay.Date.Date == utcDate.Date
+            .Where(cdm => cdm.CalendarDay!.Date.Date == utcDate.Date
                           && cdm.CalendarDay.UserId == user.Id)
             .ToList();
-        await Utilities.AuthorizeUserAndSetHeaderAsync(_client, user.Email);
+        await Utilities.AuthorizeUserAndSetHeaderAsync(_client, user.Email!);
 
         // Act
         var response = await _client.GetAsync($"/Metric/{date}");
@@ -76,8 +73,7 @@ public class MetricTests(VitalApiFactory vaf) : TestBase(vaf)
         await Utilities.ClearToken(_client);
         // Arrange
         var user = await _dbContext.Users.FirstAsync(u => u.Email == "user3@application");
-        await Utilities.AuthorizeUserAndSetHeaderAsync(_client, user.Email);
-        var date = DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ", CultureInfo.InvariantCulture);
+        await Utilities.AuthorizeUserAndSetHeaderAsync(_client, user.Email!);
         _dbContext.Cycles.RemoveRange(_dbContext.Cycles.Where(c => c.UserId == user.Id && c.EndDate == null));
         await _dbContext.SaveChangesAsync();
 
@@ -107,9 +103,7 @@ public class MetricTests(VitalApiFactory vaf) : TestBase(vaf)
         await Utilities.ClearToken(_client);
         // Arrange
         var user = await _dbContext.Users.FirstAsync(u => u.Email == "user@application");
-        await Utilities.AuthorizeUserAndSetHeaderAsync(_client, user.Email);
-
-        var date = DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ", CultureInfo.InvariantCulture);
+        await Utilities.AuthorizeUserAndSetHeaderAsync(_client, user.Email!);
 
         var metricRegisterMetricDto = new MetricRegisterMetricDto()
         {

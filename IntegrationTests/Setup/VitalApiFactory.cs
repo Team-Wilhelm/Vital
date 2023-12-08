@@ -42,7 +42,7 @@ public class VitalApiFactory : WebApplicationFactory<IApiAssemblyMarker>, IAsync
             var connectionString = _dbContainer.GetConnectionString();
 
             // Add IDbConnection to dependency injection
-            services.AddScoped<IDbConnection>(container =>
+            services.AddScoped<IDbConnection>(_ =>
             {
                 var connection = new NpgsqlConnection(connectionString ?? throw new Exception("Connection string cannot be null"));
                 connection.Open();

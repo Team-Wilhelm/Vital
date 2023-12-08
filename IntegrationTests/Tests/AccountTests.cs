@@ -71,7 +71,7 @@ public class AccountTests(VitalApiFactory vaf) : TestBase(vaf)
         var resetPasswordDto = new ResetPasswordDto()
         {
             UserId = Guid.NewGuid(),
-            NewPassword = null,
+            NewPassword = null!,
             Token = "token",
         };
 
@@ -88,7 +88,7 @@ public class AccountTests(VitalApiFactory vaf) : TestBase(vaf)
         {
             UserId = Guid.NewGuid(),
             NewPassword = "password",
-            Token = null,
+            Token = null!,
         };
 
         var response =
@@ -181,10 +181,10 @@ public class AccountTests(VitalApiFactory vaf) : TestBase(vaf)
         user = _dbContext.Users.FirstOrDefault(u => u.Id == user.Id);
         user.Should().NotBeNull();
 
-        var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+        var token = await _userManager.GeneratePasswordResetTokenAsync(user!);
         var resetPasswordDto = new ResetPasswordDto()
         {
-            UserId = user.Id,
+            UserId = user!.Id,
             NewPassword = "P@ssw0rd.+",
             Token = token
         };
@@ -228,7 +228,7 @@ public class AccountTests(VitalApiFactory vaf) : TestBase(vaf)
 
         var verifyRequestDto = new VerifyRequestDto()
         {
-            UserId = user.Id,
+            UserId = user!.Id,
             Token = "token"
         };
 
@@ -251,10 +251,10 @@ public class AccountTests(VitalApiFactory vaf) : TestBase(vaf)
         user = _dbContext.Users.FirstOrDefault(u => u.Id == user.Id);
         user.Should().NotBeNull();
 
-        var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+        var token = await _userManager.GenerateEmailConfirmationTokenAsync(user!);
         var verifyRequestDto = new VerifyRequestDto()
         {
-            UserId = user.Id,
+            UserId = user!.Id,
             Token = token
         };
 
@@ -277,10 +277,10 @@ public class AccountTests(VitalApiFactory vaf) : TestBase(vaf)
         user = _dbContext.Users.FirstOrDefault(u => u.Id == user.Id);
         user.Should().NotBeNull();
 
-        var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+        var token = await _userManager.GenerateEmailConfirmationTokenAsync(user!);
         var verifyRequestDto = new VerifyRequestDto()
         {
-            UserId = user.Id,
+            UserId = user!.Id,
             Token = token
         };
 

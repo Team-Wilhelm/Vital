@@ -4,7 +4,4 @@ namespace Vital.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class BaseController : ControllerBase
-{
-
-}
+public abstract class BaseController : ControllerBase;
