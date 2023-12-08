@@ -119,7 +119,7 @@ public class DbInitializer
             UserId = user1.Id,
             StartDate = new DateTimeOffset(utcNow.AddDays(-5).Date, TimeSpan.Zero).AddHours(12)
         });
-        
+
         #region Add cycle days for user 1
 
         // Add cycle days for user 1
@@ -258,7 +258,7 @@ public class DbInitializer
                 }
             }
         });
-        
+
 // Cycle 2
         var cycle2 = new Cycle()
         {
@@ -287,7 +287,7 @@ public class DbInitializer
                 }
             }
         });
-        
+
 // Cycle 3
         var cycle3 = new Cycle()
         {

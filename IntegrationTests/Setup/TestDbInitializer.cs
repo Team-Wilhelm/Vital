@@ -48,6 +48,22 @@ public class TestDbInitializer
             StartDate = DateTimeOffset.UtcNow.AddDays(-10),
         });
 
+        await _context.Cycles.AddAsync(new Cycle()
+        {
+            Id = Guid.Parse("025EACAF-3A0D-437F-913A-B4CEF3283142"),
+            UserId = Guid.Parse("ADFEAD4C-823B-41E5-9C7E-C84AA04192A4"),
+            StartDate = DateTimeOffset.UtcNow.AddDays(-41),
+            EndDate = DateTimeOffset.UtcNow.AddDays(-11),
+        });
+        
+        await _context.Cycles.AddAsync(new Cycle()
+        {
+            Id = Guid.Parse("4C4881F4-BB78-492B-A34A-6B834CB1F15C"),
+            UserId = Guid.Parse("ADFEAD4C-823B-41E5-9C7E-C84AA04192A4"),
+            StartDate = DateTimeOffset.UtcNow.AddDays(-68),
+            EndDate = DateTimeOffset.UtcNow.AddDays(-42),
+        });
+
         // User 2 with a current period
         var user2 = new ApplicationUser()
         {

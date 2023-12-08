@@ -80,8 +80,16 @@ public class CycleRepository : ICycleRepository
     {
         var sql =
             @"SELECT * FROM ""Cycles"" WHERE ""UserId""=@UserId AND ""EndDate"" IS NOT NULL ORDER BY ""StartDate"" DESC LIMIT @NumberOfCycles";
-        var cycles = await _db.QueryAsync<Cycle>(sql, new { UserId = userId, NumberOfCycles = numberOfCycles });
+        var cycles = await _db.QueryAsync<Cycle>(sql, new { UserId = userId, NumberOfCycles = numberOfCycles - 1 });
+        
         var cycleList = cycles.ToList();
+        var currentCycle = await GetCurrentCycle(userId);
+        if (currentCycle != null)
+        {
+            currentCycle.EndDate = DateTimeOffset.UtcNow;
+            cycleList.Add(currentCycle);
+        }
+
         cycleList.ForEach(cycle => { cycle.CycleDays = GetCycleDaysForCycleAsync(cycle.Id).Result.ToList(); });
         return cycleList;
     }
@@ -100,7 +108,7 @@ public class CycleRepository : ICycleRepository
     {
         cycle.StartDate = cycle.StartDate.ToOffset(TimeSpan.Zero);
         cycle.EndDate = cycle.EndDate?.ToOffset(TimeSpan.Zero);
-        var sql = @"UPDATE ""Cycles"" SET ""StartDate""=@StartDate, ""EndDate""=@EndDate WHERE ""Id""=@Id";
+        var sql = @"UPDATE ""Cycles"" SET ""StartDate"" = @StartDate, ""EndDate"" = @EndDate WHERE ""Id""=@Id";
 
         await _db.ExecuteAsync(sql, new
         {
