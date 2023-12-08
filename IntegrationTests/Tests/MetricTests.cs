@@ -191,49 +191,50 @@ public class MetricTests(VitalApiFactory vaf) : TestBase(vaf)
     [Fact]
     public async Task SaveMetrics_Historic_Data_Success()
     {
-        await ClearToken();
-        // Arrange
-        var user = await _dbContext.Users.FirstAsync(u => u.Email == "user@application");
-        await AuthorizeUserAndSetHeaderAsync(user.Email);
-
-        // Date before current cycle
-        var dateBeforeCurrentCycle = DateTimeOffset.UtcNow.AddMonths(-2);
-
-        // Create and post a historic cycle
-        var historicMetricRegisterMetricDto = await GetRegisterMetricDtoFlow(dateBeforeCurrentCycle);
-        await _client.PostAsJsonAsync($"/Metric",
-            new List<MetricRegisterMetricDto> { historicMetricRegisterMetricDto });
-
-        // Create a cycle that starts after the start of the historic cycle and before the current cycle
-        var metricRegisterMetricDto = await GetRegisterMetricDtoFlow(dateBeforeCurrentCycle.AddMonths(1));
-        var currentCycleCount = await _dbContext.Cycles
-            .Where(c => c.UserId == user.Id)
-            .CountAsync();
-
-        // Act
-        var response =
-            await _client.PostAsJsonAsync($"/Metric", new List<MetricRegisterMetricDto> { metricRegisterMetricDto });
-
-        // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
-
-        // Check that the new cycle successfully shifted the start and end dates of other cycles
-        var cycles = await _dbContext.Cycles
-            .Where(c => c.UserId == user.Id)
-            .OrderBy(c => c.StartDate)
-            .ToListAsync();
-        cycles.Count.Should().Be(currentCycleCount + 1);
-        for (var i = 0;
-             i < cycles.Count - 1;
-             i++) // -1 because the last cycle is the current cycle, and has no end date
+        try
         {
-            cycles[i].EndDate!.Value.Date.AddDays(1).Should().Be(cycles[i + 1].StartDate.Date);
+            // Arrange
+            var user = await RegisterUserAndCreateCycle("temp@application");
+            await AuthorizeUserAndSetHeaderAsync(user.Email!);
+
+            // Add two historic cycles
+            var historicCycles = await CreateHistoricCycles([
+                DateTimeOffset.UtcNow.AddDays(-70),
+                DateTimeOffset.UtcNow.AddDays(-30)
+            ], user.Id);
+            _dbContext.Cycles.AddRange(historicCycles);
+            await _dbContext.SaveChangesAsync();
+            
+            var currentCycleCount = await _dbContext.Cycles.Where(c => c.UserId == user.Id).CountAsync();
+            var metricRegisterMetricDto = await GetRegisterMetricDtoFlow(historicCycles[0].StartDate.AddDays(15));
+
+            // Act
+            var response =
+                await _client.PostAsJsonAsync($"/Metric",
+                    new List<MetricRegisterMetricDto> { metricRegisterMetricDto });
+            _dbContext.ChangeTracker.Clear();
+
+            // Assert
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+            // Check that the new cycle successfully shifted the start and end dates of other cycles
+            var cycles = await _dbContext.Cycles
+                .Where(c => c.UserId == user.Id)
+                .OrderBy(c => c.StartDate)
+                .ToListAsync();
+            cycles.Count.Should().Be(currentCycleCount + 1);
+            for (var i = 0;
+                 i < cycles.Count - 1;
+                 i++) // -1 because the last cycle is the current cycle, and has no end date
+            {
+                cycles[i].EndDate!.Value.Date.AddDays(1).Should().Be(cycles[i + 1].StartDate.Date);
+            }
+
+            cycles[^1].EndDate.Should().BeNull();
+        } finally
+        {
+            await Cleanup("temp@application");
         }
-
-        cycles[^1].EndDate.Should().BeNull();
-
-        // Cleanup
-        await ClearToken();
     }
 
     [Fact]
@@ -366,10 +367,11 @@ public class MetricTests(VitalApiFactory vaf) : TestBase(vaf)
             await Cleanup("temp@application");
         }
     }
-    
+
     [Fact]
-    [Description("If a user logs a non-flow metric before an existing cycle, the following cycle should be extended, but if user then logs flow before that," +
-                 "a new cycle should be created and it should encapsulate the non-flow metric.")]
+    [Description(
+        "If a user logs a non-flow metric before an existing cycle, the following cycle should be extended, but if user then logs flow before that," +
+        "a new cycle should be created and it should encapsulate the non-flow metric.")]
     public async Task Logging_Flow_Should_Update_Metric_Cycle_Link()
     {
         try
@@ -408,7 +410,7 @@ public class MetricTests(VitalApiFactory vaf) : TestBase(vaf)
                 new List<MetricRegisterMetricDto>() { flowMetricRegisterMetricDto });
             _dbContext.ChangeTracker.Clear();
             var newlyCreatedCycle = await _dbContext.Cycles.FirstAsync(c => c.UserId == user.Id && c.EndDate != null);
-            
+
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             (await _dbContext.Cycles.Where(c => c.UserId == user.Id).CountAsync()).Should().Be(2);
@@ -418,17 +420,18 @@ public class MetricTests(VitalApiFactory vaf) : TestBase(vaf)
             calendarDay =
                 await _dbContext.CycleDays
                     .Include(cycleDay => cycleDay.Cycle!)
-                    .FirstAsync(cd => cd.UserId == user.Id && cd.Date.UtcDateTime.Date == crampsMetricLogDate.UtcDateTime.Date);
+                    .FirstAsync(cd =>
+                        cd.UserId == user.Id && cd.Date.UtcDateTime.Date == crampsMetricLogDate.UtcDateTime.Date);
             calendarDay.Cycle!.Id.Should().Be(newlyCreatedCycle.Id);
-
         } finally
         {
             await Cleanup("temp@application");
         }
     }
-    
+
 
     #region Utility Methods
+
     private async Task<MetricRegisterMetricDto> GetRegisterMetricDtoFlow(DateTimeOffset? createdAt = null)
     {
         createdAt ??= DateTimeOffset.UtcNow;
@@ -455,9 +458,9 @@ public class MetricTests(VitalApiFactory vaf) : TestBase(vaf)
             UserId = user.Id,
             StartDate = cycleStartDate.Value.UtcDateTime,
             EndDate = null,
-            CycleDays = new List<CycleDay>()
-            {
-                new()
+            CycleDays =
+            [
+                new CycleDay
                 {
                     Id = cycleDayId,
                     UserId = user.Id,
@@ -468,13 +471,14 @@ public class MetricTests(VitalApiFactory vaf) : TestBase(vaf)
                         new()
                         {
                             Id = Guid.NewGuid(),
+                            CreatedAt = cycleStartDate,
                             CalendarDayId = cycleDayId,
                             MetricValueId = flow.MetricValueId,
                             MetricsId = flow.MetricsId
                         }
                     }
                 }
-            }
+            ]
         };
         _dbContext.Cycles.Add(cycle);
         user.CurrentCycleId = cycle.Id;
@@ -487,6 +491,70 @@ public class MetricTests(VitalApiFactory vaf) : TestBase(vaf)
     {
         await ClearToken();
         await RemoveUserAsync(email);
+    }
+
+    private async Task<List<Cycle>> CreateHistoricCycles(IReadOnlyList<DateTimeOffset> startDateList, Guid userId)
+    {
+        var metric = await _dbContext.Metrics.FirstAsync(m => m.Name.Contains("Flow"));
+        var calendarDayIds = new List<Guid>() { Guid.NewGuid(), Guid.NewGuid() };
+        var historicCycles = new List<Cycle>()
+        {
+            new()
+            {
+                Id = Guid.NewGuid(),
+                UserId = userId,
+                StartDate = startDateList[0],
+                EndDate = startDateList[1].AddDays(-1),
+                CycleDays =
+                [
+                    new CycleDay
+                    {
+                        Id = calendarDayIds[0],
+                        UserId = userId,
+                        Date = startDateList[0],
+                        IsPeriod = true,
+                        SelectedMetrics = new List<CalendarDayMetric>()
+                        {
+                            new()
+                            {
+                                Id = Guid.NewGuid(),
+                                CreatedAt = startDateList[0],
+                                CalendarDayId = calendarDayIds[0],
+                                MetricsId = metric.Id
+                            }
+                        }
+                    }
+                ]
+            },
+            new()
+            {
+                Id = Guid.NewGuid(),
+                UserId = userId,
+                StartDate = startDateList[1],
+                EndDate = DateTimeOffset.UtcNow.AddDays(-2), // the current cycle starts at -1 for users created with utility methods
+                CycleDays =
+                [
+                    new CycleDay
+                    {
+                        Id = calendarDayIds[1],
+                        UserId = userId,
+                        Date = startDateList[1],
+                        IsPeriod = true,
+                        SelectedMetrics = new List<CalendarDayMetric>()
+                        {
+                            new()
+                            {
+                                Id = Guid.NewGuid(),
+                                CreatedAt = startDateList[1],
+                                CalendarDayId = calendarDayIds[1],
+                                MetricsId = metric.Id
+                            }
+                        }
+                    }
+                ]
+            }
+        };
+        return historicCycles;
     }
 
     #endregion

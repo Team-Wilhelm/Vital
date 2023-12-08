@@ -149,9 +149,10 @@ public class MetricService : IMetricService
     {
         if (isFlowMetric)
         {
-            var lastFlowMetricDate = await _metricRepository
-                .GetPeriodDays(userId, cycle.StartDate, cycle.EndDate ?? DateTimeOffset.Now)
-                .ContinueWith(t => t.Result.OrderByDescending(d => d).FirstOrDefault());
+            var lastFlowMetricDate = (await _metricRepository
+                .GetPeriodDays(userId, cycle.StartDate, cycle.EndDate ?? DateTimeOffset.Now))
+                .OrderByDescending(d => d)
+                .FirstOrDefault();
 
             var followingCycle = await _cycleRepository.GetFollowingCycle(userId, date);
             if (date.Date - lastFlowMetricDate.Date >
