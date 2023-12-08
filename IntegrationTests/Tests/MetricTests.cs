@@ -236,6 +236,10 @@ public class MetricTests(VitalApiFactory vaf) : TestBase(vaf)
             MetricsId = flowMetric.Id,
             CreatedAt = dateBeforeCurrentCycle.AddMonths(1)
         };
+        
+        var currentCycleCount = await _dbContext.Cycles
+            .Where(c => c.UserId == user.Id)
+            .CountAsync();
 
         // Act
         var response = await _client.PostAsJsonAsync($"/Metric", new List<MetricRegisterMetricDto> { metricRegisterMetricDto });
@@ -248,10 +252,8 @@ public class MetricTests(VitalApiFactory vaf) : TestBase(vaf)
             .Where(c => c.UserId == user.Id)
             .OrderBy(c => c.StartDate)
             .ToListAsync();
-        cycles.Count.Should().Be(3);
-        /*cycles[0].StartDate.Should().Be(dateBeforeCurrentCycle);
-        cycles[1].StartDate.Should().Be(dateBeforeCurrentCycle.AddMonths(1));
-        cycles[2].StartDate.Should().BeAfter(dateBeforeCurrentCycle.AddMonths(1));*/
+        cycles.Count.Should().Be(currentCycleCount + 1);
+        // TODO: check start and end dates
 
         // Cleanup
         await Utilities.ClearToken(_client);
