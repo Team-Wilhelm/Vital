@@ -113,6 +113,11 @@ public class MetricService : IMetricService
         {
             var cycle = await _cycleRepository.GetCycleByDate(userId, date);
             var currentCycle = await _cycleRepository.GetCurrentCycle(userId);
+            if (currentCycle is null)
+            {
+                throw new BadRequestException("Cannot log metrics without a current cycle.");
+            }
+            
             var metricNames =
                 await _metricRepository.GetMetricNamesByIds(metrics.Select(m => m.MetricsId)
                     .ToList()); 
