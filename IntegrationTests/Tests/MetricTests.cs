@@ -1,4 +1,5 @@
-﻿using System.Globalization;
+﻿using System.ComponentModel;
+using System.Globalization;
 using System.Net;
 using System.Net.Http.Json;
 using FluentAssertions;
@@ -7,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Models;
 using Models.Dto.Metrics;
+using Models.Identity;
 using Models.Pagination;
 using Models.Util;
 using Newtonsoft.Json;
@@ -19,7 +21,7 @@ public class MetricTests(VitalApiFactory vaf) : TestBase(vaf)
     [Fact]
     public async Task Get_Should_be_unauthorized()
     {
-        await ClearToken(_client);
+        await ClearToken();
 
         var date = DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ", CultureInfo.InvariantCulture);
         var response = await _client.GetAsync($"/Metric/{date}");
@@ -30,7 +32,7 @@ public class MetricTests(VitalApiFactory vaf) : TestBase(vaf)
     [Fact]
     public async Task UploadMetricForADay_Should_be_unauthorized()
     {
-        await ClearToken(_client);
+        await ClearToken();
 
         var metricRegisterMetricDto = new MetricRegisterMetricDto()
         {
@@ -57,7 +59,7 @@ public class MetricTests(VitalApiFactory vaf) : TestBase(vaf)
             .Where(cdm => cdm.CalendarDay.Date.Date == utcDate.Date
                           && cdm.CalendarDay.UserId == user.Id)
             .ToList();
-        await AuthorizeUserAndSetHeaderAsync(_client, user.Email);
+        await AuthorizeUserAndSetHeaderAsync( user.Email);
 
         // Act
         var response = await _client.GetAsync($"/Metric/{date}");
@@ -68,29 +70,17 @@ public class MetricTests(VitalApiFactory vaf) : TestBase(vaf)
         actual?.Count.Should().Be(expected.Count);
 
         // Cleanup
-        await ClearToken(_client);
+        await ClearToken();
     }
 
     [Fact]
     public async Task Upload_Metrics_Success()
     {
-        await ClearToken(_client);
+        await ClearToken();
         
         // Arrange
-        var user = await RegisterNewUserAndVerifyEmailAsync("temp@application");
-        var cycle = new Cycle()
-        {
-            Id = Guid.NewGuid(),
-            UserId = user.Id,
-            StartDate = DateTimeOffset.UtcNow.AddDays(-1),
-            EndDate = null
-        };
-        _dbContext.Cycles.Add(cycle);
-        user.CurrentCycleId = cycle.Id;
-        await _dbContext.SaveChangesAsync();
-        await _userManager.UpdateAsync(user);
-        
-        await AuthorizeUserAndSetHeaderAsync(_client, user.Email);
+        var user = await RegisterUserAndCreateCycle("temp@application");
+        await AuthorizeUserAndSetHeaderAsync( user.Email);
         var metricRegisterMetricDto = await GetRegisterMetricDtoFlow();
 
         // Act
@@ -101,17 +91,17 @@ public class MetricTests(VitalApiFactory vaf) : TestBase(vaf)
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         // Cleanup
-        await ClearToken(_client);
+        await ClearToken();
         await RemoveUserAsync("temp@application");
     }
 
     [Fact]
     public async Task Upload_Metrics_BadRequest_Wrong_MetricID()
     {
-        await ClearToken(_client);
+        await ClearToken();
         // Arrange
         var user = await _dbContext.Users.FirstAsync(u => u.Email == "user@application");
-        await AuthorizeUserAndSetHeaderAsync(_client, user.Email);
+        await AuthorizeUserAndSetHeaderAsync( user.Email);
 
         var date = DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ", CultureInfo.InvariantCulture);
 
@@ -130,7 +120,7 @@ public class MetricTests(VitalApiFactory vaf) : TestBase(vaf)
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         
         // Cleanup
-        await ClearToken(_client);
+        await ClearToken();
     }
     
     [Fact]
@@ -138,7 +128,7 @@ public class MetricTests(VitalApiFactory vaf) : TestBase(vaf)
     {
         // Arrange
         var user = await _dbContext.Users.FirstAsync(u => u.Email == "user@application");
-        await AuthorizeUserAndSetHeaderAsync(_client, user.Email);
+        await AuthorizeUserAndSetHeaderAsync( user.Email);
         var futureDate = DateTime.UtcNow.AddDays(2); // A future date
         
         var metricRegisterMetricDto = await GetRegisterMetricDtoFlow(futureDate);
@@ -153,16 +143,16 @@ public class MetricTests(VitalApiFactory vaf) : TestBase(vaf)
         problemDetails?.Detail.Should().Contain("Cannot log metrics for a future date.");
 
         // Cleanup
-        await ClearToken(_client);
+        await ClearToken();
     }
     
     [Fact]
     public async Task SaveMetrics_No_Historic_Data_Success()
     {
-        await ClearToken(_client);
+        await ClearToken();
         // Arrange
         var user = await _dbContext.Users.FirstAsync(u => u.Email == "user@application");
-        await AuthorizeUserAndSetHeaderAsync(_client, user.Email);
+        await AuthorizeUserAndSetHeaderAsync( user.Email);
         
         // Date before existing cycle
         var dateBeforeCurrentCycle = DateTime.UtcNow.AddMonths(-2); 
@@ -190,16 +180,16 @@ public class MetricTests(VitalApiFactory vaf) : TestBase(vaf)
         previousCycle?.Id.Should().NotBe((Guid)user.CurrentCycleId!); //User always has a current cycle
 
         // Cleanup
-        await ClearToken(_client);
+        await ClearToken();
     }
     
     [Fact]
     public async Task SaveMetrics_Historic_Data_Success()
     {
-        await ClearToken(_client);
+        await ClearToken();
         // Arrange
         var user = await _dbContext.Users.FirstAsync(u => u.Email == "user@application");
-        await AuthorizeUserAndSetHeaderAsync(_client, user.Email);
+        await AuthorizeUserAndSetHeaderAsync( user.Email);
         
         // Date before current cycle
         var dateBeforeCurrentCycle = DateTime.UtcNow.AddMonths(-2); 
@@ -234,14 +224,14 @@ public class MetricTests(VitalApiFactory vaf) : TestBase(vaf)
         cycles[^1].EndDate.Should().BeNull();
 
         // Cleanup
-        await ClearToken(_client);
+        await ClearToken();
     }
 
     [Fact]
     public async Task SaveMetrics_No_Current_Cycle()
     {
-        var user = RegisterNewUserAndVerifyEmailAsync("temp@application");
-        await AuthorizeUserAndSetHeaderAsync(_client, "temp@application");
+        await RegisterNewUserAndVerifyEmailAsync("temp@application");
+        await AuthorizeUserAndSetHeaderAsync("temp@application");
         
         var registerMetricDto = await GetRegisterMetricDtoFlow();
         var response = await _client.PostAsJsonAsync($"/Metric", new List<MetricRegisterMetricDto> { registerMetricDto });
@@ -251,6 +241,35 @@ public class MetricTests(VitalApiFactory vaf) : TestBase(vaf)
         problemDetails?.Title.Should().Be("Bad Request");
         problemDetails?.Detail.Should().Contain("Cannot log metrics without a current cycle.");
         
+        await RemoveUserAsync("temp@application");
+    }
+
+    [Fact]
+    [Description("If a user tries to log a flow within seven days of the start of another cycle, the cycle should be extended instead of creating a new very short cycle.")]
+    public async Task Save_Flow_Within_Seven_Days_Of_Another_Cycle()
+    {
+        // Arrange
+        var user = await RegisterUserAndCreateCycle("temp@application");
+        var cycle = await _dbContext.Cycles.FirstAsync(c => c.UserId == user.Id);
+        var dateBeforeCurrentCycle = cycle.StartDate.AddDays(-7);
+        var metricRegisterMetricDto = await GetRegisterMetricDtoFlow(dateBeforeCurrentCycle);
+        await AuthorizeUserAndSetHeaderAsync("temp@application");
+
+        // Act
+        var response = await _client.PostAsJsonAsync($"/Metric", new List<MetricRegisterMetricDto> { metricRegisterMetricDto });
+        _dbContext.ChangeTracker.Clear();
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        
+        // Check that the cycle was extended
+        (await _dbContext.Cycles.Where(c => c.UserId == user.Id).CountAsync()).Should().Be(1);
+        var updatedCycle = await _dbContext.Cycles.FirstAsync(c => c.UserId == user.Id);
+        updatedCycle.StartDate.Date.Should().Be(dateBeforeCurrentCycle.Date);
+        updatedCycle.EndDate.Should().BeNull();
+
+        // Cleanup
+        await ClearToken();
         await RemoveUserAsync("temp@application");
     }
 
@@ -266,5 +285,23 @@ public class MetricTests(VitalApiFactory vaf) : TestBase(vaf)
             CreatedAt = createdAt.Value
         };
         return metricRegisterMetricDto;
-    } 
+    }
+
+    private async Task<ApplicationUser> RegisterUserAndCreateCycle(string email, DateTimeOffset? cycleStartDate = null)
+    {
+        cycleStartDate ??= DateTimeOffset.UtcNow.AddDays(-1);
+        var user = await RegisterNewUserAndVerifyEmailAsync(email);
+        var cycle = new Cycle()
+        {
+            Id = Guid.NewGuid(),
+            UserId = user.Id,
+            StartDate = cycleStartDate.Value,
+            EndDate = null
+        };
+        _dbContext.Cycles.Add(cycle);
+        user.CurrentCycleId = cycle.Id;
+        await _dbContext.SaveChangesAsync();
+        await _userManager.UpdateAsync(user);
+        return user;
+    }
 }

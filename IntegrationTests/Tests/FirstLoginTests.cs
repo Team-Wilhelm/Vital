@@ -27,7 +27,7 @@ public class FirstLoginTests(VitalApiFactory vaf) : TestBase(vaf)
     public async Task Firs_Login_Should_Have_Null_Data()
     {
         await RegisterNewUserAndVerifyEmailAsync("temp@application");
-        await AuthorizeUserAndSetHeaderAsync(_client, "temp@application");
+        await AuthorizeUserAndSetHeaderAsync("temp@application");
 
         var response = await _client.GetAsync("/cycle/initial-login");
         var actual = await response.Content.ReadFromJsonAsync<InitialLoginGetDto>();
@@ -36,14 +36,14 @@ public class FirstLoginTests(VitalApiFactory vaf) : TestBase(vaf)
         response.StatusCode.Should().Be(HttpStatusCode.OK);
         result.Should().BeTrue();
 
-        await ClearToken(_client);
+        await ClearToken();
         await RemoveUserAsync("temp@application");
     }
 
     [Fact]
     public async Task First_Login_Should_Be_False()
     {
-        await AuthorizeUserAndSetHeaderAsync(_client); // user@application
+        await AuthorizeUserAndSetHeaderAsync(); // user@application
         var response = await _client.GetAsync("/cycle/initial-login");
         var actual = await response.Content.ReadFromJsonAsync<InitialLoginGetDto>();
         var result = actual?.CycleLength == null || actual.PeriodLength == null;
@@ -51,7 +51,7 @@ public class FirstLoginTests(VitalApiFactory vaf) : TestBase(vaf)
         response.StatusCode.Should().Be(HttpStatusCode.OK);
         result.Should().BeFalse();
 
-        await ClearToken(_client);
+        await ClearToken();
     }
 
     [Fact]
@@ -59,7 +59,7 @@ public class FirstLoginTests(VitalApiFactory vaf) : TestBase(vaf)
     {
         const string username = "temp@application";
         await RegisterNewUserAndVerifyEmailAsync(username);
-        await AuthorizeUserAndSetHeaderAsync(_client, username);
+        await AuthorizeUserAndSetHeaderAsync( username);
 
         var initialLoginPutDto = new InitialLoginPutDto()
         {
@@ -77,7 +77,7 @@ public class FirstLoginTests(VitalApiFactory vaf) : TestBase(vaf)
         await AssertMetricsWereCreatedAsync(user, initialLoginPutDto);
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        await ClearToken(_client);
+        await ClearToken();
         await RemoveUserAsync(username);
     }
 
@@ -86,7 +86,7 @@ public class FirstLoginTests(VitalApiFactory vaf) : TestBase(vaf)
     {
         const string username = "temp@application";
         await RegisterNewUserAndVerifyEmailAsync(username);
-        await AuthorizeUserAndSetHeaderAsync(_client, username);
+        await AuthorizeUserAndSetHeaderAsync( username);
 
         var initialLoginPutDto = new InitialLoginPutDto()
         {
@@ -105,7 +105,7 @@ public class FirstLoginTests(VitalApiFactory vaf) : TestBase(vaf)
         await AssertMetricsWereCreatedAsync(user, initialLoginPutDto);
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        await ClearToken(_client);
+        await ClearToken();
         await RemoveUserAsync(username);
     }
 
@@ -114,7 +114,7 @@ public class FirstLoginTests(VitalApiFactory vaf) : TestBase(vaf)
     {
         const string username = "temp@application";
         await RegisterNewUserAndVerifyEmailAsync(username);
-        await AuthorizeUserAndSetHeaderAsync(_client, username);
+        await AuthorizeUserAndSetHeaderAsync( username);
 
         var initialLoginPutDto = new InitialLoginPutDto()
         {
@@ -131,7 +131,7 @@ public class FirstLoginTests(VitalApiFactory vaf) : TestBase(vaf)
         user.PeriodLength.Should().BeNull();
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
 
-        await ClearToken(_client);
+        await ClearToken();
         await RemoveUserAsync(username);
     }
 
@@ -140,7 +140,7 @@ public class FirstLoginTests(VitalApiFactory vaf) : TestBase(vaf)
     {
         const string username = "temp@application";
         await RegisterNewUserAndVerifyEmailAsync(username);
-        await AuthorizeUserAndSetHeaderAsync(_client, username);
+        await AuthorizeUserAndSetHeaderAsync( username);
 
         var initialLoginPutDto = new InitialLoginPutDto()
         {
@@ -157,7 +157,7 @@ public class FirstLoginTests(VitalApiFactory vaf) : TestBase(vaf)
         user.PeriodLength.Should().BeNull();
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
 
-        await ClearToken(_client);
+        await ClearToken();
         await RemoveUserAsync(username);
     }
 
@@ -166,7 +166,7 @@ public class FirstLoginTests(VitalApiFactory vaf) : TestBase(vaf)
     {
         const string username = "temp@application";
         await RegisterNewUserAndVerifyEmailAsync(username);
-        await AuthorizeUserAndSetHeaderAsync(_client, username);
+        await AuthorizeUserAndSetHeaderAsync( username);
 
         var initialLoginPutDto = new InitialLoginPutDto()
         {
@@ -184,7 +184,7 @@ public class FirstLoginTests(VitalApiFactory vaf) : TestBase(vaf)
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         responseContent.Should().Be("Last period start and end dates cannot be in the future.");
 
-        await ClearToken(_client);
+        await ClearToken();
         await RemoveUserAsync(username);
     }
 
@@ -193,7 +193,7 @@ public class FirstLoginTests(VitalApiFactory vaf) : TestBase(vaf)
     {
         const string username = "temp@application";
         await RegisterNewUserAndVerifyEmailAsync(username);
-        await AuthorizeUserAndSetHeaderAsync(_client, username);
+        await AuthorizeUserAndSetHeaderAsync( username);
 
         var initialLoginPutDto = new InitialLoginPutDto()
         {
@@ -212,7 +212,7 @@ public class FirstLoginTests(VitalApiFactory vaf) : TestBase(vaf)
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         responseContent.Should().Be("Last period start and end dates cannot be in the future.");
 
-        await ClearToken(_client);
+        await ClearToken();
         await RemoveUserAsync(username);
     }
 
@@ -221,7 +221,7 @@ public class FirstLoginTests(VitalApiFactory vaf) : TestBase(vaf)
     {
         const string username = "temp@application";
         await RegisterNewUserAndVerifyEmailAsync(username);
-        await AuthorizeUserAndSetHeaderAsync(_client, username);
+        await AuthorizeUserAndSetHeaderAsync( username);
 
         var initialLoginPutDto = new InitialLoginPutDto()
         {
@@ -240,7 +240,7 @@ public class FirstLoginTests(VitalApiFactory vaf) : TestBase(vaf)
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         responseContent.Should().Be("Last period start date must be before the end date.");
 
-        await ClearToken(_client);
+        await ClearToken();
         await RemoveUserAsync(username);
     }
 

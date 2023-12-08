@@ -25,7 +25,7 @@ public abstract class TestBase
         _userManager = _scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
     }
 
-    protected async Task AuthorizeUserAndSetHeaderAsync(HttpClient client, string email = "user@application",
+    protected async Task AuthorizeUserAndSetHeaderAsync(string email = "user@application",
         string password = "P@ssw0rd.+")
     {
         var loginRequestDto = new LoginRequestDto()
@@ -34,19 +34,19 @@ public abstract class TestBase
             Password = password
         };
 
-        var response = await client.PostAsJsonAsync("/identity/auth/login", loginRequestDto);
+        var response = await _client.PostAsJsonAsync("/identity/auth/login", loginRequestDto);
         var authResponse = await response.Content.ReadFromJsonAsync<AuthResponse>();
 
         if (authResponse != null)
         {
-            client.DefaultRequestHeaders.Remove("Authorization");
-            client.DefaultRequestHeaders.Add("Authorization", $"Bearer {authResponse.Token}");
+            _client.DefaultRequestHeaders.Remove("Authorization");
+            _client.DefaultRequestHeaders.Add("Authorization", $"Bearer {authResponse.Token}");
         }
     }
 
-    protected Task ClearToken(HttpClient client)
+    protected Task ClearToken()
     {
-        client.DefaultRequestHeaders.Remove("Authorization");
+        _client.DefaultRequestHeaders.Remove("Authorization");
         return Task.CompletedTask;
     }
 

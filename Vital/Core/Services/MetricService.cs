@@ -124,7 +124,7 @@ public class MetricService : IMetricService
             var isFlowMetric = metricNames.Values.Any(m => m.Contains("Flow"));
 
             // Saving data for the current cycle
-            if (cycle is not null && currentCycle is not null && cycle.Id == currentCycle.Id)
+            if (cycle is not null && cycle.Id == currentCycle.Id)
             {
                 await HandleCurrentCycle(userId, metrics, date, cycle, isFlowMetric);
             }
@@ -132,13 +132,13 @@ public class MetricService : IMetricService
             else if (cycle is not null)
             {
                 // If the cycle is not null, but it's not the current cycle, then we need to check if the metric being saved is 'Flow' and if so, 
-                // check if the metric's date is more than 2 days from the retrieved cycle's last 'Flow' metric date, which should create a new cycle
+                // check if the metric's date is more than 7 days from the retrieved cycle's last 'Flow' metric date, which should create a new cycle
                 await HandleExistingHistoricCycle(userId, metrics, isFlowMetric, cycle, date);
             } 
             
             else
             {
-                // This case means there is no historic cycle (which old enough to contain the logged date), so a new one needs to be created from the metric date up until the following cycle's start date
+                // This case means there is no historic cycle (old enough to contain the logged date), so a new one needs to be created from the metric date up until the following cycle's start date
                 await HandleNoHistoricCycle(userId, metrics, date, isFlowMetric);
             }
         }
@@ -155,11 +155,10 @@ public class MetricService : IMetricService
 
             var followingCycle = await _cycleRepository.GetFollowingCycle(userId, date);
             if (date.Date - lastFlowMetricDate.Date >
-                TimeSpan.FromDays(
-                    3)) // This case is for handling logging flow, which is less than 2 days from the next logged flow
+                TimeSpan.FromDays(8)) // This case is for handling logging flow, which is less than 7 days from the next logged flow
             {
-                // If the date is within 2 days of the following cycle's start date, merge the cycle with the following cycle
-                if (followingCycle is not null && followingCycle.StartDate - date <= TimeSpan.FromDays(2))
+                // If the date is within 7 days of the following cycle's start date, merge the cycle with the following cycle
+                if (followingCycle is not null && followingCycle.StartDate - date <= TimeSpan.FromDays(7))
                 {
                     // Update the start of following cycle
                     await UpdateCycle(followingCycle.Id, userId, date, followingCycle.EndDate);
@@ -202,9 +201,9 @@ public class MetricService : IMetricService
         var followingCycle = await _cycleRepository.GetFollowingCycle(userId, date);
 
         // When the following cycle contains no 'Flow', merge the new cycle with the following cycle (e.g. when the user logs a headache without logging a period)
-        // Also, when the start of the new cycle is less than 2 days from the following cycle's start date, merge the new cycle with the following cycle
+        // Also, when the start of the new cycle is less than 7 days from the following cycle's start date, merge the new cycle with the following cycle
         if (followingCycle is not null && (followingCycle.CycleDays.All(c => c.IsPeriod == false) ||
-                                           followingCycle.StartDate - date <= TimeSpan.FromDays(2)))
+                                           followingCycle.StartDate - date <= TimeSpan.FromDays(7)))
         {
             await UpdateCycle(followingCycle.Id, userId, date, followingCycle.EndDate);
 
