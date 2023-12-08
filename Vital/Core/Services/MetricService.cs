@@ -200,22 +200,27 @@ public class MetricService : IMetricService
         Cycle cycle;
         var followingCycle = await _cycleRepository.GetFollowingCycle(userId, date);
 
+        // Because the user needs to have at least their current cycle, before they can use the rest of the application
+        if (followingCycle is null) 
+        {
+            throw new BadRequestException("Cannot create a historic cycle without at least one existing cycle.");
+
+        }
+        
         // When the following cycle contains no 'Flow', merge the new cycle with the following cycle (e.g. when the user logs a headache without logging a period)
         // Also, when the start of the new cycle is less than 7 days from the following cycle's start date, merge the new cycle with the following cycle
-        if (followingCycle is not null && (followingCycle.CycleDays.All(c => c.IsPeriod == false) ||
-                                           followingCycle.StartDate - date <= TimeSpan.FromDays(7)))
+        if (followingCycle.CycleDays.All(c => c.IsPeriod == false) || followingCycle.StartDate - date <= TimeSpan.FromDays(7))
         {
             await UpdateCycle(followingCycle.Id, userId, date, followingCycle.EndDate);
-
-            // If the following cycle contains any metrics, which now belong to the new cycle, update their cycle id
-            await _calendarDayRepository.UpdateCycleIds(followingCycle.Id, followingCycle.Id, followingCycle.StartDate,
-                followingCycle.EndDate ?? DateTimeOffset.UtcNow);
-
             cycle = followingCycle;
         }
         else
         {
             cycle = await CreateCycle(userId, date, followingCycle?.StartDate.AddDays(-1));
+            
+            // If the following cycle contains any metrics, which now belong to the new cycle, update their cycle id
+            await _calendarDayRepository.UpdateCycleIds(followingCycle!.Id, cycle.Id, cycle.StartDate,
+                cycle.EndDate!.Value);
         }
 
         var calendarDay = await GetOrCreateCalendarDay(userId, date, cycle.Id);

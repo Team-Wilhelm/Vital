@@ -11,7 +11,6 @@ using Models.Days;
 using Models.Dto.Metrics;
 using Models.Identity;
 using Models.Util;
-using Newtonsoft.Json;
 
 namespace IntegrationTests.Tests;
 
@@ -56,10 +55,10 @@ public class MetricTests(VitalApiFactory vaf) : TestBase(vaf)
         var expected = _dbContext.CalendarDayMetric
             .Include(cdm => cdm.Metrics)
             .Include(cdm => cdm.MetricValue)
-            .Where(cdm => cdm.CalendarDay.Date.Date == utcDate.Date
+            .Where(cdm => cdm.CalendarDay!.Date.Date == utcDate.Date
                           && cdm.CalendarDay.UserId == user.Id)
             .ToList();
-        await AuthorizeUserAndSetHeaderAsync(user.Email);
+        await AuthorizeUserAndSetHeaderAsync(user.Email!);
 
         // Act
         var response = await _client.GetAsync($"/Metric/{date}");
@@ -329,6 +328,107 @@ public class MetricTests(VitalApiFactory vaf) : TestBase(vaf)
         await RemoveUserAsync("temp@application");
     }
 
+    [Fact]
+    [Description("If a user logs a non-flow metric before an existing cycle, the following cycle should be extended.")]
+    public async Task Logging_Cramps_Should_Extend_Following_Cycle()
+    {
+        try
+        {
+            // Arrange
+            var user = await RegisterUserAndCreateCycle("temp@application");
+            await AuthorizeUserAndSetHeaderAsync("temp@application");
+            var cycle = await _dbContext.Cycles.FirstAsync(c => c.UserId == user.Id);
+            var dateBeforeCurrentCycle = cycle.StartDate.AddDays(-7);
+
+            var metricsId = (await _dbContext.Metrics.FirstAsync(m => m.Name == "Cramps")).Id;
+            var metricRegisterMetricDto = new MetricRegisterMetricDto()
+            {
+                CreatedAt = dateBeforeCurrentCycle,
+                MetricsId = metricsId
+            };
+
+            // Act
+            var response =
+                await _client.PostAsJsonAsync($"/Metric",
+                    new List<MetricRegisterMetricDto> { metricRegisterMetricDto });
+            _dbContext.ChangeTracker.Clear();
+
+            // Assert
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+            // Check that the cycle was extended
+            (await _dbContext.Cycles.Where(c => c.UserId == user.Id).CountAsync()).Should().Be(1);
+            var updatedCycle = await _dbContext.Cycles.FirstAsync(c => c.UserId == user.Id);
+            updatedCycle.StartDate.Date.Should().Be(dateBeforeCurrentCycle.Date);
+            updatedCycle.EndDate.Should().BeNull();
+        } finally
+        {
+            await Cleanup("temp@application");
+        }
+    }
+    
+    [Fact]
+    [Description("If a user logs a non-flow metric before an existing cycle, the following cycle should be extended, but if user then logs flow before that," +
+                 "a new cycle should be created and it should encapsulate the non-flow metric.")]
+    public async Task Logging_Flow_Should_Update_Metric_Cycle_Link()
+    {
+        try
+        {
+            // Arrange
+            var user = await RegisterUserAndCreateCycle("temp@application");
+            await AuthorizeUserAndSetHeaderAsync("temp@application");
+            var cycle = await _dbContext.Cycles.FirstAsync(c => c.UserId == user.Id);
+            var crampsMetricLogDate = cycle.StartDate.AddDays(-7);
+
+            var calendarDay = new CycleDay()
+            {
+                Id = Guid.NewGuid(),
+                CycleId = cycle.Id,
+                Date = crampsMetricLogDate,
+                IsPeriod = false,
+                UserId = user.Id
+            };
+            _dbContext.CycleDays.Add(calendarDay);
+
+            var metric = await _dbContext.Metrics.FirstAsync(m => m.Name == "Cramps");
+            var calendarDayMetric = new CalendarDayMetric()
+            {
+                Id = Guid.NewGuid(),
+                CalendarDayId = calendarDay.Id,
+                CreatedAt = crampsMetricLogDate,
+                MetricsId = metric.Id
+            };
+            _dbContext.CalendarDayMetric.Add(calendarDayMetric);
+            await _dbContext.SaveChangesAsync();
+
+            var flowMetricLogDate = cycle.StartDate.AddDays(-14);
+            var flowMetricRegisterMetricDto = await GetRegisterMetricDtoFlow(flowMetricLogDate);
+            // Act
+            var response = await _client.PostAsJsonAsync("/Metric",
+                new List<MetricRegisterMetricDto>() { flowMetricRegisterMetricDto });
+            _dbContext.ChangeTracker.Clear();
+            var newlyCreatedCycle = await _dbContext.Cycles.FirstAsync(c => c.UserId == user.Id && c.EndDate != null);
+            
+            // Assert
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            (await _dbContext.Cycles.Where(c => c.UserId == user.Id).CountAsync()).Should().Be(2);
+            newlyCreatedCycle.StartDate.Date.Should().Be(cycle.StartDate.Date.AddDays(-14));
+            newlyCreatedCycle.EndDate!.Value.Date.Should().Be(cycle.StartDate.Date.AddDays(-1));
+
+            calendarDay =
+                await _dbContext.CycleDays
+                    .Include(cycleDay => cycleDay.Cycle!)
+                    .FirstAsync(cd => cd.UserId == user.Id && cd.Date.UtcDateTime.Date == crampsMetricLogDate.UtcDateTime.Date);
+            calendarDay.Cycle!.Id.Should().Be(newlyCreatedCycle.Id);
+
+        } finally
+        {
+            await Cleanup("temp@application");
+        }
+    }
+    
+
+    #region Utility Methods
     private async Task<MetricRegisterMetricDto> GetRegisterMetricDtoFlow(DateTimeOffset? createdAt = null)
     {
         createdAt ??= DateTimeOffset.UtcNow;
@@ -388,4 +488,6 @@ public class MetricTests(VitalApiFactory vaf) : TestBase(vaf)
         await ClearToken();
         await RemoveUserAsync(email);
     }
+
+    #endregion
 }
