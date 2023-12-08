@@ -4,12 +4,14 @@ import {environment} from "../../../environments/environment";
 import {HttpClient} from "@angular/common/http";
 import {firstValueFrom} from "rxjs";
 import {LoginDto, RegisterDto} from "../interfaces/utilities.interface";
+import HttpService from "./http.service";
+import {ToastService} from "./toast.service";
 
 @Injectable()
 export class TokenService {
   private readonly storage: Storage = window.sessionStorage;
 
-  constructor(public jwtHelper: JwtHelperService, private httpClient: HttpClient) {
+  constructor(public jwtHelper: JwtHelperService, private httpClient: HttpClient, private httpService: HttpService, private toastService: ToastService) {
   }
 
   setToken(token: string) {
@@ -37,15 +39,18 @@ export class TokenService {
       this.setToken(token);
     } catch (e : any) {
       if (e.status === 400) {
+        this.toastService.show('Invalid credentials', 'Error', 'error');
         throw new Error('Invalid credentials');
+      }else if(e.status === 500){
+        this.toastService.show('Something went wrong', 'Error', 'error');
+        throw new Error('Something went wrong');
       }
     }
   }
 
   //TODO: try catch and user feedback
   public async register(registerDto: RegisterDto) {
-    const request = this.httpClient.post<any>(environment.baseUrl + '/identity/auth/register', registerDto);
-    await firstValueFrom(request);
+    await this.httpService.post('/identity/auth/register', registerDto, 'Confirm your email')
   }
 
   public logout() {

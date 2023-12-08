@@ -9,12 +9,14 @@ import {ForgotPasswordDto} from "../interfaces/account/forgotPasswordDto.interfa
 import {VerifyRequestDto} from "../interfaces/account/verifyEmailDto.interface";
 import {ToastService} from "./toast.service";
 import {Router} from "@angular/router";
+import HttpService from "./http.service";
+import {addWarning} from "@angular-devkit/build-angular/src/utils/webpack-diagnostics";
 
 @Injectable({
   providedIn: 'root'
 })
 export default class AccountService {
-  constructor(private httpClient: HttpClient, private toastService: ToastService, private router: Router) {
+  constructor(private httpClient: HttpClient, private toastService: ToastService, private router: Router, private httpService: HttpService) {
   }
 
   public async setInitialLoginData(loginData: InitialLoginPostDto): Promise<void> {
@@ -38,38 +40,20 @@ export default class AccountService {
   }
 
   public async verifyEmail(dto: VerifyRequestDto): Promise<void> {
-    try {
-      const response = await firstValueFrom(this.httpClient.post(environment.baseUrl + '/Identity/Account/Verify-Email', dto, {observe: 'response'}));
-      if (response.status === 200) {
-        this.toastService.show('Email verified', 'Your email was successfully verified', 'success', 5000);
-      }
-    } catch (error:any) {
-      this.toastService.show(error.error.detail, 'Error', 'error', 5000);
-    }
+    await this.httpService.post('/Identity/Account/Verify-Email', dto, 'Email Verified');
+
     await this.router.navigateByUrl('/')
   }
 
   public async forgotPassword(dto: ForgotPasswordDto): Promise<void> {
-    try {
-      const response = await firstValueFrom(this.httpClient.post(environment.baseUrl + '/Identity/Account/Forgot-Password', dto, {observe: 'response'}));
-      if (response.status === 200) {
-        this.toastService.show('Password reset link sent', 'Check your email for a password reset link', 'success', 5000);
-      }
-    } catch (error:any) {
-      this.toastService.show(error.error.detail, 'Error', 'error', 5000);
-    }
+    await this.httpService.post('/Identity/Account/Forgot-Password', dto, 'Password reset link sent, Check your email for a password reset link')
+
     await this.router.navigateByUrl('/')
   }
 
   public async resetPassword(dto: ResetPasswordDto): Promise<void> {
-    try {
-      const response = await firstValueFrom(this.httpClient.post(environment.baseUrl + '/Identity/Account/Reset-Password', dto, {observe: 'response'}));
-      if (response.status === 200) {
-        this.toastService.show('Password reset', 'Your password was successfully reset', 'success', 5000);
-      }
-    } catch (error:any) {
-      this.toastService.show(error.error.detail, 'Error', 'error', 5000);
-    }
+    await this.httpService.post('/Identity/Account/Reset-Password', dto, 'Your password was successfully reset');
+
     await this.router.navigateByUrl('/')
   }
 }

@@ -34,7 +34,7 @@ export class RegisterCardComponent implements OnDestroy {
     specialCondition: false
   };
 
-  constructor(private tokenService: TokenService, private accountService: AccountService) {
+  constructor(private tokenService: TokenService, private accountService: AccountService, private router: Router) {
     this.subscribeToPasswordChanges();
     this.subscribeToEmailChanges();
 
@@ -51,6 +51,7 @@ export class RegisterCardComponent implements OnDestroy {
   async register(): Promise<void> {
     if (this.registerForm.invalid) return;
     await this.tokenService.register(this.registerForm.value as RegisterDto);
+    await this.router.navigateByUrl('/login')
   }
 
   passwordMatchValidator(control: AbstractControl) {
