@@ -42,9 +42,11 @@ public class AccountController : BaseController
         if (user is not null)
         {
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            user.ResetPasswordTokenExpirationDate = DateTime.UtcNow.AddHours(24);
+            await _userManager.UpdateAsync(user);
             await _emailService.SendForgotPasswordEmailAsync(user, token, cancellationToken);
+            
         }
-
         return Ok();
     }
 
@@ -63,15 +65,24 @@ public class AccountController : BaseController
 
         var user = await _userManager.FindByIdAsync(dto.UserId.ToString());
 
-        if (user is not null)
+        if (user is null)
         {
-            var result = await _userManager.ResetPasswordAsync(user, dto.Token, dto.NewPassword);
-
-            if (!result.Succeeded)
-            {
-                throw new ResetPasswordException(result.Errors?.FirstOrDefault()?.Description ?? "");
-            }
+            throw new ResetPasswordException("User not found.");
         }
+
+        if (user.ResetPasswordTokenExpirationDate is null || user.ResetPasswordTokenExpirationDate.HasValue && user.ResetPasswordTokenExpirationDate.Value < DateTime.UtcNow)
+        {
+            throw new ResetPasswordException("Link has expired.");
+        }
+
+        var result = await _userManager.ResetPasswordAsync(user, dto.Token, dto.NewPassword);
+
+        if (!result.Succeeded)
+        {
+            throw new ResetPasswordException(result.Errors?.FirstOrDefault()?.Description ?? "Something went wrong.");
+        }
+        
+        user.ResetPasswordTokenExpirationDate = null;
 
         return Ok();
     }
@@ -91,17 +102,27 @@ public class AccountController : BaseController
     {
         var user = await _userManager.FindByIdAsync(dto.UserId.ToString());
 
-        if (user is not null)
+        if (user is null)
         {
-            var result = await _userManager.ConfirmEmailAsync(user, dto.Token);
-
-            if (result.Succeeded)
-            {
-                return Ok();
-            }
+            throw new EmailVerifyException("User not found.");
         }
 
-        throw new EmailVerifyException();
+        if (user.VerifyEmailTokenExpirationDate.HasValue && user.VerifyEmailTokenExpirationDate.Value < DateTime.UtcNow)
+        {
+            throw new EmailVerifyException("Link has expired.");
+        }
+
+        if (user.EmailConfirmed)
+        {
+            throw new EmailVerifyException("Email already verified.");
+        }
+
+        var result = await _userManager.ConfirmEmailAsync(user, dto.Token);
+
+        if (!result.Succeeded) throw new EmailVerifyException("Something went wrong.");
+        user.VerifyEmailTokenExpirationDate = null;
+        await _userManager.UpdateAsync(user);
+        return Ok();
     }
 
     /// <summary>
