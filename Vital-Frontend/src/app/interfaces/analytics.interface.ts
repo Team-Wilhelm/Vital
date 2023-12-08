@@ -1,7 +1,7 @@
 export interface CycleAnalyticsDto {
-  StartDate: Date;
-  EndDate: Date;
-  PeriodDays: Date[];
+  startDate: Date;
+  endDate: Date;
+  periodDays: Date[];
 }
 
 export interface PeriodCycleStatsDto {
