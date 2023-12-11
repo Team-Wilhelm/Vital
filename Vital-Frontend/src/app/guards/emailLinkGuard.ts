@@ -1,28 +1,42 @@
-import { ActivatedRouteSnapshot, Router } from '@angular/router';
+import {ActivatedRoute, ActivatedRouteSnapshot, Router} from '@angular/router';
 import {inject} from '@angular/core';
 import AccountService from "../services/account.service";
+import {firstValueFrom} from "rxjs";
 
 
 export const emailLinkGuard = async () => {
-  const router = inject(Router);
-  const route = inject(ActivatedRouteSnapshot);
-  const accountService = inject(AccountService);
+  return new Promise(async (resolve, reject) => {
+    const router = inject(Router);
+    const activatedRoute = inject(ActivatedRoute);
+    const route: ActivatedRouteSnapshot = activatedRoute.snapshot;
+    const accountService = inject(AccountService);
 
-  const userId = route.queryParams['userId'];
-  const token = route.queryParams['token'];
-  const verifyRequestDto = { userId: userId, token: token };
+    const params = await firstValueFrom(activatedRoute.queryParams);
+    console.log(params);
 
-  if (route.queryParams['userId'] && route.queryParams['token']) {
-    if (route.url[0].path === 'verify-email' && await accountService.isValidTokenForUser(verifyRequestDto)) {
-      router.parseUrl('/verify-email');
-      return true;
-    }
-    if (route.url[0].path === 'reset-password' && await accountService.isValidTokenForUser(verifyRequestDto)) {
-      router.parseUrl('/reset-password');
-      return true;
-    }
-  }
+    activatedRoute.queryParams.subscribe(async params => {
+      console.log(params);
+      const userId = params['userId'];
+      const token = decodeURI(params['token']);
+      const verifyRequestDto = {userId: userId, token: token};
+      console.log(verifyRequestDto);
 
-  // Redirect to the login page
-  return router.parseUrl('/login');
-};
+     if (userId && token) {
+        const isTokenValid = await accountService.isValidTokenForUser(verifyRequestDto);
+        if (route.url[0].path === 'verify-email' && isTokenValid) {
+          router.parseUrl('/verify-email');
+          resolve(true);
+        }
+        else if (route.url[0].path === 'reset-password' && isTokenValid) {
+          router.parseUrl('/reset-password');
+          resolve(true);
+        } else {
+          resolve(router.parseUrl('/login'));
+        }
+      }
+
+      // Redirect to the login page
+      resolve(router.parseUrl('/login'));
+    });
+  });
+}
