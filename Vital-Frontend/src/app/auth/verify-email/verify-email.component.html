@@ -10,6 +10,8 @@
         xl:absolute lg:top-[20%] xl:right-[10%]
         xl:w-[30rem] xl:h-[30rem] xl:rounded-2xl xl:shadow-xl">
 
+      <p>Please verify your Email below in order to use Vital</p>
+
       <form (ngSubmit)="verifyEmail()" #verifyEmailForm="ngForm">
         <div class="form-group hidden">
           <label for="userId">User ID</label>
@@ -31,7 +33,7 @@
                  class="form-control">
         </div>
 
-        <button type="submit" class="btn btn-primary"
+        <button type="submit" class="btn btn-primary w-full mb-10"
                 [disabled]="!verifyEmailForm.form.valid">
           Submit
         </button>

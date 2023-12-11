@@ -12,4 +12,7 @@ public class ApplicationUser : IdentityUser<Guid>
 
     [Range(0.0, Double.MaxValue, ErrorMessage = "The field {0} must be greater than {1}.")]
     public float? PeriodLength { get; set; } = 5;
+    
+    public DateTimeOffset? ResetPasswordTokenExpirationDate { get; set; } 
+    public DateTimeOffset? VerifyEmailTokenExpirationDate { get; set; }
 }
