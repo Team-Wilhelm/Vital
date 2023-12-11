@@ -67,7 +67,7 @@ public class AccountController : BaseController
 
         if (user is null)
         {
-            throw new ResetPasswordException("User not found.");
+            throw new ResetPasswordException("Something went wrong.");
         }
 
         if (user.ResetPasswordTokenExpirationDate is null || user.ResetPasswordTokenExpirationDate.HasValue && user.ResetPasswordTokenExpirationDate.Value < DateTime.UtcNow)
@@ -77,13 +77,40 @@ public class AccountController : BaseController
 
         var result = await _userManager.ResetPasswordAsync(user, dto.Token, dto.NewPassword);
 
-        if (!result.Succeeded)
+        if (result.Succeeded)
         {
-            throw new ResetPasswordException(result.Errors?.FirstOrDefault()?.Description ?? "Something went wrong.");
+            user.ResetPasswordTokenExpirationDate = null;
         }
         
-        user.ResetPasswordTokenExpirationDate = null;
+        return Ok();
+    }
+    
+    /// <summary>
+    /// Enables a logged in user to change their password as long as they know their existing password
+    /// </summary>
+    /// <param name="dto"></param>
+    /// <returns></returns>
+    /// <exception cref="ResetPasswordException"></exception>
+    [HttpPost("change-password")]
+    public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto dto)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
 
+        var user = await _userManager.FindByIdAsync(_currentContext.UserId!.Value.ToString());
+
+        if (user is null)
+        {
+            throw new ResetPasswordException("Something went wrong.");
+        }
+        
+        if(await _userManager.CheckPasswordAsync(user, dto.OldPassword))
+        {
+            await _userManager.ChangePasswordAsync(user, dto.OldPassword, dto.NewPassword);
+        }
+        
         return Ok();
     }
 
