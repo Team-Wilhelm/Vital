@@ -1,4 +1,4 @@
-﻿namespace Vital.Models.Exception;
+﻿namespace Models.Exception;
 
 public class AuthException : AppException
 {

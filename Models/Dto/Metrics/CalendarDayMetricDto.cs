@@ -2,10 +2,10 @@
 
 public class CalendarDayMetricDto
 {
-    public Guid Id { get; set; }
-    public DateTimeOffset CreatedAt { get; set; }
-    public Guid CalendarDayId { get; set; }
-    public Guid MetricsId { get; set; }
-    public Models.Metrics Metrics { get; set; }
-    public Guid? MetricValueId { get; set; }
+    public Guid Id { get; init; }
+    public DateTimeOffset CreatedAt { get; init; }
+    public Guid CalendarDayId { get; init; }
+    public Guid MetricsId { get; init; }
+    public Models.Metrics Metrics { get; init; } = null!;
+    public Guid? MetricValueId { get; init; }
 }

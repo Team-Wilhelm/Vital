@@ -23,10 +23,10 @@ public class PaginatedList<T>
 
     public bool HasNextPage => PageIndex < TotalPages;
 
-    public static async Task<PaginatedList<T>> CreateAsync(
+    public static Task<PaginatedList<T>> CreateAsync(
         IEnumerable<T> items, int pageIndex, int pageSize, int count)
     {
-        return new PaginatedList<T>(items.ToList(), count, pageIndex, pageSize);
+        return Task.FromResult(new PaginatedList<T>(items.ToList(), count, pageIndex, pageSize));
     }
 
     public static async Task<PaginatedList<T>> CreateAsync(

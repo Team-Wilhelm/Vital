@@ -8,7 +8,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Models.Dto.InitialLogin;
 using Models.Identity;
-using Xunit.Abstractions;
 
 namespace IntegrationTests.Tests;
 

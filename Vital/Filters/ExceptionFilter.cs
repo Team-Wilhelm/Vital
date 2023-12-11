@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Vital.Models.Exception;
+using Models.Exception;
 
 namespace Vital.Filters;
 
@@ -18,7 +18,7 @@ public class ExceptionFilter : IAsyncExceptionFilter
     public async Task OnExceptionAsync(ExceptionContext context)
     {
         context.ExceptionHandled = true;
-        var exception = context!.Exception;
+        var exception = context.Exception;
 
         string errorCode;
         int statusCode;

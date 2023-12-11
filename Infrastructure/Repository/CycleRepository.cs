@@ -81,7 +81,7 @@ public class CycleRepository : ICycleRepository
         var sql =
             @"SELECT * FROM ""Cycles"" WHERE ""UserId""=@UserId AND ""EndDate"" IS NOT NULL ORDER BY ""StartDate"" DESC LIMIT @NumberOfCycles";
         var cycles = await _db.QueryAsync<Cycle>(sql, new { UserId = userId, NumberOfCycles = numberOfCycles - 1 });
-        
+
         var cycleList = cycles.ToList();
         var currentCycle = await GetCurrentCycle(userId);
         if (currentCycle != null)

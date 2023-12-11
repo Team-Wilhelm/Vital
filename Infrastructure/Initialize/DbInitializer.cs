@@ -230,7 +230,7 @@ public class DbInitializer
 
         #region Add more cycles for user 1
 
-// Cycle 1 - newest
+        // Cycle 1 - newest
         var cycle = new Cycle()
         {
             Id = Guid.NewGuid(),
@@ -287,8 +287,8 @@ public class DbInitializer
                 }
             }
         });
-        
-// Cycle 3
+
+        // Cycle 3
         var cycle3 = new Cycle()
         {
             Id = Guid.NewGuid(),

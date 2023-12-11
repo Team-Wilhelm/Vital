@@ -36,7 +36,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 });
 
 // Use PostgreSQL with Dapper for working with data
-builder.Services.AddScoped<IDbConnection>(container =>
+builder.Services.AddScoped<IDbConnection>(_ =>
 {
     var connection = new NpgsqlConnection(connectionString ?? throw new Exception("Connection string cannot be null"));
     connection.Open();
