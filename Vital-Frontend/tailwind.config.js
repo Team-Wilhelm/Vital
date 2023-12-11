@@ -34,6 +34,7 @@ module.exports = {
         'non-period-day-border':'#EEAF3A',
         /*Calendar*/
         'selected-day':'#edebed',
+        'app-background':'#F6F3F7'
       },
     },
     container: {

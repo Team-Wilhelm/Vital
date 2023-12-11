@@ -56,7 +56,7 @@ export class CardComponent implements OnInit {
     if (this.cardColor) {
       this.classList.push(this.cardColor);
     } else {
-      this.classList.push('bg-base-100');
+      this.classList.push('bg-base-200');
     }
 
     if (this.redirectLink) {
