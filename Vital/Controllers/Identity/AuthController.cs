@@ -132,4 +132,26 @@ public class AuthController : BaseController
         var user = await _userManager.Users.FirstOrDefaultAsync(u => u.UserName == username);
         return Ok(user != null);
     }
+
+    [HttpGet("valid-token")]
+    public async Task<IActionResult> IsValidTokenForUser([FromRoute] string userId, [FromRoute] string token)
+    {
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user == null)
+        {
+            return Ok(false);
+        }
+
+        return Ok(_userManager.VerifyUserTokenAsync(
+            user, 
+            _userManager.Options.Tokens.EmailConfirmationTokenProvider, 
+            "EmailConfirmation", 
+            token).Result 
+                  || 
+                  _userManager.VerifyUserTokenAsync(
+                      user, 
+                      _userManager.Options.Tokens.PasswordResetTokenProvider, 
+                      "ResetPassword", 
+                      token).Result);
+    }
 }
