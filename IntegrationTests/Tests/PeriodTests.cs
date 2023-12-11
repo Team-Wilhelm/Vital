@@ -23,7 +23,7 @@ public class PeriodTests(VitalApiFactory vaf) : TestBase(vaf)
     public async Task Get_Predicted_Period_OnGoing_Period_Success()
     {
         var user = _userManager.Users.First(u => u.Email == "user2@application");
-        await AuthorizeUserAndSetHeaderAsync( user.Email);
+        await AuthorizeUserAndSetHeaderAsync(user.Email!);
 
         // The user has the average period length of 5 days and logged 2, so the predicted period should be for the next 3 days
         var response = await _client.GetAsync($"/cycle/predicted-period");
@@ -48,7 +48,7 @@ public class PeriodTests(VitalApiFactory vaf) : TestBase(vaf)
     public async Task Get_Predicted_Period_Future_Success()
     {
         var user = _userManager.Users.First(u => u.Email == "user@application");
-        await AuthorizeUserAndSetHeaderAsync( user.Email);
+        await AuthorizeUserAndSetHeaderAsync(user.Email!);
 
         // The user has already logged all of their period days for the current cycle, so the predicted period should be for the next 3 months
         var response = await _client.GetAsync("/cycle/predicted-period");
@@ -58,7 +58,7 @@ public class PeriodTests(VitalApiFactory vaf) : TestBase(vaf)
         actual.Should().HaveCount((int)Math.Floor(user.PeriodLength!.Value) * 3);
 
         var startDate = _dbContext.Cycles.First(c => c.Id == user.CurrentCycleId).StartDate.Date;
-        AssertFutureCyclePredictions(0, (int)Math.Floor(user.PeriodLength!.Value), startDate, actual);
+        AssertFutureCyclePredictions(0, (int)Math.Floor(user.PeriodLength!.Value), startDate, actual!);
         
         await ClearToken();
     }
@@ -77,7 +77,7 @@ public class PeriodTests(VitalApiFactory vaf) : TestBase(vaf)
     {
         var user = _userManager.Users.First(u => u.Email == "user2@application");
         var cycle = _dbContext.Cycles.First(c => c.UserId == user.Id);
-        await AuthorizeUserAndSetHeaderAsync( user.Email);
+        await AuthorizeUserAndSetHeaderAsync(user.Email!);
 
         var response = await _client.GetAsync("/cycle/period-cycle-stats");
         var actual = await response.Content.ReadFromJsonAsync<PeriodCycleStatsDto>();
@@ -86,7 +86,7 @@ public class PeriodTests(VitalApiFactory vaf) : TestBase(vaf)
         actual.Should().NotBeNull();
         actual!.AverageCycleLength.Should().Be((int)Math.Floor(user.CycleLength!.Value));
         actual.AveragePeriodLength.Should().Be((int)Math.Floor(user.PeriodLength!.Value));
-        actual.CurrentCycleLength.Should().Be(DateTime.Now.Subtract(cycle.StartDate.Date).Days);
+        actual.CurrentCycleLength.Should().Be((DateTimeOffset.UtcNow - cycle.StartDate).Days);
         
         await ClearToken();
     }
@@ -104,7 +104,7 @@ public class PeriodTests(VitalApiFactory vaf) : TestBase(vaf)
     public async Task Set_Period_Cycle_Length_Success()
     {
         var user = _userManager.Users.First(u => u.Email == "user2@application");
-        await AuthorizeUserAndSetHeaderAsync( user.Email);
+        await AuthorizeUserAndSetHeaderAsync(user.Email!);
 
         var response = await _client.PostAsJsonAsync("/cycle/period-cycle-length", new PeriodAndCycleLengthDto
         {
@@ -130,7 +130,7 @@ public class PeriodTests(VitalApiFactory vaf) : TestBase(vaf)
     public async Task Set_Period_Negative_Period_Length()
     {
         var user = _userManager.Users.First(u => u.Email == "user2@application");
-        await AuthorizeUserAndSetHeaderAsync( user.Email);
+        await AuthorizeUserAndSetHeaderAsync(user.Email!);
         
         var response = await _client.PostAsJsonAsync("/cycle/period-cycle-length", new PeriodAndCycleLengthDto
         {
@@ -148,7 +148,7 @@ public class PeriodTests(VitalApiFactory vaf) : TestBase(vaf)
     public async Task Set_Period_TooHigh_Period_Length()
     {
         var user = _userManager.Users.First(u => u.Email == "user2@application");
-        await AuthorizeUserAndSetHeaderAsync( user.Email);
+        await AuthorizeUserAndSetHeaderAsync(user.Email!);
         
         var response = await _client.PostAsJsonAsync("/cycle/period-cycle-length", new PeriodAndCycleLengthDto
         {
@@ -166,7 +166,7 @@ public class PeriodTests(VitalApiFactory vaf) : TestBase(vaf)
     public async Task Set_Period_Negative_Cycle_Length()
     {
         var user = _userManager.Users.First(u => u.Email == "user2@application");
-        await AuthorizeUserAndSetHeaderAsync( user.Email);
+        await AuthorizeUserAndSetHeaderAsync(user.Email!);
         
         var response = await _client.PostAsJsonAsync("/cycle/period-cycle-length", new PeriodAndCycleLengthDto
         {
@@ -184,7 +184,7 @@ public class PeriodTests(VitalApiFactory vaf) : TestBase(vaf)
     public async Task Set_Period_TooHigh_Cycle_Length()
     {
         var user = _userManager.Users.First(u => u.Email == "user2@application");
-        await AuthorizeUserAndSetHeaderAsync( user.Email);
+        await AuthorizeUserAndSetHeaderAsync(user.Email!);
         
         var response = await _client.PostAsJsonAsync("/cycle/period-cycle-length", new PeriodAndCycleLengthDto
         {
