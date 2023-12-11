@@ -4,10 +4,10 @@ lg:gap-4
 
 flex flex-col">
   <div class="col-span-4 grid grid-cols-3 order-3 mb-3
-   lg:mb-0 lg:order-none lg:gap-4 ">
+   lg:mb-0 lg:order-none lg:gap-4">
     <div class="col-span-1">
       <!-- Upcoming period -->
-      <stat-card class="lg:col-span-1 hidden lg:block lg:order-none stats shadow mb-5" cardColor="bg-primary"
+      <stat-card class="lg:col-span-1 hidden lg:block lg:order-none stats shadow-lg mb-5" cardColor="bg-primary"
                  [redirectLink]="'/analytics'">
         <div class="stat-title break-normal">Estimated next period in</div>
         <div class="stat-value">{{ nextPeriodInDays }} days</div>
@@ -23,16 +23,15 @@ flex flex-col">
     </div>
     <!-- Metrics -->
     <app-card cardTitle="Metrics"
-              class="lg:col-span-2
-              h-full justify-between overflow-y-auto card shadow
-              col-span-3"
+              class="col-span-3 h-full justify-between overflow-y-hidden shadow-lg
+              lg:col-span-2"
               [hasPlusButton]="true"
               (plusButtonClicked)="redirectToMetrics()">
-      <div *ngFor="let calendarDayMetric of metricService.loggedMetrics; index as i"
-           class="flex justify-between items-center">
-        <metric-list-item [calendarDayMetric]="calendarDayMetric"
+      <div class="flex flex-col lg:max-h-[280px] xl:max-h-[335px] 2xl:max-h-[385px] overflow-y-auto">
+        <metric-list-item *ngFor="let calendarDayMetric of metricService.loggedMetrics; index as i"
+                          [calendarDayMetric]="calendarDayMetric"
                           [listIndex]="i"
-                          class="w-full">
+                          class="w-full mb-3">
         </metric-list-item>
       </div>
       <p *ngIf="metricService.loggedMetrics.length === 0">No metrics logged for today</p>
@@ -47,7 +46,7 @@ flex flex-col">
 
   <!-- Week overview -->
   <app-card cardTitle="Week overview"
-            class="order-1 max-h-64 mb-3 overflow-x-hidden card shadow
+            class="order-1 max-h-64 mb-3 overflow-x-hidden card shadow-lg
                     lg:order-none lg:col-span-4 lg:row-span-1 lg:mb-0 relative">
     <app-current-cycle>
     </app-current-cycle>

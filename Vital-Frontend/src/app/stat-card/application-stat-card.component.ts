@@ -28,7 +28,7 @@ export class ApplicationStatCardComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.classList.push('card', 'card-compact', 'lg:card-normal', 'h-full', 'w-full', 'shadow');
+    this.classList.push('card', 'card-compact', 'lg:card-normal', 'h-full', 'w-full', 'shadow-lg');
 
     if (this.cardBackground) {
       this.classList.push(this.cardBackground);
