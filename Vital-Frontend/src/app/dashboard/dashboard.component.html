@@ -27,7 +27,8 @@ flex flex-col">
               lg:col-span-2"
               [hasPlusButton]="true"
               (plusButtonClicked)="redirectToMetrics()">
-      <div class="flex flex-col lg:max-h-[280px] xl:max-h-[335px] 2xl:max-h-[385px] overflow-y-auto">
+      <div class="flex flex-col
+     max-h-[280px] xl:max-h-[335px] 2xl:max-h-[385px] overflow-y-auto">
         <metric-list-item *ngFor="let calendarDayMetric of metricService.loggedMetrics; index as i"
                           [calendarDayMetric]="calendarDayMetric"
                           [listIndex]="i"
