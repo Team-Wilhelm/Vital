@@ -2,6 +2,7 @@
 using System.Net.Http.Json;
 using FluentAssertions;
 using IntegrationTests.Setup;
+using Microsoft.EntityFrameworkCore;
 using Models.Dto.Identity.Account;
 using Models.Identity;
 
@@ -297,7 +298,6 @@ public class AccountTests(VitalApiFactory vaf) : TestBase(vaf)
     {
         var changePasswordDto = new ChangePasswordDto()
         {
-            User = null,
             OldPassword = "oldPassword",
             NewPassword = "newPassword"
         };
@@ -311,15 +311,18 @@ public class AccountTests(VitalApiFactory vaf) : TestBase(vaf)
     [Fact]
     public async Task Change_Password_Valid_Old_Password_Changes_Password()
     {
-        var user = new ApplicationUser()
+        await Utilities.ClearToken(_client);
+        // Arrange
+        var newUser = new ApplicationUser()
         {
             Email = "change-password@app.com",
             UserName = "change-password@app.com",
             EmailConfirmed = true
         };
         var oldPassword = "P@ssw0rd.+";
-        await _userManager.CreateAsync(user, oldPassword);
-        
+        await _userManager.CreateAsync(newUser, oldPassword);
+        var user = await _dbContext.Users.FirstAsync(u => u.Email == "change-password@app.com");
+        await Utilities.AuthorizeUserAndSetHeaderAsync(_client, user.Email!);
 
         var changePasswordDto = new ChangePasswordDto()
         {
@@ -327,22 +330,31 @@ public class AccountTests(VitalApiFactory vaf) : TestBase(vaf)
             NewPassword = "NewP@ssw0rd.+"
         };
 
+        // Act
         var response =
             await _client.PostAsync("/Identity/Account/change-password", JsonContent.Create(changePasswordDto));
 
+        // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
+        
+        // Cleanup
+        await Utilities.ClearToken(_client);
     }
 
     [Fact]
     public async Task Change_Password_Invalid_Old_Password_Returns_Ok()
     {
-        var user = new ApplicationUser()
+        await Utilities.ClearToken(_client);
+        // Arrange
+        var newUser = new ApplicationUser()
         {
             Email = "change-password-invalid@app.com",
             UserName = "change-password-invalid@app.com",
             EmailConfirmed = true
         };
-        await _userManager.CreateAsync(user, "P@ssw0rd.+");
+        await _userManager.CreateAsync(newUser, "P@ssw0rd.+");
+        var user = await _dbContext.Users.FirstAsync(u => u.Email == "change-password-invalid@app.com");
+        await Utilities.AuthorizeUserAndSetHeaderAsync(_client, user.Email!);
 
         var changePasswordDto = new ChangePasswordDto()
         {
@@ -350,9 +362,14 @@ public class AccountTests(VitalApiFactory vaf) : TestBase(vaf)
             NewPassword = "NewP@ssw0rd.+"
         };
 
+        // Act
         var response =
-            await _client.PostAsync("/Identity/Account/change-password", JsonContent.Create(changePasswordDto));
+            await _client.PostAsJsonAsync("/Identity/Account/change-password", changePasswordDto);
 
+        // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
+        
+        // Cleanup
+        await Utilities.ClearToken(_client);
     }
 }
