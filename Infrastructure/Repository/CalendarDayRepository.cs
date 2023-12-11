@@ -43,7 +43,7 @@ public class CalendarDayRepository : ICalendarDayRepository
 
         foreach (var state in states)
         {
-            var calendarDay = BuildCalendarDay(state!, sql, parameters);
+            var calendarDay = BuildCalendarDay(state, sql, parameters);
             if (calendarDay is not null)
             {
                 calendarDays.Add(calendarDay);
@@ -59,7 +59,7 @@ public class CalendarDayRepository : ICalendarDayRepository
         var state = await _db.QuerySingleOrDefaultAsync<string>(sql, new { calendarDayId });
 
         sql = @"SELECT * FROM ""CalendarDay"" WHERE ""Id""=@calendarDayId";
-        return state is null ? null : BuildCalendarDay(state!, sql, new { calendarDayId });
+        return state is null ? null : BuildCalendarDay(state, sql, new { calendarDayId });
     }
 
     public async Task<CalendarDay> CreteCycleDay(Guid userId, DateTimeOffset dateTime, Guid? cycleId)

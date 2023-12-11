@@ -1,11 +1,10 @@
-﻿using System.Text.Encodings.Web;
-using System.Web;
+﻿using System.Web;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
+using Models.Exception;
 using Models.Identity;
 using Vital.Configuration;
 using Vital.Core.Services.Interfaces;
-using Vital.Models.Exception;
 
 namespace Vital.Core.Services;
 
@@ -13,7 +12,7 @@ public class EmailService(IEmailDeliveryService emailDeliveryService, IOptions<G
     : IEmailService
 {
     private readonly UserManager<ApplicationUser> _userManager;
-    
+
     public async Task SendVerifyEmail(ApplicationUser user, string token, CancellationToken cancellationToken)
     {
         var recipients = new List<string>() { user.UserName! };
@@ -38,7 +37,7 @@ public class EmailService(IEmailDeliveryService emailDeliveryService, IOptions<G
 
         await SendEmailAsync(recipients, subject, message, cancellationToken);
     }
-    
+
     public async Task SendForgotPasswordEmailAsync(ApplicationUser user, string token,
         CancellationToken cancellationToken)
     {
@@ -61,7 +60,7 @@ public class EmailService(IEmailDeliveryService emailDeliveryService, IOptions<G
 </body>";
 
         var message = CreateDefaultMessage(resetPasswordContent);
-       
+
         await SendEmailAsync(recipients, subject, message, cancellationToken);
     }
 

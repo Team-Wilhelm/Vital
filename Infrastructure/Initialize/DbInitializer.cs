@@ -119,7 +119,7 @@ public class DbInitializer
             UserId = user1.Id,
             StartDate = new DateTimeOffset(utcNow.AddDays(-5).Date, TimeSpan.Zero).AddHours(12)
         });
-
+        
         #region Add cycle days for user 1
 
         // Add cycle days for user 1
@@ -230,12 +230,12 @@ public class DbInitializer
 
         #region Add more cycles for user 1
 
-// Cycle 1
+        // Cycle 1 - newest
         var cycle = new Cycle()
         {
             Id = Guid.NewGuid(),
             UserId = user1.Id,
-            StartDate = new DateTimeOffset(utcNow.AddDays(-5 - (30 * 1)).Date, TimeSpan.Zero).AddHours(12),
+            StartDate = new DateTimeOffset(utcNow.AddDays(-6 - (30 * 1)).Date, TimeSpan.Zero).AddHours(12),
             EndDate = new DateTimeOffset(utcNow.AddDays(-5).Date, TimeSpan.Zero).AddHours(12)
         };
         await _context.Cycles.AddAsync(cycle);
@@ -244,7 +244,7 @@ public class DbInitializer
         {
             Id = Guid.Parse("C8DCD3C7-8889-4BF0-BE6C-3017F45ACF1A"),
             UserId = user1.Id,
-            Date = new DateTimeOffset(utcNow.AddDays(-5 - (30 * 1)).Date, TimeSpan.Zero).AddHours(12),
+            Date = new DateTimeOffset(utcNow.AddDays(-6 - (30 * 1)).Date, TimeSpan.Zero).AddHours(12),
             CycleId = cycle.Id,
             IsPeriod = true,
             SelectedMetrics = new List<CalendarDayMetric>()
@@ -254,18 +254,18 @@ public class DbInitializer
                     CalendarDayId = Guid.Parse("C8DCD3C7-8889-4BF0-BE6C-3017F45ACF1A"),
                     MetricsId = Guid.Parse("d56807fe-05ca-4901-a564-68f14e31b241"), // Flow
                     MetricValueId = Guid.Parse("b5bf508b-9cd5-4c9c-aa64-63bc9cbafe3b"), // Heavy
-                    CreatedAt = DateTimeOffset.UtcNow.AddDays(-4).AddHours(-4)
+                    CreatedAt = DateTimeOffset.UtcNow.AddDays(-36)
                 }
             }
         });
-
-// Cycle 2
+        
+        // Cycle 2
         var cycle2 = new Cycle()
         {
             Id = Guid.NewGuid(),
             UserId = user1.Id,
             StartDate = new DateTimeOffset(utcNow.AddDays(-5 - (30 * 2)).Date, TimeSpan.Zero).AddHours(12),
-            EndDate = new DateTimeOffset(utcNow.AddDays(-5 - (30 * 1)).Date, TimeSpan.Zero).AddHours(12)
+            EndDate = new DateTimeOffset(utcNow.AddDays(-7 - (30 * 1)).Date, TimeSpan.Zero).AddHours(12)
         };
         await _context.Cycles.AddAsync(cycle2);
 
@@ -273,7 +273,7 @@ public class DbInitializer
         {
             Id = Guid.Parse("14177B9E-B74B-4477-9496-89E10570411D"),
             UserId = user1.Id,
-            Date = new DateTimeOffset(utcNow.AddDays(-5 - (30 * 2)).Date, TimeSpan.Zero).AddHours(12),
+            Date = new DateTimeOffset(utcNow.AddDays(-6 - (30 * 2)).Date, TimeSpan.Zero).AddHours(12),
             CycleId = cycle2.Id,
             IsPeriod = true,
             SelectedMetrics = new List<CalendarDayMetric>()
@@ -283,18 +283,18 @@ public class DbInitializer
                     CalendarDayId = Guid.Parse("14177B9E-B74B-4477-9496-89E10570411D"),
                     MetricsId = Guid.Parse("d56807fe-05ca-4901-a564-68f14e31b241"), // Flow
                     MetricValueId = Guid.Parse("b5bf508b-9cd5-4c9c-aa64-63bc9cbafe3b"), // Heavy
-                    CreatedAt = DateTimeOffset.UtcNow.AddDays(-5).AddHours(-5)
+                    CreatedAt = DateTimeOffset.UtcNow.AddDays(-72)
                 }
             }
         });
 
-// Cycle 3
+        // Cycle 3
         var cycle3 = new Cycle()
         {
             Id = Guid.NewGuid(),
             UserId = user1.Id,
             StartDate = new DateTimeOffset(utcNow.AddDays(-5 - (30 * 3)).Date, TimeSpan.Zero).AddHours(12),
-            EndDate = new DateTimeOffset(utcNow.AddDays(-5 - (30 * 2)).Date, TimeSpan.Zero).AddHours(12),
+            EndDate = new DateTimeOffset(utcNow.AddDays(-6 - (30 * 2)).Date, TimeSpan.Zero).AddHours(12),
         };
         await _context.Cycles.AddAsync(cycle3);
 

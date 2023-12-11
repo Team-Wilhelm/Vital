@@ -4,20 +4,18 @@ using Infrastructure.Adapters;
 using Infrastructure.Repository.Interface;
 using Models;
 using Models.Dto.Metrics;
+using Models.Exception;
 using Models.Util;
-using Vital.Models.Exception;
 
 namespace Infrastructure.Repository;
 
 public class MetricRepository : IMetricRepository
 {
     private readonly IDbConnection _db;
-    private readonly ICalendarDayRepository _calendarDayRepository;
 
-    public MetricRepository(IDbConnection db, ICalendarDayRepository calendarDayRepository)
+    public MetricRepository(IDbConnection db)
     {
         _db = db;
-        _calendarDayRepository = calendarDayRepository;
     }
 
     public async Task<List<Metrics>> GetAllMetrics()
@@ -68,8 +66,7 @@ public class MetricRepository : IMetricRepository
         });
         return result;
     }
-
-    //TODO parse date correctly
+    
     public async Task<IEnumerable<DateTimeOffset>> GetPeriodDays(Guid userId, DateTimeOffset fromDate, DateTimeOffset toDate)
     {
         var sql = $@"SELECT
@@ -78,9 +75,8 @@ public class MetricRepository : IMetricRepository
     WHERE CAST(""Date"" AS DATE) >= CAST(@fromDate AS DATE) AND CAST(""Date"" AS DATE) <= CAST(@toDate AS DATE)
       AND ""UserId"" = @userId AND ""IsPeriod"" = true
     ";
-        var result = await _db.QueryAsync<string>(sql, new { userId, fromDate, toDate });
-        var parsedDates = result.Select(dateString => DateTimeOffset.Parse(dateString));
-        return parsedDates;
+        var result = await _db.QueryAsync<DateTime>(sql, new { userId, fromDate, toDate });
+        return result.Select(d => new DateTimeOffset(d, TimeSpan.Zero));
     }
 
     public async Task<ICollection<CalendarDayMetric>> Get(Guid userId, DateTimeOffset date)

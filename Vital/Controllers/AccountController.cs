@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Models.Dto.Identity.Account;
+using Models.Exception;
 using Models.Identity;
 using Vital.Core.Context;
 using Vital.Core.Services.Interfaces;
@@ -45,8 +46,8 @@ public class AccountController : BaseController
             user.ResetPasswordTokenExpirationDate = DateTime.UtcNow.AddHours(24);
             await _userManager.UpdateAsync(user);
             await _emailService.SendForgotPasswordEmailAsync(user, token, cancellationToken);
-            
         }
+
         return Ok();
     }
 
@@ -81,10 +82,10 @@ public class AccountController : BaseController
         {
             user.ResetPasswordTokenExpirationDate = null;
         }
-        
+
         return Ok();
     }
-    
+
     /// <summary>
     /// Enables a logged in user to change their password as long as they know their existing password
     /// </summary>
@@ -105,12 +106,12 @@ public class AccountController : BaseController
         {
             throw new ResetPasswordException("Something went wrong.");
         }
-        
+
         if(await _userManager.CheckPasswordAsync(user, dto.OldPassword))
         {
             await _userManager.ChangePasswordAsync(user, dto.OldPassword, dto.NewPassword);
         }
-        
+
         return Ok();
     }
 

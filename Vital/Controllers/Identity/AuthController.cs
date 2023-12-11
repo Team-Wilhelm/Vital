@@ -2,10 +2,10 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Models.Dto.Identity;
+using Models.Exception;
 using Models.Identity;
 using Models.Responses;
 using Vital.Core.Services.Interfaces;
-using Vital.Models.Exception;
 
 namespace Vital.Controllers.Identity;
 
@@ -17,14 +17,12 @@ public class AuthController : BaseController
 {
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IJwtService _jwtService;
-    private readonly ICycleService _cycleService;
     private readonly IEmailService _emailService;
 
-    public AuthController(UserManager<ApplicationUser> userManager, IJwtService jwtService, ICycleService cycleService, IEmailService emailService)
+    public AuthController(UserManager<ApplicationUser> userManager, IJwtService jwtService, IEmailService emailService)
     {
         _userManager = userManager;
         _jwtService = jwtService;
-        _cycleService = cycleService;
         _emailService = emailService;
     }
 
@@ -103,7 +101,7 @@ public class AuthController : BaseController
         }
         if (!result.Succeeded)
         {
-            var identityError = result.Errors?.FirstOrDefault();
+            var identityError = result.Errors.FirstOrDefault();
 
             if (identityError == null)
             {

@@ -1,11 +1,8 @@
 ﻿using System.Net;
 using System.Net.Http.Json;
 using FluentAssertions;
-using Infrastructure.Data;
 using IntegrationTests.Setup;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Models.Dto.Identity;
 using Models.Identity;
 

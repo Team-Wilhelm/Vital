@@ -12,14 +12,10 @@ namespace Vital.Core.Services;
 public class JwtService : IJwtService
 {
     private readonly IOptions<JwtSettings> _jwtSettings;
-    private readonly ILogger<JwtService> _logger;
 
-    public JwtService(
-        IOptions<JwtSettings> jwtSettings,
-        ILogger<JwtService> logger)
+    public JwtService(IOptions<JwtSettings> jwtSettings)
     {
         _jwtSettings = jwtSettings;
-        _logger = logger;
     }
 
     public string GenerateJwtToken(ApplicationUser user, IEnumerable<string> roles, IDictionary<string, dynamic>? customClaims)
