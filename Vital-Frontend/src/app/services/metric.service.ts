@@ -27,13 +27,13 @@ export class MetricService implements OnDestroy {
   periodDays: Date[] = [];
 
   constructor(private http: HttpClient, private dataService: DataService) {
-    this.getAllMetricsWithValues();
-    this.getUsersMetric(this.clickedDate);
+    this.getAllMetricsWithValues().then();
+    this.getUsersMetric(this.clickedDate).then();
 
     this.subscription = this.dataService.clickedDate$.subscribe(clickedDate => {
       if (clickedDate) {
         this.clickedDate = clickedDate;
-        this.getUsersMetric(clickedDate);
+        this.getUsersMetric(clickedDate).then();
       }
     });
   }
@@ -184,10 +184,10 @@ export class MetricService implements OnDestroy {
   async deleteMetric(calendarDayMetricId: string) {
     const calendarDayMetric = this.loggedMetrics.filter((metric) => metric.id === calendarDayMetricId)[0];
     await firstValueFrom(this.http.delete(`${this.apiUrl}/${calendarDayMetric.id}`));
-    this.getUsersMetric(this.clickedDate); // Refresh the metrics
+    await this.getUsersMetric(this.clickedDate); // Refresh the metrics
 
     const today = new Date();
-    this.getPeriodDays(new Date(today.getFullYear(), today.getMonth() - 1, 1), new Date(today.getFullYear(), today.getMonth() + 1, 0)); // Refresh the period days
+    await this.getPeriodDays(new Date(today.getFullYear(), today.getMonth() - 1, 1), new Date(today.getFullYear(), today.getMonth() + 1, 0)); // Refresh the period days
     this.metricDeletedSource.next(true);
   }
 
