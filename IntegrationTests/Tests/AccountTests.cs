@@ -342,7 +342,7 @@ public class AccountTests(VitalApiFactory vaf) : TestBase(vaf)
     }
 
     [Fact]
-    public async Task Change_Password_Invalid_Old_Password_Returns_Ok()
+    public async Task Change_Password_Invalid_Old_Password_Returns_BadRequest()
     {
         await ClearToken();
         // Arrange
@@ -367,7 +367,7 @@ public class AccountTests(VitalApiFactory vaf) : TestBase(vaf)
             await _client.PostAsJsonAsync("/Identity/Account/change-password", changePasswordDto);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
 
         // Cleanup
         await ClearToken();

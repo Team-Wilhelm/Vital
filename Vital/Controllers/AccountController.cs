@@ -106,11 +106,12 @@ public class AccountController : BaseController
             throw new ResetPasswordException("Something went wrong.");
         }
 
-        if(await _userManager.CheckPasswordAsync(user, dto.OldPassword))
+        if (!await _userManager.CheckPasswordAsync(user, dto.OldPassword))
         {
-            await _userManager.ChangePasswordAsync(user, dto.OldPassword, dto.NewPassword);
+            return BadRequest("Old password is incorrect.");
         }
-
+        
+        await _userManager.ChangePasswordAsync(user, dto.OldPassword, dto.NewPassword);
         return Ok();
     }
 
