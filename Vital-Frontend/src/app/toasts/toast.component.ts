@@ -11,7 +11,7 @@ import {animate, style, transition, trigger} from "@angular/animations";
            max-w-[300px] w-[200px] z-50 min-h-[100px] max-h-[150px]
            overflow-ellipsis
            lg:w-[300px]"
-           [class.bg-success]="toast.type === 'success'" [class.bg-error]="toast.type === 'error'"
+           [class.bg-secondary]="toast.type === 'success'" [class.bg-error]="toast.type === 'error'"
            [class.bg-info]="toast.type === 'info'"
            [class.top-0]="i === 0" [class.top-[125px]]="i === 1" [class.top-[250px]]="i === 2"
       >
