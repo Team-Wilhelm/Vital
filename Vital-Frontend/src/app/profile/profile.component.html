@@ -32,6 +32,10 @@
       <div class="stat">
         <div class="stat-title ml-5">Change Password</div>
         <div class="flex flex-col gap-3 card-body">
+          <input type="password" placeholder="Old Password" class="input input-bordered w-full max-w-xs"
+                 [formControl]="changePasswordForm.controls.oldPassword"
+                 [class.input-error]="changePasswordForm.controls.oldPassword.invalid && changePasswordForm.controls.oldPassword.touched"
+          />
           <input type="password" placeholder="New Password" class="input input-bordered w-full max-w-xs"
                  [formControl]="changePasswordForm.controls.password"
                  [class.input-error]="changePasswordForm.controls.password.invalid && changePasswordForm.controls.password.touched"
@@ -68,7 +72,14 @@
           <p [hidden]="!(changePasswordForm.invalid && changePasswordForm.controls.password.valid)"
             class="text-error">
             Passwords do not match.</p>
-          <button class="btn btn-active btn-accent w-full max-w-xs">Change password</button>
+          <button class="btn btn-active btn-accent w-full max-w-xs"
+                  (click)="changePassword({
+    oldPassword: changePasswordForm.controls.oldPassword.value,
+    newPassword: changePasswordForm.controls.password.value,
+    confirmPassword: changePasswordForm.controls.repeatPassword.value
+  })">
+            Change password
+          </button>
         </div>
       </div>
     </div>

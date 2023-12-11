@@ -319,13 +319,10 @@ public class AccountTests(VitalApiFactory vaf) : TestBase(vaf)
         };
         var oldPassword = "P@ssw0rd.+";
         await _userManager.CreateAsync(user, oldPassword);
-
-        user = _dbContext.Users.FirstOrDefault(u => u.Id == user.Id);
-        user.Should().NotBeNull();
+        
 
         var changePasswordDto = new ChangePasswordDto()
         {
-            User = user,
             OldPassword = oldPassword,
             NewPassword = "NewP@ssw0rd.+"
         };
@@ -347,12 +344,8 @@ public class AccountTests(VitalApiFactory vaf) : TestBase(vaf)
         };
         await _userManager.CreateAsync(user, "P@ssw0rd.+");
 
-        user = _dbContext.Users.FirstOrDefault(u => u.Id == user.Id);
-        user.Should().NotBeNull();
-
         var changePasswordDto = new ChangePasswordDto()
         {
-            User = user,
             OldPassword = "InvalidOldPassword",
             NewPassword = "NewP@ssw0rd.+"
         };

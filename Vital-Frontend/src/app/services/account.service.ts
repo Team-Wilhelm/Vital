@@ -9,6 +9,7 @@ import {VerifyRequestDto} from "../interfaces/account/verifyEmailDto.interface";
 import {ToastService} from "./toast.service";
 import {Router} from "@angular/router";
 import HttpService from "./http.service";
+import {ChangePasswordDto} from "../interfaces/account/ChangePasswordDto";
 
 @Injectable({
   providedIn: 'root'
@@ -53,5 +54,11 @@ export default class AccountService {
     await this.httpService.post('/Identity/Account/Reset-Password', dto, 'Your password was successfully reset');
 
     await this.router.navigateByUrl('/')
+  }
+
+  public async changePassword(dto: ChangePasswordDto): Promise<void> {
+    await this.httpService.post('/Identity/Account/change-password', dto, 'Your password was successfully changed');
+
+    await this.router.navigateByUrl('/Identity/Account')
   }
 }

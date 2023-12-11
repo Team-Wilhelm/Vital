@@ -5,6 +5,8 @@ import {PasswordRules} from "../interfaces/utilities.interface";
 import {CycleService} from "../services/cycle.service";
 import {UserService} from "../services/user.service";
 import {PeriodCycleStatsDto} from "../interfaces/analytics.interface";
+import AccountService from "../services/account.service";
+import {ChangePasswordDto} from "../interfaces/account/ChangePasswordDto";
 
 @Component({
   selector: 'app-profile',
@@ -15,7 +17,7 @@ export class ProfileComponent implements OnInit{
 
   public periodCycleStats: PeriodCycleStatsDto | undefined;
   public userEmail: string = '';
-  constructor(private cycleService: CycleService, private userService: UserService) {
+  constructor(private cycleService: CycleService, private userService: UserService, private accountService: AccountService) {
     this.subscribeToPasswordChanges();
   }
 
@@ -33,6 +35,7 @@ export class ProfileComponent implements OnInit{
   };
 
   readonly changePasswordForm = new FormGroup({
+    oldPassword: new FormBuilder().control('', Validators.required),
     password: new FormBuilder().control('', [Validators.required, PasswordValidator]),
     repeatPassword: new FormBuilder().control('', [Validators.required, PasswordValidator])
   }, {validators: this.passwordMatchValidator});
@@ -58,4 +61,15 @@ export class ProfileComponent implements OnInit{
       });
     }
   }
+
+  async changePassword(): Promise<void> {
+    if (this.changePasswordForm.valid) {
+      const dto: ChangePasswordDto = {
+        oldPassword: this.changePasswordForm.get('oldPassword')!.value as string,
+        newPassword: this.changePasswordForm.get('password')!.value as string
+      };
+      await this.accountService.changePassword(dto);
+    }
+  }
+
 }
