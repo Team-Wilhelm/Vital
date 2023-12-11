@@ -116,6 +116,8 @@ public class AuthController : BaseController
         }
 
         var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+        user.VerifyEmailTokenExpirationDate = DateTime.UtcNow.AddHours(24);
+        await _userManager.UpdateAsync(user);
         await _emailService.SendVerifyEmail(user, token, cancellationToken);
 
         return Ok();

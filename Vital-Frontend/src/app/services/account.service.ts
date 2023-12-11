@@ -1,16 +1,15 @@
 import {Injectable} from "@angular/core";
 import {environment} from "../../../environments/environment";
-import {firstValueFrom, tap} from "rxjs";
+import {firstValueFrom} from "rxjs";
 import {InitialLoginGetDto, InitialLoginPostDto} from "../interfaces/dtos/user.dto.interface";
 import {HttpClient} from "@angular/common/http";
-import {aW} from "@fullcalendar/core/internal-common";
 import {ResetPasswordDto} from "../interfaces/account/resetPasswordDto.interface";
 import {ForgotPasswordDto} from "../interfaces/account/forgotPasswordDto.interface";
 import {VerifyRequestDto} from "../interfaces/account/verifyEmailDto.interface";
 import {ToastService} from "./toast.service";
 import {Router} from "@angular/router";
 import HttpService from "./http.service";
-import {addWarning} from "@angular-devkit/build-angular/src/utils/webpack-diagnostics";
+import {ChangePasswordDto} from "../interfaces/account/ChangePasswordDto";
 
 @Injectable({
   providedIn: 'root'
@@ -40,13 +39,13 @@ export default class AccountService {
   }
 
   public async verifyEmail(dto: VerifyRequestDto): Promise<void> {
-    await this.httpService.post('/Identity/Account/Verify-Email', dto, 'Email Verified');
+    await this.httpService.post('/Identity/Account/Verify-Email', dto, 'Email verified');
 
     await this.router.navigateByUrl('/')
   }
 
   public async forgotPassword(dto: ForgotPasswordDto): Promise<void> {
-    await this.httpService.post('/Identity/Account/Forgot-Password', dto, 'Password reset link sent, Check your email for a password reset link')
+    await this.httpService.post('/Identity/Account/Forgot-Password', dto, 'Reset password link sent to your email')
 
     await this.router.navigateByUrl('/')
   }
@@ -55,5 +54,9 @@ export default class AccountService {
     await this.httpService.post('/Identity/Account/Reset-Password', dto, 'Your password was successfully reset');
 
     await this.router.navigateByUrl('/')
+  }
+
+  public async changePassword(dto: ChangePasswordDto): Promise<void> {
+    await this.httpService.post('/Identity/Account/change-password', dto, 'Your password was successfully changed');
   }
 }
