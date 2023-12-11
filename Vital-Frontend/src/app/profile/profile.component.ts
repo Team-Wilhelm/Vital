@@ -17,6 +17,10 @@ export class ProfileComponent implements OnInit{
 
   public periodCycleStats: PeriodCycleStatsDto | undefined;
   public userEmail: string = '';
+  public changePasswordDto: ChangePasswordDto = {
+    oldPassword: '',
+    newPassword: ''
+  }
   constructor(private cycleService: CycleService, private userService: UserService, private accountService: AccountService) {
     this.subscribeToPasswordChanges();
   }
@@ -62,14 +66,13 @@ export class ProfileComponent implements OnInit{
     }
   }
 
-  async changePassword(): Promise<void> {
-    if (this.changePasswordForm.valid) {
-      const dto: ChangePasswordDto = {
-        oldPassword: this.changePasswordForm.get('oldPassword')!.value as string,
-        newPassword: this.changePasswordForm.get('password')!.value as string
-      };
-      await this.accountService.changePassword(dto);
+  public async changePassword(): Promise<void> {
+    if (!this.changePasswordForm.valid) {
+      return;
     }
-  }
+    this.changePasswordDto.oldPassword = <string>this.changePasswordForm.get('oldPassword')?.value;
+    this.changePasswordDto.newPassword = <string>this.changePasswordForm.get('password')?.value;
 
+    await this.accountService.changePassword(this.changePasswordDto);
+  }
 }

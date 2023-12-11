@@ -332,13 +332,14 @@ public class AccountTests(VitalApiFactory vaf) : TestBase(vaf)
 
         // Act
         var response =
-            await _client.PostAsync("/Identity/Account/change-password", JsonContent.Create(changePasswordDto));
+            await _client.PostAsJsonAsync("/Identity/Account/change-password", changePasswordDto);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         // Cleanup
         await ClearToken();
+        await RemoveUserAsync("change-password@app.com");
     }
 
     [Fact]
@@ -371,5 +372,6 @@ public class AccountTests(VitalApiFactory vaf) : TestBase(vaf)
 
         // Cleanup
         await ClearToken();
+        await RemoveUserAsync("change-password-invalid@app.com");
     }
 }

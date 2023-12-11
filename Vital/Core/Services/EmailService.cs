@@ -1,5 +1,4 @@
 ﻿using System.Web;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Models.Exception;
 using Models.Identity;
@@ -11,7 +10,6 @@ namespace Vital.Core.Services;
 public class EmailService(IEmailDeliveryService emailDeliveryService, IOptions<GlobalSettings> globalSettings)
     : IEmailService
 {
-    private readonly UserManager<ApplicationUser> _userManager;
 
     public async Task SendVerifyEmail(ApplicationUser user, string token, CancellationToken cancellationToken)
     {

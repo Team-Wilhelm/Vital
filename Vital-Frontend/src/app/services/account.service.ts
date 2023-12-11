@@ -58,7 +58,5 @@ export default class AccountService {
 
   public async changePassword(dto: ChangePasswordDto): Promise<void> {
     await this.httpService.post('/Identity/Account/change-password', dto, 'Your password was successfully changed');
-
-    await this.router.navigateByUrl('/Identity/Account')
   }
 }
