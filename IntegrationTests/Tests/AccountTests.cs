@@ -14,13 +14,13 @@ public class AccountTests(VitalApiFactory vaf) : TestBase(vaf)
     [Fact]
     public async Task Forgot_Password_input_not_address_return_400()
     {
-        var forgotPassordDto = new ForgotPasswordDto()
+        var forgotPasswordDto = new ForgotPasswordDto()
         {
             Email = "userapp"
         };
 
         var response =
-            await _client.PostAsync("/Identity/Account/Forgot-Password", JsonContent.Create(forgotPassordDto));
+            await _client.PostAsync("/Identity/Account/Forgot-Password", JsonContent.Create(forgotPasswordDto));
 
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
@@ -28,15 +28,15 @@ public class AccountTests(VitalApiFactory vaf) : TestBase(vaf)
     [Fact]
     public async Task Forgot_Password_user_not_found_return_200()
     {
-        var forgotPassordDto = new ForgotPasswordDto()
+        var forgotPasswordDto = new ForgotPasswordDto()
         {
             Email = "forgot-password-not-found@app.com"
         };
 
-        _dbContext.Users.FirstOrDefault(u => u.UserName == forgotPassordDto.Email).Should().BeNull();
+        _dbContext.Users.FirstOrDefault(u => u.UserName == forgotPasswordDto.Email).Should().BeNull();
 
         var response =
-            await _client.PostAsync("/Identity/Account/Forgot-Password", JsonContent.Create(forgotPassordDto));
+            await _client.PostAsync("/Identity/Account/Forgot-Password", JsonContent.Create(forgotPasswordDto));
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
@@ -44,24 +44,24 @@ public class AccountTests(VitalApiFactory vaf) : TestBase(vaf)
     [Fact]
     public async Task Forgot_Password_return_500()
     {
-        var forgotPassordDto = new ForgotPasswordDto()
+        var forgotPasswordDto = new ForgotPasswordDto()
         {
             Email = "forgot-password@app.com"
         };
 
         var user = new ApplicationUser()
         {
-            Email = forgotPassordDto.Email,
-            UserName = forgotPassordDto.Email,
+            Email = forgotPasswordDto.Email,
+            UserName = forgotPasswordDto.Email,
             EmailConfirmed = true
         };
 
         await _userManager.CreateAsync(user, "P@ssw0rd.+");
 
-        _dbContext.Users.FirstOrDefault(u => u.UserName == forgotPassordDto.Email).Should().NotBeNull();
+        _dbContext.Users.FirstOrDefault(u => u.UserName == forgotPasswordDto.Email).Should().NotBeNull();
 
         var response =
-            await _client.PostAsync("/Identity/Account/Forgot-Password", JsonContent.Create(forgotPassordDto));
+            await _client.PostAsync("/Identity/Account/Forgot-Password", JsonContent.Create(forgotPasswordDto));
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
@@ -182,13 +182,13 @@ public class AccountTests(VitalApiFactory vaf) : TestBase(vaf)
         user = _dbContext.Users.FirstOrDefault(u => u.Id == user.Id);
         user.Should().NotBeNull();
 
-        var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-        user.ResetPasswordTokenExpirationDate = DateTime.UtcNow.AddHours(24);
+        var token = await _userManager.GeneratePasswordResetTokenAsync(user!);
+        user!.ResetPasswordTokenExpirationDate = DateTime.UtcNow.AddHours(24);
         await _userManager.UpdateAsync(user);
 
         var resetPasswordDto = new ResetPasswordDto()
         {
-            UserId = user!.Id,
+            UserId = user.Id,
             NewPassword = "P@ssw0rd.+",
             Token = token
         };
@@ -311,7 +311,7 @@ public class AccountTests(VitalApiFactory vaf) : TestBase(vaf)
     [Fact]
     public async Task Change_Password_Valid_Old_Password_Changes_Password()
     {
-        await Utilities.ClearToken(_client);
+        await ClearToken();
         // Arrange
         var newUser = new ApplicationUser()
         {
@@ -322,7 +322,7 @@ public class AccountTests(VitalApiFactory vaf) : TestBase(vaf)
         var oldPassword = "P@ssw0rd.+";
         await _userManager.CreateAsync(newUser, oldPassword);
         var user = await _dbContext.Users.FirstAsync(u => u.Email == "change-password@app.com");
-        await Utilities.AuthorizeUserAndSetHeaderAsync(_client, user.Email!);
+        await AuthorizeUserAndSetHeaderAsync(user.Email!);
 
         var changePasswordDto = new ChangePasswordDto()
         {
@@ -338,13 +338,13 @@ public class AccountTests(VitalApiFactory vaf) : TestBase(vaf)
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         // Cleanup
-        await Utilities.ClearToken(_client);
+        await ClearToken();
     }
 
     [Fact]
     public async Task Change_Password_Invalid_Old_Password_Returns_Ok()
     {
-        await Utilities.ClearToken(_client);
+        await ClearToken();
         // Arrange
         var newUser = new ApplicationUser()
         {
@@ -354,7 +354,7 @@ public class AccountTests(VitalApiFactory vaf) : TestBase(vaf)
         };
         await _userManager.CreateAsync(newUser, "P@ssw0rd.+");
         var user = await _dbContext.Users.FirstAsync(u => u.Email == "change-password-invalid@app.com");
-        await Utilities.AuthorizeUserAndSetHeaderAsync(_client, user.Email!);
+        await AuthorizeUserAndSetHeaderAsync(user.Email!);
 
         var changePasswordDto = new ChangePasswordDto()
         {
@@ -370,6 +370,6 @@ public class AccountTests(VitalApiFactory vaf) : TestBase(vaf)
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         // Cleanup
-        await Utilities.ClearToken(_client);
+        await ClearToken();
     }
 }
