@@ -330,7 +330,7 @@ public class TestDbInitializer
                     CalendarDayId = Guid.Parse("EFE6886A-374D-48E2-A3E7-16637865ED74"),
                     MetricsId = Guid.Parse("d56807fe-05ca-4901-a564-68f14e31b241"), // Flow
                     MetricValueId = Guid.Parse("24d4c8aa-614d-467f-9afb-9e2f744cf151"), // Moderate
-                    CreatedAt = DateTimeOffset.UtcNow.AddDays(-1).AddHours(-1)
+                    CreatedAt = DateTimeOffset.UtcNow.AddDays(-1)
                 }
             }
         });

@@ -1,7 +1,6 @@
 ﻿using System.Net;
 using System.Net.Http.Json;
 using FluentAssertions;
-using Infrastructure.Data;
 using IntegrationTests.Setup;
 using Models.Dto.Cycle;
 

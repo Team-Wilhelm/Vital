@@ -1,12 +1,11 @@
-﻿using AutoMapper;
-using Infrastructure.Adapters;
+﻿using Infrastructure.Adapters;
 using Infrastructure.Repository.Interface;
 using Models;
 using Models.Days;
 using Models.Dto.Metrics;
+using Models.Exception;
 using Models.Util;
 using Vital.Core.Services.Interfaces;
-using Vital.Models.Exception;
 
 namespace Vital.Core.Services;
 
@@ -15,14 +14,11 @@ public class MetricService : IMetricService
     private readonly IMetricRepository _metricRepository;
     private readonly ICalendarDayRepository _calendarDayRepository;
     private readonly ICycleRepository _cycleRepository;
-    private readonly IMapper _mapper;
 
-    public MetricService(IMetricRepository metricRepository, ICalendarDayRepository calendarDayRepository,
-        IMapper mapper, ICycleRepository cycleRepository)
+    public MetricService(IMetricRepository metricRepository, ICalendarDayRepository calendarDayRepository, ICycleRepository cycleRepository)
     {
         _metricRepository = metricRepository;
         _calendarDayRepository = calendarDayRepository;
-        _mapper = mapper;
         _cycleRepository = cycleRepository;
     }
 

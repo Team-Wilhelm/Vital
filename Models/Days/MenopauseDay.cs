@@ -1,6 +1,3 @@
 ﻿namespace Models.Days;
 
-public class MenopauseDay : CalendarDay
-{
-
-}
+public class MenopauseDay : CalendarDay;
