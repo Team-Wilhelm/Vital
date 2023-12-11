@@ -34,13 +34,6 @@ public interface ICycleService
     Task<Cycle> Create();
 
     /// <summary>
-    /// Creates a new Cycle object with the specified details.
-    /// </summary>
-    /// <param name="cycle"></param>
-    /// <returns></returns>
-    Task<Cycle> Create(Cycle cycle);
-
-    /// <summary>
     /// Updates an existing Cycle object with new values.
     /// </summary>
     /// <param name="id">The unique identifier of the Cycle object to be updated.</param>
