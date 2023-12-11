@@ -72,7 +72,7 @@ export class MetricListItemComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.classString += " bg-zinc-200"
+    this.classString += " bg-zinc-200/50"
   }
 
   ngOnDestroy() {

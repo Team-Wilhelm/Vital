@@ -13,6 +13,7 @@
   --fc-button-active-border-color: #ac9fb1;
   --fc-border-color: #d0d0d0;
   --fc-bg-event-opacity: 0.5;
+  --fc-today-bg-color: #eeeff1;
   /*--fc-today-bg-color: hsl(158, 55%, 95%); for some reason deletes the border around */
 }
 
