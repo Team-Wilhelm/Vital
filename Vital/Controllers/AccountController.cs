@@ -6,7 +6,6 @@ using Models.Exception;
 using Models.Identity;
 using Vital.Core.Context;
 using Vital.Core.Services.Interfaces;
-using Vital.Models.Exception;
 
 namespace Vital.Controllers;
 
