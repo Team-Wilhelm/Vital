@@ -198,10 +198,13 @@ public class MetricTests(VitalApiFactory vaf) : TestBase(vaf)
             await AuthorizeUserAndSetHeaderAsync(user.Email!);
 
             // Add two historic cycles
-            var historicCycles = await CreateHistoricCycles([
+            var dates = new List<DateTimeOffset>
+            {
                 DateTimeOffset.UtcNow.AddDays(-70),
                 DateTimeOffset.UtcNow.AddDays(-30)
-            ], user.Id);
+            };
+
+            var historicCycles = await CreateHistoricCycles(dates, user.Id);
             _dbContext.Cycles.AddRange(historicCycles);
             await _dbContext.SaveChangesAsync();
             
@@ -458,8 +461,8 @@ public class MetricTests(VitalApiFactory vaf) : TestBase(vaf)
             UserId = user.Id,
             StartDate = cycleStartDate.Value.UtcDateTime,
             EndDate = null,
-            CycleDays =
-            [
+            CycleDays = new List<CycleDay>
+            {
                 new CycleDay
                 {
                     Id = cycleDayId,
@@ -478,7 +481,7 @@ public class MetricTests(VitalApiFactory vaf) : TestBase(vaf)
                         }
                     }
                 }
-            ]
+            }
         };
         _dbContext.Cycles.Add(cycle);
         user.CurrentCycleId = cycle.Id;
@@ -494,68 +497,68 @@ public class MetricTests(VitalApiFactory vaf) : TestBase(vaf)
     }
 
     private async Task<List<Cycle>> CreateHistoricCycles(IReadOnlyList<DateTimeOffset> startDateList, Guid userId)
+{
+    var metric = await _dbContext.Metrics.FirstAsync(m => m.Name.Contains("Flow"));
+    var calendarDayIds = new List<Guid>() { Guid.NewGuid(), Guid.NewGuid() };
+    var historicCycles = new List<Cycle>()
     {
-        var metric = await _dbContext.Metrics.FirstAsync(m => m.Name.Contains("Flow"));
-        var calendarDayIds = new List<Guid>() { Guid.NewGuid(), Guid.NewGuid() };
-        var historicCycles = new List<Cycle>()
+        new()
         {
-            new()
+            Id = Guid.NewGuid(),
+            UserId = userId,
+            StartDate = startDateList[0],
+            EndDate = startDateList[1].AddDays(-1),
+            CycleDays = new List<CycleDay>
             {
-                Id = Guid.NewGuid(),
-                UserId = userId,
-                StartDate = startDateList[0],
-                EndDate = startDateList[1].AddDays(-1),
-                CycleDays =
-                [
-                    new CycleDay
+                new CycleDay
+                {
+                    Id = calendarDayIds[0],
+                    UserId = userId,
+                    Date = startDateList[0],
+                    IsPeriod = true,
+                    SelectedMetrics = new List<CalendarDayMetric>()
                     {
-                        Id = calendarDayIds[0],
-                        UserId = userId,
-                        Date = startDateList[0],
-                        IsPeriod = true,
-                        SelectedMetrics = new List<CalendarDayMetric>()
+                        new()
                         {
-                            new()
-                            {
-                                Id = Guid.NewGuid(),
-                                CreatedAt = startDateList[0],
-                                CalendarDayId = calendarDayIds[0],
-                                MetricsId = metric.Id
-                            }
+                            Id = Guid.NewGuid(),
+                            CreatedAt = startDateList[0],
+                            CalendarDayId = calendarDayIds[0],
+                            MetricsId = metric.Id
                         }
                     }
-                ]
-            },
-            new()
-            {
-                Id = Guid.NewGuid(),
-                UserId = userId,
-                StartDate = startDateList[1],
-                EndDate = DateTimeOffset.UtcNow.AddDays(-2), // the current cycle starts at -1 for users created with utility methods
-                CycleDays =
-                [
-                    new CycleDay
-                    {
-                        Id = calendarDayIds[1],
-                        UserId = userId,
-                        Date = startDateList[1],
-                        IsPeriod = true,
-                        SelectedMetrics = new List<CalendarDayMetric>()
-                        {
-                            new()
-                            {
-                                Id = Guid.NewGuid(),
-                                CreatedAt = startDateList[1],
-                                CalendarDayId = calendarDayIds[1],
-                                MetricsId = metric.Id
-                            }
-                        }
-                    }
-                ]
+                }
             }
-        };
-        return historicCycles;
-    }
+        },
+        new()
+        {
+            Id = Guid.NewGuid(),
+            UserId = userId,
+            StartDate = startDateList[1],
+            EndDate = DateTimeOffset.UtcNow.AddDays(-2), // the current cycle starts at -1 for users created with utility methods
+            CycleDays = new List<CycleDay>
+            {
+                new()
+                {
+                    Id = calendarDayIds[1],
+                    UserId = userId,
+                    Date = startDateList[1],
+                    IsPeriod = true,
+                    SelectedMetrics = new List<CalendarDayMetric>()
+                    {
+                        new()
+                        {
+                            Id = Guid.NewGuid(),
+                            CreatedAt = startDateList[1],
+                            CalendarDayId = calendarDayIds[1],
+                            MetricsId = metric.Id
+                        }
+                    }
+                }
+            }
+        }
+    };
+    return historicCycles;
+}
 
     #endregion
 }
