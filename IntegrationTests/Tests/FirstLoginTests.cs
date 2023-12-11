@@ -13,22 +13,8 @@ using Xunit.Abstractions;
 namespace IntegrationTests.Tests;
 
 [Collection("VitalApi")]
-public class FirstLoginTests
+public class FirstLoginTests(VitalApiFactory vaf) : TestBase(vaf)
 {
-    private readonly ITestOutputHelper _testOutputHelper;
-    private readonly HttpClient _client;
-    private readonly ApplicationDbContext _dbContext;
-    private readonly IServiceScope _scope;
-    private readonly UserManager<ApplicationUser> _userManager;
-
-    public FirstLoginTests(VitalApiFactory waf, ITestOutputHelper testOutputHelper)
-    {
-        _testOutputHelper = testOutputHelper;
-        _client = waf.Client;
-        _scope = waf.Services.CreateScope();
-        _dbContext = _scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-        _userManager = _scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-    }
 
     [Fact]
     public async Task Should_Return_Unauthorized_When_Not_Authorized()
@@ -41,7 +27,7 @@ public class FirstLoginTests
     public async Task Firs_Login_Should_Have_Null_Data()
     {
         await RegisterNewUserAndVerifyEmailAsync("temp@application");
-        await Utilities.AuthorizeUserAndSetHeaderAsync(_client, "temp@application");
+        await AuthorizeUserAndSetHeaderAsync("temp@application");
 
         var response = await _client.GetAsync("/cycle/initial-login");
         var actual = await response.Content.ReadFromJsonAsync<InitialLoginGetDto>();
@@ -50,14 +36,14 @@ public class FirstLoginTests
         response.StatusCode.Should().Be(HttpStatusCode.OK);
         result.Should().BeTrue();
 
-        await Utilities.ClearToken(_client);
+        await ClearToken();
         await RemoveUserAsync("temp@application");
     }
 
     [Fact]
     public async Task First_Login_Should_Be_False()
     {
-        await Utilities.AuthorizeUserAndSetHeaderAsync(_client); // user@application
+        await AuthorizeUserAndSetHeaderAsync(); // user@application
         var response = await _client.GetAsync("/cycle/initial-login");
         var actual = await response.Content.ReadFromJsonAsync<InitialLoginGetDto>();
         var result = actual?.CycleLength == null || actual.PeriodLength == null;
@@ -65,7 +51,7 @@ public class FirstLoginTests
         response.StatusCode.Should().Be(HttpStatusCode.OK);
         result.Should().BeFalse();
 
-        await Utilities.ClearToken(_client);
+        await ClearToken();
     }
 
     [Fact]
@@ -73,7 +59,7 @@ public class FirstLoginTests
     {
         const string username = "temp@application";
         await RegisterNewUserAndVerifyEmailAsync(username);
-        await Utilities.AuthorizeUserAndSetHeaderAsync(_client, username);
+        await AuthorizeUserAndSetHeaderAsync( username);
 
         var initialLoginPutDto = new InitialLoginPutDto()
         {
@@ -91,7 +77,7 @@ public class FirstLoginTests
         await AssertMetricsWereCreatedAsync(user, initialLoginPutDto);
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        await Utilities.ClearToken(_client);
+        await ClearToken();
         await RemoveUserAsync(username);
     }
 
@@ -100,7 +86,7 @@ public class FirstLoginTests
     {
         const string username = "temp@application";
         await RegisterNewUserAndVerifyEmailAsync(username);
-        await Utilities.AuthorizeUserAndSetHeaderAsync(_client, username);
+        await AuthorizeUserAndSetHeaderAsync( username);
 
         var initialLoginPutDto = new InitialLoginPutDto()
         {
@@ -119,7 +105,7 @@ public class FirstLoginTests
         await AssertMetricsWereCreatedAsync(user, initialLoginPutDto);
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        await Utilities.ClearToken(_client);
+        await ClearToken();
         await RemoveUserAsync(username);
     }
 
@@ -128,7 +114,7 @@ public class FirstLoginTests
     {
         const string username = "temp@application";
         await RegisterNewUserAndVerifyEmailAsync(username);
-        await Utilities.AuthorizeUserAndSetHeaderAsync(_client, username);
+        await AuthorizeUserAndSetHeaderAsync( username);
 
         var initialLoginPutDto = new InitialLoginPutDto()
         {
@@ -145,7 +131,7 @@ public class FirstLoginTests
         user.PeriodLength.Should().BeNull();
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
 
-        await Utilities.ClearToken(_client);
+        await ClearToken();
         await RemoveUserAsync(username);
     }
 
@@ -154,7 +140,7 @@ public class FirstLoginTests
     {
         const string username = "temp@application";
         await RegisterNewUserAndVerifyEmailAsync(username);
-        await Utilities.AuthorizeUserAndSetHeaderAsync(_client, username);
+        await AuthorizeUserAndSetHeaderAsync( username);
 
         var initialLoginPutDto = new InitialLoginPutDto()
         {
@@ -171,7 +157,7 @@ public class FirstLoginTests
         user.PeriodLength.Should().BeNull();
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
 
-        await Utilities.ClearToken(_client);
+        await ClearToken();
         await RemoveUserAsync(username);
     }
 
@@ -180,7 +166,7 @@ public class FirstLoginTests
     {
         const string username = "temp@application";
         await RegisterNewUserAndVerifyEmailAsync(username);
-        await Utilities.AuthorizeUserAndSetHeaderAsync(_client, username);
+        await AuthorizeUserAndSetHeaderAsync( username);
 
         var initialLoginPutDto = new InitialLoginPutDto()
         {
@@ -198,7 +184,7 @@ public class FirstLoginTests
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         responseContent.Should().Be("Last period start and end dates cannot be in the future.");
 
-        await Utilities.ClearToken(_client);
+        await ClearToken();
         await RemoveUserAsync(username);
     }
 
@@ -207,7 +193,7 @@ public class FirstLoginTests
     {
         const string username = "temp@application";
         await RegisterNewUserAndVerifyEmailAsync(username);
-        await Utilities.AuthorizeUserAndSetHeaderAsync(_client, username);
+        await AuthorizeUserAndSetHeaderAsync( username);
 
         var initialLoginPutDto = new InitialLoginPutDto()
         {
@@ -226,7 +212,7 @@ public class FirstLoginTests
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         responseContent.Should().Be("Last period start and end dates cannot be in the future.");
 
-        await Utilities.ClearToken(_client);
+        await ClearToken();
         await RemoveUserAsync(username);
     }
 
@@ -235,7 +221,7 @@ public class FirstLoginTests
     {
         const string username = "temp@application";
         await RegisterNewUserAndVerifyEmailAsync(username);
-        await Utilities.AuthorizeUserAndSetHeaderAsync(_client, username);
+        await AuthorizeUserAndSetHeaderAsync( username);
 
         var initialLoginPutDto = new InitialLoginPutDto()
         {
@@ -254,33 +240,11 @@ public class FirstLoginTests
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         responseContent.Should().Be("Last period start date must be before the end date.");
 
-        await Utilities.ClearToken(_client);
+        await ClearToken();
         await RemoveUserAsync(username);
     }
 
     #region Utility methods
-    private async Task RegisterNewUserAndVerifyEmailAsync(string email)
-    {
-        var user = new ApplicationUser()
-        {
-            Email = email,
-            UserName = email,
-            EmailConfirmed = true,
-            CycleLength = null,
-            PeriodLength = null
-        };
-        await _userManager.CreateAsync(user, "P@ssw0rd.+");
-        await _userManager.AddToRoleAsync(user, "User");
-        _dbContext.ChangeTracker.Clear();
-    }
-
-    private async Task RemoveUserAsync(string email)
-    {
-        var user = await _userManager.Users.FirstAsync(u => u.Email == email);
-        await _userManager.DeleteAsync(user);
-        _dbContext.ChangeTracker.Clear();
-    }
-
     private async Task AssertUserHasCycleAsync(ApplicationUser user, InitialLoginPutDto initialLoginPutDto)
     {
         var cycle = await _dbContext.Cycles.FirstAsync(c => c.UserId == user.Id);

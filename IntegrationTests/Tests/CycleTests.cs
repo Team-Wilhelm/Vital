@@ -13,7 +13,7 @@ public class CycleTests(VitalApiFactory vaf) : TestBase(vaf)
     [Fact]
     public async Task Get_Should_be_unauthorized()
     {
-        await Utilities.ClearToken(_client);
+        await ClearToken();
 
         var response = await _client.GetAsync("/Cycle");
 
@@ -23,7 +23,7 @@ public class CycleTests(VitalApiFactory vaf) : TestBase(vaf)
     [Fact]
     public async Task Get_by_id_Should_be_unauthorized()
     {
-        await Utilities.ClearToken(_client);
+        await ClearToken();
 
         var id = Guid.NewGuid();
         var response = await _client.GetAsync($"/Cycle/{id}");
@@ -34,7 +34,7 @@ public class CycleTests(VitalApiFactory vaf) : TestBase(vaf)
     [Fact]
     public async Task Create_Should_be_unauthorized()
     {
-        await Utilities.ClearToken(_client);
+        await ClearToken();
 
         var createCycleDto = new CreateCycleDto()
         {
@@ -49,7 +49,7 @@ public class CycleTests(VitalApiFactory vaf) : TestBase(vaf)
     [Fact]
     public async Task Update_Should_be_unauthorized()
     {
-        await Utilities.ClearToken(_client);
+        await ClearToken();
 
         var id = Guid.NewGuid();
         var updateCycleDto = new UpdateCycleDto()
