@@ -45,7 +45,7 @@ public class UserCleanupService : IHostedService
 
     public Task StartAsync(CancellationToken cancellationToken)
     {
-        _timer = new Timer(DoWork, null, TimeSpan.Zero, TimeSpan.FromHours(24));
+        _timer = new Timer(DoWork, null, TimeSpan.FromMinutes(5), TimeSpan.FromHours(24));
         return Task.CompletedTask;
     }
 
