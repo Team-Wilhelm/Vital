@@ -13,10 +13,11 @@ export const emailLinkGuard: CanActivateFn =
     const accountService = inject(AccountService);
     const router = inject(Router);
 
-    if(userId && token && await accountService.isValidTokenForUser(verifyRequestDto)) {
-        return router.parseUrl(url);
+    // Route to login page if the token is invalid
+    if(!userId || !token || !await accountService.isValidTokenForUser(verifyRequestDto)) {
+      return router.parseUrl('/login');
     }
 
-    // Redirect to the login page
-    return router.parseUrl('/login');
+    return true;
+
   };
