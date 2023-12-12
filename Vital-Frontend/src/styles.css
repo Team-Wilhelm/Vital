@@ -23,4 +23,8 @@
   @apply justify-between;
 }
 
+.user-profile-input {
+  @apply input input-bordered w-full max-w-md lg:max-w-sm mb-2;
+}
+
 

@@ -20,12 +20,13 @@ public static class ServicesAndRepositoryExtension
         #endregion
 
         #region Service
-
+        
         services.AddTransient<ICycleService, CycleService>();
         services.AddTransient<IJwtService, JwtService>();
         services.AddScoped<IMetricService, MetricService>();
         services.AddTransient<IEmailDeliveryService, BrevoEmailDeliveryService>();
         services.AddTransient<IEmailService, EmailService>();
+        services.AddHostedService<UserCleanupService>();
 
         #endregion
 
