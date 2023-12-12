@@ -10,7 +10,6 @@ using Models;
 using Models.Days;
 using Models.Dto.Metrics;
 using Models.Identity;
-using Models.Util;
 
 namespace IntegrationTests.Tests;
 
@@ -80,7 +79,7 @@ public class MetricTests(VitalApiFactory vaf) : TestBase(vaf)
         {
             // Arrange
             var user = await RegisterUserAndCreateCycle("temp@application");
-            await AuthorizeUserAndSetHeaderAsync(user.Email);
+            await AuthorizeUserAndSetHeaderAsync(user.Email!);
             var metricRegisterMetricDto = await GetRegisterMetricDtoFlow();
 
             // Act
@@ -104,9 +103,7 @@ public class MetricTests(VitalApiFactory vaf) : TestBase(vaf)
     {
         // Arrange
         var user = await _dbContext.Users.FirstAsync(u => u.Email == "user@application");
-        await AuthorizeUserAndSetHeaderAsync(user.Email);
-
-        var date = DateTimeOffset.UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ", CultureInfo.InvariantCulture);
+        await AuthorizeUserAndSetHeaderAsync(user.Email!);
 
         var metricRegisterMetricDto = new MetricRegisterMetricDto()
         {
@@ -131,7 +128,7 @@ public class MetricTests(VitalApiFactory vaf) : TestBase(vaf)
     {
         // Arrange
         var user = await _dbContext.Users.FirstAsync(u => u.Email == "user@application");
-        await AuthorizeUserAndSetHeaderAsync(user.Email);
+        await AuthorizeUserAndSetHeaderAsync(user.Email!);
         var futureDate = DateTimeOffset.UtcNow.AddDays(2); // A future date
 
         var metricRegisterMetricDto = await GetRegisterMetricDtoFlow(futureDate);
@@ -156,7 +153,7 @@ public class MetricTests(VitalApiFactory vaf) : TestBase(vaf)
         await ClearToken();
         // Arrange
         var user = await _dbContext.Users.FirstAsync(u => u.Email == "user@application");
-        await AuthorizeUserAndSetHeaderAsync(user.Email);
+        await AuthorizeUserAndSetHeaderAsync(user.Email!);
 
         // Date before existing cycle
         var dateBeforeCurrentCycle = DateTimeOffset.UtcNow.AddMonths(-2);

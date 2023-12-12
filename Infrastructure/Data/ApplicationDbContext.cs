@@ -2,8 +2,8 @@
 using Microsoft.EntityFrameworkCore;
 using Models;
 using Models.Days;
+using Models.Dto.Metrics;
 using Models.Identity;
-using Models.Util;
 
 namespace Infrastructure.Data;
 

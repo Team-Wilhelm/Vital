@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Models.Dto.Metrics;
 using Models.Identity;
-using Models.Util;
 
 namespace Models.Days;
 

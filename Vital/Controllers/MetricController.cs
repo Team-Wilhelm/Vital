@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Models.Dto.Metrics;
-using Models.Util;
 using Vital.Core.Context;
 using Vital.Core.Services.Interfaces;
 

@@ -1,7 +1,6 @@
 ﻿using Models;
 using Models.Days;
 using Models.Dto.Metrics;
-using Models.Util;
 
 namespace Vital.Core.Services.Interfaces;
 
