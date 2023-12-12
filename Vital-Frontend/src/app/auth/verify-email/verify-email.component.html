@@ -1,16 +1,17 @@
 <div class="flex w-full h-full justify-center items-start xl:relative">
-  <div class="w-[95%] pt-5
-     md:w-[80%]
-     lg:w-[70%]
-     xl:w-full xl:pt-0">
-    <app-card cardTitle="Verify Email"
-              [hoverable]="false"
-              class="flex flex-col justify-around
-        w-[100%]
+  <app-card cardTitle="Verification"
+            class="w-full
         xl:absolute lg:top-[20%] xl:right-[10%]
         xl:w-[30rem] xl:h-[30rem] xl:rounded-2xl xl:shadow-xl">
 
-      <p>Please verify your Email below in order to use Vital</p>
+    <div class="flex flex-col h-full w-full justify-between">
+      <div>
+        <p>Welcome to Vital!</p>
+        <br>
+        <p>Thank you for signing up. There is only one step remaining, before you can start using your Vital account.</p>
+        <br>
+        <p>In order to get access, please, verify your e-mail address by clicking the button below.</p>
+      </div>
 
       <form (ngSubmit)="verifyEmail()" #verifyEmailForm="ngForm">
         <div class="form-group hidden">
@@ -33,12 +34,12 @@
                  class="form-control">
         </div>
 
-        <button type="submit" class="btn btn-primary w-full mb-10"
+        <button type="submit" class="btn btn-accent w-full"
                 [disabled]="!verifyEmailForm.form.valid">
-          Submit
+          Verify e-mail address
         </button>
       </form>
 
-    </app-card>
-  </div>
+    </div>
+  </app-card>
 </div>
