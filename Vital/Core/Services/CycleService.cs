@@ -152,7 +152,7 @@ public class CycleService : ICycleService
         var difference = periodLength - periodElapsed;
 
         //Add predicted days after latest period day until cycle length is reached
-        for (var i = 0; i <= difference; i++)
+        for (var i = 0; i < difference; i++)
         {
             var dayToAdd = latestPeriodDay.AddDays(i + 1);
             if (dayToAdd.Date > today)
