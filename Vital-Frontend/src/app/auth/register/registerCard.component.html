@@ -1,5 +1,5 @@
-<app-card cardTitle="Sign Up" [hoverable]="false"
-          [ngClass]="{'flex flex-col justify-around w-[100%] xl:absolute lg:top-[20%] xl:right-[10%] xl:w-[30rem] xl:h-[30rem] xl:rounded-2xl xl:shadow-lg': true,
+<auth-card cardTitle="Sign Up" [hoverable]="false"
+          [ngClass]="{'flex flex-col justify-around w-[100%] absolute xl:w-[30rem] xl:h-[30rem] xl:rounded-2xl xl:shadow-lg': true,
            'xl:h-[38rem]': passwordField.matches(':focus')
           }">
   <p class="mb-3">In order to use Vital, please log in or register.</p>
@@ -70,4 +70,4 @@
   <button class="btn btn-accent" (click)="register()">Sign Up</button>
   <p class="text-center">Already have an account? <a href="javascript:void(0)" (click)="redirectToLogin()"
                                                      class="text-accent">Login</a></p>
-</app-card>
+</auth-card>

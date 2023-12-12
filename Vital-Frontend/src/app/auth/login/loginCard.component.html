@@ -1,7 +1,7 @@
-<app-card cardTitle="Log In" [hoverable]="false"
+<auth-card cardTitle="Log In" [hoverable]="false"
           class="flex flex-col justify-around
           w-[100%]
-          xl:absolute lg:top-[20%] xl:right-[10%]
+          absolute
           xl:w-[30rem] xl:h-[30rem] xl:rounded-2xl xl:shadow-xl"
 >
   <p class="mb-3">In order to use Vital, please log in or register.</p>
@@ -22,4 +22,4 @@
   <p class="text-center">Don't have an account? <a href="javascript:void(0)" class="text-accent"
                                                    (click)="redirectToRegister()">Register</a>
   </p>
-</app-card>
+</auth-card>
