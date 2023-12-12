@@ -61,7 +61,10 @@ export default class AccountService {
   }
 
   public async isValidTokenForUser(dto: VerifyRequestDto): Promise<boolean> {
-    const url = `${environment.baseUrl}/Identity/Auth/valid-token?userId=${dto.userId}&token=${dto.token}`;
+    var token = dto.token;
+    var encodedToken = encodeURIComponent(dto.token);
+    debugger;
+    const url = `${environment.baseUrl}/Identity/Auth/valid-token?userId=${dto.userId}&token=${encodedToken}`;
     return await firstValueFrom(this.httpClient.get<boolean>(url));
   }
 }

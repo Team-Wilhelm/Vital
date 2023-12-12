@@ -145,20 +145,17 @@ public class AuthController : BaseController
             return Ok(false);
         }
 
-        var decodedToken = HttpUtility.UrlDecode(token);
-        Console.WriteLine(decodedToken);
-
         var isEmailTokenValid = await _userManager.VerifyUserTokenAsync(
             user,
             _userManager.Options.Tokens.EmailConfirmationTokenProvider,
             "EmailConfirmation",
-            decodedToken);
+            token);
 
         var isResetTokenValid = await _userManager.VerifyUserTokenAsync(
             user,
             _userManager.Options.Tokens.PasswordResetTokenProvider,
             "ResetPassword", 
-            decodedToken);
+            token);
 
         return Ok(isEmailTokenValid || isResetTokenValid);
     }
