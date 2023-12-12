@@ -4,7 +4,6 @@ using Models;
 using Models.Days;
 using Models.Dto.Metrics;
 using Models.Exception;
-using Models.Util;
 using Vital.Core.Services.Interfaces;
 
 namespace Vital.Core.Services;
@@ -213,10 +212,10 @@ public class MetricService : IMetricService
         }
         else
         {
-            cycle = await CreateCycle(userId, date, followingCycle?.StartDate.AddDays(-1));
+            cycle = await CreateCycle(userId, date, followingCycle.StartDate.AddDays(-1));
             
             // If the following cycle contains any metrics, which now belong to the new cycle, update their cycle id
-            await _calendarDayRepository.UpdateCycleIds(followingCycle!.Id, cycle.Id, cycle.StartDate,
+            await _calendarDayRepository.UpdateCycleIds(followingCycle.Id, cycle.Id, cycle.StartDate,
                 cycle.EndDate!.Value);
         }
 

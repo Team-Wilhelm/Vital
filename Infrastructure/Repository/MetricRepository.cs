@@ -5,7 +5,6 @@ using Infrastructure.Repository.Interface;
 using Models;
 using Models.Dto.Metrics;
 using Models.Exception;
-using Models.Util;
 
 namespace Infrastructure.Repository;
 

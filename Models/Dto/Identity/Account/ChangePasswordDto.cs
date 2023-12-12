@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Models.Identity;
 
 namespace Models.Dto.Identity.Account;
 

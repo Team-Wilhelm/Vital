@@ -1,7 +1,6 @@
 ﻿using Infrastructure.Adapters;
 using Models;
 using Models.Dto.Metrics;
-using Models.Util;
 
 namespace Infrastructure.Repository.Interface;
 
