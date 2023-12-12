@@ -1,4 +1,4 @@
-import {Component} from "@angular/core";
+import {Component, OnInit} from "@angular/core";
 import AccountService from "../../services/account.service";
 import {VerifyRequestDto} from "../../interfaces/account/verifyEmailDto.interface";
 import {ActivatedRoute} from "@angular/router";
@@ -8,7 +8,7 @@ import {ActivatedRoute} from "@angular/router";
   templateUrl: './verify-email.component.html'
 
 })
-export class VerifyEmailComponent {
+export class VerifyEmailComponent implements OnInit{
   dto: VerifyRequestDto = { userId: '', token: '' }; // Declare the model
 
   constructor(

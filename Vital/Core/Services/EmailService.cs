@@ -15,6 +15,8 @@ public class EmailService(IEmailDeliveryService emailDeliveryService, IOptions<G
     {
         var recipients = new List<string>() { user.UserName! };
         var subject = "Verify Email";
+        var userId = user.Id;
+        var encodedToken = HttpUtility.UrlEncode(token);
 
         var verifyMessageContent = $@"
 <body style=""font-family: Arial, sans-serif; background-color: #f0f0f0; margin: 0; padding: 0;"">
@@ -25,7 +27,7 @@ public class EmailService(IEmailDeliveryService emailDeliveryService, IOptions<G
         <div style=""padding: 10px; text-align: center;"">
             <p>Hello there,</p>
             <p>Thanks for signing up for Vital, a women's health app dedicated to your well-being. Please confirm your email address to start your journey with us.</p>
-            <a href=""{globalSettings.Value.FrontEndUrl}/verify-email?userId={user.Id}&token={HttpUtility.UrlEncode(token)}"" style=""display: inline-block; padding: 10px 20px; margin-top: 20px; background-color: #d1c1d7; color: black; text-decoration: none; border-radius: 5px;"">Verify Email</a>
+            <a href=""{globalSettings.Value.FrontEndUrl}/verify-email?userId={userId}&token={encodedToken}"" style=""display: inline-block; padding: 10px 20px; margin-top: 20px; background-color: #d1c1d7; color: black; text-decoration: none; border-radius: 5px;"">Verify Email</a>
             <p>If you didn't sign up for Vital, you can safely ignore this email.</p>
         </div>
     </div>
@@ -41,6 +43,8 @@ public class EmailService(IEmailDeliveryService emailDeliveryService, IOptions<G
     {
         var recipients = new List<string>() { user.UserName! };
         var subject = "Forgot password";
+        var userId = user.Id;
+        var encodedToken = HttpUtility.UrlEncode(token);
 
         var resetPasswordContent = $@"
 <body style=""font-family: Arial, sans-serif; background-color: #f0f0f0; margin: 0; padding: 0;"">
@@ -51,7 +55,7 @@ public class EmailService(IEmailDeliveryService emailDeliveryService, IOptions<G
     <div style=""padding: 10px; text-align: center;"">
         <p>Hello there,</p>
         <p>We received a request to reset the password for your Vital account. Click the button below to set a new password:</p>
-        <a href=""{globalSettings.Value.FrontEndUrl}/Forgot-Password?userId={user.Id}&token={HttpUtility.UrlEncode(token)}"" style=""display: inline-block; padding: 10px 20px; margin-top: 20px; background-color: #d1c1d7; color: black; text-decoration: none; border-radius: 5px;"">Reset Password</a>
+        <a href=""{globalSettings.Value.FrontEndUrl}/Forgot-Password?userId={userId}&token={encodedToken}"" style=""display: inline-block; padding: 10px 20px; margin-top: 20px; background-color: #d1c1d7; color: black; text-decoration: none; border-radius: 5px;"">Reset Password</a>
         <p>If you did not request a password reset, please ignore this email.</p>
     </div>
 </div>

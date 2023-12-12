@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using System.Web;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Models.Dto.Identity;
@@ -136,7 +137,7 @@ public class AuthController : BaseController
     }
 
     [HttpGet("valid-token")]
-    public async Task<IActionResult> IsValidTokenForUser([FromRoute] string userId, [FromRoute] string token)
+    public async Task<IActionResult> IsValidTokenForUser([FromQuery] string userId, [FromQuery] string token)
     {
         var user = await _userManager.FindByIdAsync(userId);
         if (user == null)
@@ -144,16 +145,22 @@ public class AuthController : BaseController
             return Ok(false);
         }
 
-        return Ok(_userManager.VerifyUserTokenAsync(
-            user, 
-            _userManager.Options.Tokens.EmailConfirmationTokenProvider, 
-            "EmailConfirmation", 
-            token).Result 
-                  || 
-                  _userManager.VerifyUserTokenAsync(
-                      user, 
-                      _userManager.Options.Tokens.PasswordResetTokenProvider, 
-                      "ResetPassword", 
-                      token).Result);
+        var decodedToken = HttpUtility.UrlDecode(token);
+        Console.WriteLine(decodedToken);
+
+        var isEmailTokenValid = await _userManager.VerifyUserTokenAsync(
+            user,
+            _userManager.Options.Tokens.EmailConfirmationTokenProvider,
+            "EmailConfirmation",
+            decodedToken);
+
+        var isResetTokenValid = await _userManager.VerifyUserTokenAsync(
+            user,
+            _userManager.Options.Tokens.PasswordResetTokenProvider,
+            "ResetPassword", 
+            decodedToken);
+
+        return Ok(isEmailTokenValid || isResetTokenValid);
     }
+
 }
