@@ -55,7 +55,7 @@ public class EmailService(IEmailDeliveryService emailDeliveryService, IOptions<G
     <div style=""padding: 10px; text-align: center;"">
         <p>Hello there,</p>
         <p>We received a request to reset the password for your Vital account. Click the button below to set a new password:</p>
-        <a href=""{globalSettings.Value.FrontEndUrl}/Forgot-Password?userId={userId}&token={encodedToken}"" style=""display: inline-block; padding: 10px 20px; margin-top: 20px; background-color: #d1c1d7; color: black; text-decoration: none; border-radius: 5px;"">Reset Password</a>
+        <a href=""{globalSettings.Value.FrontEndUrl}/reset-password?userId={userId}&token={encodedToken}"" style=""display: inline-block; padding: 10px 20px; margin-top: 20px; background-color: #d1c1d7; color: black; text-decoration: none; border-radius: 5px;"">Reset Password</a>
         <p>If you did not request a password reset, please ignore this email.</p>
     </div>
 </div>

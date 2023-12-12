@@ -8,7 +8,6 @@ export const emailLinkGuard: CanActivateFn =
 
     const userId = route.queryParams["userId"]!;
     const token = route.queryParams["token"]!;
-    const url = state.url.split('?')[0];
     const verifyRequestDto = {userId, token};
     const accountService = inject(AccountService);
     const router = inject(Router);
