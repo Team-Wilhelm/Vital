@@ -42,7 +42,7 @@ public class AccountTests(VitalApiFactory vaf) : TestBase(vaf)
     }
 
     [Fact]
-    public async Task Forgot_Password_return_500()
+    public async Task Forgot_Password_return_200()
     {
         var forgotPasswordDto = new ForgotPasswordDto()
         {
