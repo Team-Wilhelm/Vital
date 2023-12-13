@@ -28,7 +28,9 @@ export default class AccountService {
 
   public async isFirstLogin() {
     const response = await this.httpService.get<InitialLoginGetDto>(environment.baseUrl + '/cycle/initial-login');
-    if(response === undefined || response === null)return false;
+    if(response === undefined || response === null){
+      return false;
+    }
     return response.periodLength === null || response.cycleLength === null;
   }
 
