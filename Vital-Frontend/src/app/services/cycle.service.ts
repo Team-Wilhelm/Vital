@@ -19,7 +19,7 @@ export class CycleService {
 
   async getPredictedPeriod() {
     this.predictedPeriod = await firstValueFrom(this.httpClient.get<Date[]>(environment.baseUrl + '/cycle/predicted-period'));
-    this.predictedPeriod = this.predictedPeriod.map(date => new Date(date));
+    this.predictedPeriod = this.predictedPeriod.map(date => new Date(date)).filter(date => date >= new Date());
   }
 
   async getAnalytics(numberOfCycles: number) {

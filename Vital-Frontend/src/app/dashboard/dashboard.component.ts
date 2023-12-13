@@ -57,8 +57,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
     });
   }
 
-  ngOnInit() {
-
+  async ngOnInit() {
+    await this.updateDashboardComponents();
   }
 
   ngOnDestroy() {
