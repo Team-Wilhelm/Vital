@@ -15,26 +15,20 @@ import {ChangePasswordDto} from "../interfaces/account/ChangePasswordDto";
   providedIn: 'root'
 })
 export default class AccountService {
-  constructor(private httpClient: HttpClient, private toastService: ToastService, private router: Router, private httpService: HttpService) {
+  constructor(private router: Router, private httpService: HttpService) {
   }
 
   public async setInitialLoginData(loginData: InitialLoginPostDto): Promise<void> {
-    try {
-      const request = this.httpClient.put(environment.baseUrl + '/cycle/initial-login', loginData);
-      await firstValueFrom(request);
-    } catch (e) {
-      throw new Error('Could not set initial login data.');
-    }
+    await this.httpService.put(environment.baseUrl + '/cycle/initial-login', loginData, 'Initial login data set');
   }
 
-  public async checkIfUsernameIsTaken(username: string): Promise<boolean> {
-    const request = this.httpClient.get<boolean>(environment.baseUrl + '/identity/auth/username-taken/' + username);
-    return await firstValueFrom(request);
+  public async checkIfUsernameIsTaken(username: string){
+    return await this.httpService.get<boolean>(environment.baseUrl + '/identity/auth/username-taken/' + username);
   }
 
   public async isFirstLogin() {
-    const request = this.httpClient.get<InitialLoginGetDto>(environment.baseUrl + '/cycle/initial-login');
-    const response = await firstValueFrom(request);
+    const response = await this.httpService.get<InitialLoginGetDto>(environment.baseUrl + '/cycle/initial-login');
+    if(response === undefined || response === null)return false;
     return response.periodLength === null || response.cycleLength === null;
   }
 
