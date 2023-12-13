@@ -35,6 +35,7 @@ import AccountService from "./services/account.service";
 import {ForgotPasswordComponent} from "./auth/forgot-password/forgot-password.component";
 import {ResetPasswordComponent} from "./auth/reset-password/reset-password.component";
 import {VerifyEmailComponent} from "./auth/verify-email/verify-email.component";
+import {AuthCardComponent} from "./card/auth-card.component";
 
 @NgModule({
   declarations: [
@@ -61,7 +62,8 @@ import {VerifyEmailComponent} from "./auth/verify-email/verify-email.component";
     ApplicationStatCardComponent,
     ForgotPasswordComponent,
     ResetPasswordComponent,
-    VerifyEmailComponent
+    VerifyEmailComponent,
+    AuthCardComponent
   ],
     imports: [
         BrowserModule,
