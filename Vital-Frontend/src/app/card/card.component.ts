@@ -19,7 +19,6 @@ import {Router} from "@angular/router";
                       </button>
                   </div>
               </div>
-
               <ng-content></ng-content>
           </div>
       </div>
@@ -44,7 +43,7 @@ export class CardComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.classList.push('card', 'card-compact', 'xl:card-normal', 'h-full', 'w-full', 'shadow');
+    this.classList.push('card', 'card-compact', 'xl:card-normal', 'h-full', 'w-full', 'shadow-lg');
 
     if (this.isTextContent) {
       this.classList.push('text-primary-content');
@@ -57,7 +56,7 @@ export class CardComponent implements OnInit {
     if (this.cardColor) {
       this.classList.push(this.cardColor);
     } else {
-      this.classList.push('bg-base-100');
+      this.classList.push('bg-base-200');
     }
 
     if (this.redirectLink) {

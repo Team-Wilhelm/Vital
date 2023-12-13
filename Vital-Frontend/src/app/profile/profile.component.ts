@@ -1,9 +1,12 @@
 import {Component, OnInit} from '@angular/core';
 import {AbstractControl, FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {PasswordValidator} from "../validators/password.validator";
-import {PasswordRules} from "../interfaces/Utilities";
+import {PasswordRules} from "../interfaces/utilities.interface";
 import {CycleService} from "../services/cycle.service";
+import {UserService} from "../services/user.service";
 import {PeriodCycleStatsDto} from "../interfaces/analytics.interface";
+import AccountService from "../services/account.service";
+import {ChangePasswordDto} from "../interfaces/account/ChangePasswordDto";
 
 @Component({
   selector: 'app-profile',
@@ -13,12 +16,18 @@ import {PeriodCycleStatsDto} from "../interfaces/analytics.interface";
 export class ProfileComponent implements OnInit{
 
   public periodCycleStats: PeriodCycleStatsDto | undefined;
-  constructor(private cycleService: CycleService) {
+  public userEmail: string = '';
+  public changePasswordDto: ChangePasswordDto = {
+    oldPassword: '',
+    newPassword: ''
+  }
+  constructor(private cycleService: CycleService, private userService: UserService, private accountService: AccountService) {
     this.subscribeToPasswordChanges();
   }
 
   async ngOnInit(): Promise<void>{
     this.periodCycleStats = await this.cycleService.getUserStats();
+    this.userEmail = await this.userService.getUserEmail();
   }
 
   passwordRulesMet: PasswordRules = {
@@ -30,6 +39,7 @@ export class ProfileComponent implements OnInit{
   };
 
   readonly changePasswordForm = new FormGroup({
+    oldPassword: new FormBuilder().control('', Validators.required),
     password: new FormBuilder().control('', [Validators.required, PasswordValidator]),
     repeatPassword: new FormBuilder().control('', [Validators.required, PasswordValidator])
   }, {validators: this.passwordMatchValidator});
@@ -54,5 +64,15 @@ export class ProfileComponent implements OnInit{
         };
       });
     }
+  }
+
+  public async changePassword(): Promise<void> {
+    if (!this.changePasswordForm.valid) {
+      return;
+    }
+    this.changePasswordDto.oldPassword = <string>this.changePasswordForm.get('oldPassword')?.value;
+    this.changePasswordDto.newPassword = <string>this.changePasswordForm.get('password')?.value;
+
+    await this.accountService.changePassword(this.changePasswordDto);
   }
 }

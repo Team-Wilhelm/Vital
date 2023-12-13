@@ -1,10 +1,8 @@
 ﻿using AutoMapper;
 using Models;
-using Models.Days;
 using Models.Dto.Cycle;
 using Models.Dto.Metrics;
 using Models.Pagination;
-using Models.Util;
 
 namespace Vital.Extension.Mapping;
 
@@ -17,7 +15,7 @@ public class MappingProfile : Profile
         CreateMap<CreateCycleDto, Cycle>();
         CreateMap<UpdateCycleDto, Cycle>();
         CreateMap<PaginatedList<Cycle>, PaginatedList<CycleDto>>();
-        
+
 
         // Metric
         CreateMap<Metrics, MetricsDto>();

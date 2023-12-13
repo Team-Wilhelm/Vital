@@ -6,32 +6,51 @@ import {authGuard} from "./gurads/auth.guard";
 import {AddMetricPageComponent} from "./add-metric-page/add-metric-page.component";
 import {AuthComponent} from "./auth/auth.component";
 import {ProfileComponent} from "./profile/profile.component";
+import {FirstLoginComponent} from "./first-login-page/first-login.component";
+import {initialLoginGuard} from "./gurads/initial-login.guard";
+import {ForgotPasswordComponent} from "./auth/forgot-password/forgot-password.component";
+import {ResetPasswordComponent} from "./auth/reset-password/reset-password.component";
+import {VerifyEmailComponent} from "./auth/verify-email/verify-email.component";
 
 const routes: Routes = [
-    {path: '', redirectTo: 'dashboard', pathMatch: 'full'},
-    {
-        path: 'dashboard',
-        component: DashboardComponent,
-        canActivate: [authGuard]
-    },
-    {
-        path: 'analytics',
-        component: AnalyticsComponent,
-        canActivate: [authGuard]
-    },
-    {
-      path: 'add-metric',
-      component: AddMetricPageComponent,
-      pathMatch: 'full'
-    },
-    {path: 'profile', component: ProfileComponent, canActivate: [authGuard]},
-    {path: 'login', component: AuthComponent},
-    {path: '**', redirectTo: 'dashboard'},
+  {path: '', redirectTo: 'dashboard', pathMatch: 'full'},
+  {
+    path: 'dashboard',
+    component: DashboardComponent,
+    canActivate: [authGuard]
+  },
+  {
+    path: 'analytics',
+    component: AnalyticsComponent,
+    canActivate: [authGuard]
+  },
+  {
+    path: 'add-metric',
+    component: AddMetricPageComponent,
+    pathMatch: 'full',
+    canActivate: [authGuard]
+  },
+  {
+    path: 'initial-login',
+    component: FirstLoginComponent,
+    pathMatch: 'full',
+    canActivate: [initialLoginGuard]
+  },
+  {
+    path: 'profile',
+    component: ProfileComponent,
+    canActivate: [authGuard]
+  },
+  {path: 'login', component: AuthComponent},
+  {path: 'forgot-password', component: ForgotPasswordComponent},
+  {path: 'reset-password', component: ResetPasswordComponent},
+  {path: 'verify-email', component: VerifyEmailComponent},
+  {path: '**', redirectTo: 'dashboard'}
 ];
 
 @NgModule({
-    imports: [RouterModule.forRoot(routes)],
-    exports: [RouterModule]
+  imports: [RouterModule.forRoot(routes)],
+  exports: [RouterModule]
 })
 export class AppRoutingModule {
 }

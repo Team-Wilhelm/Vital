@@ -1,33 +1,16 @@
 ﻿using System.Net;
 using System.Net.Http.Json;
 using FluentAssertions;
-using Infrastructure.Data;
 using IntegrationTests.Setup;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.DependencyInjection;
+using Microsoft.EntityFrameworkCore;
 using Models.Dto.Identity;
 using Models.Identity;
 
 namespace IntegrationTests.Tests;
 
 [Collection("VitalApi")]
-public class AuthTests
+public class AuthTests(VitalApiFactory vaf) : TestBase(vaf)
 {
-    private readonly HttpClient _client;
-    private readonly ApplicationDbContext _dbContext;
-    private readonly IServiceScope _scope;
-    private readonly UserManager<ApplicationUser> _userManager;
-    private readonly VitalApiFactory _waf;
-
-    public AuthTests(VitalApiFactory waf)
-    {
-        _client = waf.Client;
-        _scope = waf.Services.CreateScope();
-        _dbContext = _scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-        _userManager = _scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-        _waf = waf;
-    }
-
     [Fact]
     public async Task Register_with_insufficient_email()
     {
@@ -50,7 +33,7 @@ public class AuthTests
     {
         var registerRequest = new RegisterRequestDto()
         {
-            Email = "user@app",
+            Email = "less-than-6-user@app",
             Password = "P@5sw"
         };
 
@@ -67,7 +50,7 @@ public class AuthTests
     {
         var registerRequest = new RegisterRequestDto()
         {
-            Email = "user@app",
+            Email = "no-uppercase-user@app",
             Password = "p@ssw0rd.+"
         };
 
@@ -84,7 +67,7 @@ public class AuthTests
     {
         var registerRequest = new RegisterRequestDto()
         {
-            Email = "user@app",
+            Email = "no-symbol-user@app",
             Password = "Passw0rd"
         };
 
@@ -101,7 +84,7 @@ public class AuthTests
     {
         var registerRequest = new RegisterRequestDto()
         {
-            Email = "user@app",
+            Email = "no-number-user@app",
             Password = "P@ssword.+"
         };
 
@@ -118,13 +101,13 @@ public class AuthTests
     {
         var registerRequest = new RegisterRequestDto()
         {
-            Email = "user@app.com",
+            Email = "successfull-user@app.com",
             Password = "P@ssw0rd.+"
         };
 
         var response = await _client.PostAsync("/Identity/Auth/Register", JsonContent.Create(registerRequest));
 
-        response.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
+        response.StatusCode.Should().Be(HttpStatusCode.ServiceUnavailable);
 
         _dbContext.Users.FirstOrDefault(u => u.UserName == registerRequest.Email)
             .Should().NotBeNull();
@@ -189,7 +172,7 @@ public class AuthTests
         };
         await _userManager.CreateAsync(user, loginRequest.Password);
 
-        _dbContext.Users.FirstOrDefault(u => u.UserName == loginRequest.Email)
+        (await _userManager.Users.FirstOrDefaultAsync(u => u.UserName == loginRequest.Email))
             .Should().NotBeNull();
 
         var response = await _client.PostAsync("/Identity/Auth/Login", JsonContent.Create(loginRequest));

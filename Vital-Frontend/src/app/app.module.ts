@@ -22,12 +22,20 @@ import {CalendarComponent} from './calendar/calendar.component';
 import {AddMetricPageComponent} from './add-metric-page/add-metric-page.component';
 import {MetricListItemComponent} from "./dashboard/metric-list-item/metric-list-item.component";
 import {MetricSelectionItemComponent} from "./add-metric-page/metric-selection-item/metric-selection-item.component";
-import {StatCardComponent} from "./card/stat-card.component";
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 import {RegisterCardComponent} from "./auth/register/registerCard.component";
 import {LoginCardComponent} from "./auth/login/loginCard.component";
 import {ToastComponent} from "./toasts/toast.component";
 import {ProfileComponent} from "./profile/profile.component";
+import {ApplicationStatCardComponent} from "./stat-card/application-stat-card.component";
+import {StatCardComponent} from "./card/stat-card.component";
+import {FirstLoginComponent} from "./first-login-page/first-login.component";
+import {PasswordInputComponent} from "./auth/password-input.component";
+import AccountService from "./services/account.service";
+import {ForgotPasswordComponent} from "./auth/forgot-password/forgot-password.component";
+import {ResetPasswordComponent} from "./auth/reset-password/reset-password.component";
+import {VerifyEmailComponent} from "./auth/verify-email/verify-email.component";
+import {AuthCardComponent} from "./card/auth-card.component";
 
 @NgModule({
   declarations: [
@@ -47,7 +55,15 @@ import {ProfileComponent} from "./profile/profile.component";
     MetricSelectionItemComponent,
     ToastComponent,
     MetricSelectionItemComponent,
-    ProfileComponent
+    ProfileComponent,
+    ApplicationStatCardComponent,
+    FirstLoginComponent,
+    PasswordInputComponent,
+    ApplicationStatCardComponent,
+    ForgotPasswordComponent,
+    ResetPasswordComponent,
+    VerifyEmailComponent,
+    AuthCardComponent
   ],
     imports: [
         BrowserModule,
@@ -62,7 +78,7 @@ import {ProfileComponent} from "./profile/profile.component";
     ],
   providers: [
     TokenService,
-    CycleService,
+    AccountService,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthHttpInterceptor,

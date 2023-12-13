@@ -158,7 +158,8 @@ namespace Vital.Migrations
 
                     b.Property<string>("State")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
@@ -172,6 +173,35 @@ namespace Vital.Migrations
                     b.HasDiscriminator<string>("State").HasValue("CalendarDay");
 
                     b.UseTphMappingStrategy();
+                });
+
+            modelBuilder.Entity("Models.Dto.Metrics.CalendarDayMetric", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CalendarDayId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset?>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("MetricValueId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("MetricsId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CalendarDayId");
+
+                    b.HasIndex("MetricValueId");
+
+                    b.HasIndex("MetricsId");
+
+                    b.ToTable("CalendarDayMetric");
                 });
 
             modelBuilder.Entity("Models.Identity.ApplicationRole", b =>
@@ -217,7 +247,7 @@ namespace Vital.Migrations
                     b.Property<Guid?>("CurrentCycleId")
                         .HasColumnType("uuid");
 
-                    b.Property<float>("CycleLength")
+                    b.Property<float?>("CycleLength")
                         .HasColumnType("real");
 
                     b.Property<string>("Email")
@@ -244,7 +274,7 @@ namespace Vital.Migrations
                     b.Property<string>("PasswordHash")
                         .HasColumnType("text");
 
-                    b.Property<float>("PeriodLength")
+                    b.Property<float?>("PeriodLength")
                         .HasColumnType("real");
 
                     b.Property<string>("PhoneNumber")
@@ -252,6 +282,9 @@ namespace Vital.Migrations
 
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("boolean");
+
+                    b.Property<DateTimeOffset?>("ResetPasswordTokenExpirationDate")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("text");
@@ -262,6 +295,9 @@ namespace Vital.Migrations
                     b.Property<string>("UserName")
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
+
+                    b.Property<DateTimeOffset?>("VerifyEmailTokenExpirationDate")
+                        .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 
@@ -286,7 +322,8 @@ namespace Vital.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(30)
+                        .HasColumnType("character varying(30)");
 
                     b.HasKey("Id");
 
@@ -303,40 +340,12 @@ namespace Vital.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(30)
+                        .HasColumnType("character varying(30)");
 
                     b.HasKey("Id");
 
                     b.ToTable("Metrics");
-                });
-
-            modelBuilder.Entity("Models.Util.CalendarDayMetric", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("CalendarDayId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTimeOffset>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid?>("MetricValueId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("MetricsId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CalendarDayId");
-
-                    b.HasIndex("MetricValueId");
-
-                    b.HasIndex("MetricsId");
-
-                    b.ToTable("CalendarDayMetric");
                 });
 
             modelBuilder.Entity("Models.Days.CycleDay", b =>
@@ -441,16 +450,7 @@ namespace Vital.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Models.MetricValue", b =>
-                {
-                    b.HasOne("Models.Metrics", null)
-                        .WithMany("Values")
-                        .HasForeignKey("MetricsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Models.Util.CalendarDayMetric", b =>
+            modelBuilder.Entity("Models.Dto.Metrics.CalendarDayMetric", b =>
                 {
                     b.HasOne("Models.Days.CalendarDay", "CalendarDay")
                         .WithMany("SelectedMetrics")
@@ -473,6 +473,15 @@ namespace Vital.Migrations
                     b.Navigation("MetricValue");
 
                     b.Navigation("Metrics");
+                });
+
+            modelBuilder.Entity("Models.MetricValue", b =>
+                {
+                    b.HasOne("Models.Metrics", null)
+                        .WithMany("Values")
+                        .HasForeignKey("MetricsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Models.Days.CycleDay", b =>

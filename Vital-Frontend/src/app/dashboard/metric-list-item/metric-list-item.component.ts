@@ -72,8 +72,7 @@ export class MetricListItemComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    //TODO: colour based on metric value
-    this.classString += " bg-secondary"
+    this.classString += " bg-zinc-200/50"
   }
 
   ngOnDestroy() {

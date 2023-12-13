@@ -1,26 +1,19 @@
 ﻿using System.Net;
 using System.Net.Http.Json;
 using FluentAssertions;
-using Infrastructure.Data;
 using IntegrationTests.Setup;
 using Models.Dto.Cycle;
 
 namespace IntegrationTests.Tests;
 
 [Collection("VitalApi")]
-public class CycleTests
+public class CycleTests(VitalApiFactory vaf) : TestBase(vaf)
 {
-    private readonly HttpClient _client;
-    private readonly ApplicationDbContext _dbContext;
-    public CycleTests(VitalApiFactory waf)
-    {
-        _client = waf.Client;
-        _dbContext = waf.DbContext;
-    }
-
     [Fact]
     public async Task Get_Should_be_unauthorized()
     {
+        await ClearToken();
+
         var response = await _client.GetAsync("/Cycle");
 
         response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
@@ -29,6 +22,8 @@ public class CycleTests
     [Fact]
     public async Task Get_by_id_Should_be_unauthorized()
     {
+        await ClearToken();
+
         var id = Guid.NewGuid();
         var response = await _client.GetAsync($"/Cycle/{id}");
 
@@ -38,6 +33,8 @@ public class CycleTests
     [Fact]
     public async Task Create_Should_be_unauthorized()
     {
+        await ClearToken();
+
         var createCycleDto = new CreateCycleDto()
         {
             StartDate = DateTimeOffset.Now,
@@ -51,6 +48,8 @@ public class CycleTests
     [Fact]
     public async Task Update_Should_be_unauthorized()
     {
+        await ClearToken();
+
         var id = Guid.NewGuid();
         var updateCycleDto = new UpdateCycleDto()
         {
@@ -61,5 +60,4 @@ public class CycleTests
 
         response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }
-
 }

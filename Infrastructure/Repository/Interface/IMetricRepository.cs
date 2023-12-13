@@ -1,9 +1,6 @@
 ﻿using Infrastructure.Adapters;
 using Models;
-using Models.Days;
-using Models.Dto.Cycle;
 using Models.Dto.Metrics;
-using Models.Util;
 
 namespace Infrastructure.Repository.Interface;
 
@@ -18,4 +15,5 @@ public interface IMetricRepository
     Task DeleteMetricEntry(Guid calendarDayMetricId);
     Task<List<Metrics>> GetMetricsForCalendarDayById(Guid calendarDayId);
     Task<Guid> GetCalendarDayIdByCalendarDayMetricId(Guid calendarDayMetricId);
+    Task<bool> CheckIfMetricsExist(List<MetricRegisterMetricDto> metrics);
 }

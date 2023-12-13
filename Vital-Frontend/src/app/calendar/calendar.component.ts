@@ -18,17 +18,16 @@ export class CalendarComponent implements AfterViewInit {
 
   private eventList: any[] = [];
   private periodDays: Date[] = [];
+  private calendarApi?: Calendar;
   clickedDate = new Date();
   selectedDateElement: HTMLElement | null = null;
-  private calendarApi?: Calendar;
 
   constructor(private dataService: DataService, private metricService: MetricService, private cycleService: CycleService) {
   }
 
   async ngAfterViewInit() {
     this.calendarApi = this.calendarComponent.getApi();
-    await this.getPeriodDays();
-    await this.getPredictedPeriodDays();
+    await this.updateCalendar();
 
     this.calendarApi?.setOption('dateClick', this.handleDateClick.bind(this));
     this.calendarApi?.setOption('datesSet', this.handleDatesSet.bind(this));
@@ -85,16 +84,13 @@ export class CalendarComponent implements AfterViewInit {
   }
 
   async handleDatesSet(arg: any) {
-    await this.getPeriodDays();
-    await this.getPredictedPeriodDays();
+    await this.updateCalendar();
   }
 
   async getPeriodDays() {
     if (!this.calendarApi) {
       return;
     }
-    this.eventList = [];
-    this.calendarApi?.removeAllEvents();
 
     const currentDate = this.calendarApi.getDate(); // Get the currently displayed month
     const firstDay = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1);
@@ -102,7 +98,6 @@ export class CalendarComponent implements AfterViewInit {
     const today = new Date();
 
     this.periodDays = await this.metricService.getPeriodDays(firstDay, lastDay > today ? today : lastDay);
-
     for (let date of this.periodDays) {
       date = new Date(date);
       this.createEvent(date);
@@ -116,7 +111,6 @@ export class CalendarComponent implements AfterViewInit {
     }
   }
 
-  //TODO why no period event for 30/11? Is date being dumb?
   createEvent(date: Date) {
     const newEvent = {
       start: date,
@@ -127,6 +121,11 @@ export class CalendarComponent implements AfterViewInit {
       description: 'Period'
       //url: maybe route to add metric page for that day?
     };
+
+    if (this.eventList.some(event => event.start.getTime() === newEvent.start.getTime())) {
+      return;
+    }
+
     this.calendarApi?.addEvent(newEvent);
     this.eventList.push(newEvent);
   }
@@ -138,11 +137,24 @@ export class CalendarComponent implements AfterViewInit {
       backgroundColor: '#DBC2C6',
       borderColor: '#BA6E6E',
       description: 'Predicted period',
-      display: 'auto'
+      display: 'block'
       //url: maybe route to add metric page for that day?
     };
+
+    if (this.eventList.some(event => event.start.getTime() === newEvent.start.getTime())) {
+      return;
+    }
+
     this.calendarApi?.addEvent(newEvent);
     this.eventList.push(newEvent);
+  }
+
+  async updateCalendar() {
+    this.calendarApi?.removeAllEvents();
+    this.eventList = [];
+    await this.getPeriodDays();
+    await this.getPredictedPeriodDays();
+    console.log(this.eventList);
   }
 }
 

@@ -1,0 +1,12 @@
+.card {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  transition: transform 1s;
+  transform-style: preserve-3d;
+  perspective: 1000px;
+}
+
+.flipped {
+  transform: rotateY(-180deg);
+}

@@ -1,26 +1,28 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Models.Dto.Identity;
+using Models.Exception;
 using Models.Identity;
 using Models.Responses;
 using Vital.Core.Services.Interfaces;
-using Vital.Models.Exception;
 
 namespace Vital.Controllers.Identity;
 
+/// <summary>
+/// Controller responsible for user authentication
+/// </summary>
 [Route("/Identity/[controller]")]
 public class AuthController : BaseController
 {
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IJwtService _jwtService;
-    private readonly ICycleService _cycleService;
     private readonly IEmailService _emailService;
 
-    public AuthController(UserManager<ApplicationUser> userManager, IJwtService jwtService, ICycleService cycleService, IEmailService emailService)
+    public AuthController(UserManager<ApplicationUser> userManager, IJwtService jwtService, IEmailService emailService)
     {
         _userManager = userManager;
         _jwtService = jwtService;
-        _cycleService = cycleService;
         _emailService = emailService;
     }
 
@@ -38,7 +40,7 @@ public class AuthController : BaseController
             return BadRequest(ModelState);
         }
 
-        var user = await _userManager.FindByEmailAsync(request.Email);
+        var user = await _userManager.Users.FirstOrDefaultAsync(u => u.UserName == request.Email);
         if (user == null)
         {
             throw new AuthException("Wrong username or password");
@@ -69,7 +71,8 @@ public class AuthController : BaseController
     /// <summary>
     /// Register user
     /// </summary>
-    /// <param name="requestDto"></param>
+    /// <param name="requestDto">Request</param>
+    /// <param name="cancellationToken"></param>
     /// <returns></returns>
     /// <exception cref="Exception"></exception>
     [HttpPost("Register")]
@@ -82,19 +85,53 @@ public class AuthController : BaseController
 
         var user = new ApplicationUser()
         {
+            Id = Guid.NewGuid(),
             Email = requestDto.Email,
-            UserName = requestDto.Email
+            UserName = requestDto.Email,
+            CycleLength = null,
+            PeriodLength = null
         };
-
-        var result = await _userManager.CreateAsync(user, requestDto.Password);
+        IdentityResult result;
+        try
+        {
+            result = await _userManager.CreateAsync(user, requestDto.Password);
+        } catch (DbUpdateException)
+        {
+            throw new AuthException("Cannot create user. This username is already taken.");
+        }
         if (!result.Succeeded)
         {
-            throw new AuthException("Cannot create user");
+            var identityError = result.Errors.FirstOrDefault();
+
+            if (identityError == null)
+            {
+                throw new AuthException("Unknown error occurred while creating user.");
+            }
+
+            if (identityError.Code == "DuplicateUserName")
+            {
+                throw new AuthException("Cannot create user. This username is already taken.");
+            }
+            throw new AuthException(identityError.Description);
         }
 
         var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+        user.VerifyEmailTokenExpirationDate = DateTime.UtcNow.AddHours(24);
+        await _userManager.UpdateAsync(user);
         await _emailService.SendVerifyEmail(user, token, cancellationToken);
 
         return Ok();
+    }
+
+    /// <summary>
+    /// Check if username is taken
+    /// </summary>
+    /// <param name="username">Username to lookup</param>
+    /// <returns></returns>
+    [HttpGet("username-taken/{username}")]
+    public async Task<IActionResult> IsUsernameTaken([FromRoute] string username)
+    {
+        var user = await _userManager.Users.FirstOrDefaultAsync(u => u.UserName == username);
+        return Ok(user != null);
     }
 }

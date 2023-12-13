@@ -4,20 +4,17 @@ using Infrastructure.Adapters;
 using Infrastructure.Repository.Interface;
 using Models;
 using Models.Dto.Metrics;
-using Models.Util;
-using Vital.Models.Exception;
+using Models.Exception;
 
 namespace Infrastructure.Repository;
 
 public class MetricRepository : IMetricRepository
 {
     private readonly IDbConnection _db;
-    private readonly ICalendarDayRepository _calendarDayRepository;
 
-    public MetricRepository(IDbConnection db, ICalendarDayRepository calendarDayRepository)
+    public MetricRepository(IDbConnection db)
     {
         _db = db;
-        _calendarDayRepository = calendarDayRepository;
     }
 
     public async Task<List<Metrics>> GetAllMetrics()
@@ -34,8 +31,7 @@ public class MetricRepository : IMetricRepository
         return list.GroupBy(m => m.Id).Select(g =>
         {
             var groupedMetric = g.First();
-            groupedMetric.Values = g.Select(p => p.Values.FirstOrDefault()).Where(p => p != null).ToList() ??
-                                   new List<MetricValue>();
+            groupedMetric.Values = g.Select(p => p.Values.First()).ToList();
             return groupedMetric;
         }).ToList();
     }
@@ -69,8 +65,7 @@ public class MetricRepository : IMetricRepository
         });
         return result;
     }
-
-    //TODO parse date correctly
+    
     public async Task<IEnumerable<DateTimeOffset>> GetPeriodDays(Guid userId, DateTimeOffset fromDate, DateTimeOffset toDate)
     {
         var sql = $@"SELECT
@@ -79,18 +74,17 @@ public class MetricRepository : IMetricRepository
     WHERE CAST(""Date"" AS DATE) >= CAST(@fromDate AS DATE) AND CAST(""Date"" AS DATE) <= CAST(@toDate AS DATE)
       AND ""UserId"" = @userId AND ""IsPeriod"" = true
     ";
-        var result = await _db.QueryAsync<string>(sql, new { userId, fromDate, toDate });
-        var parsedDates = result.Select(dateString => DateTimeOffset.Parse(dateString));
-        return parsedDates;
+        var result = await _db.QueryAsync<DateTime>(sql, new { userId, fromDate, toDate });
+        return result.Select(d => new DateTimeOffset(d, TimeSpan.Zero));
     }
-    
+
     public async Task<ICollection<CalendarDayMetric>> Get(Guid userId, DateTimeOffset date)
     {
         // Because the data in the database is stored in UTC, but we want to retrieve it in the user's timezone,
         // we need to convert the date to UTC and add/subtract the offset + 24 hours to retrieve the correct data for the user's timezone.
         // For example, if the user is trying to retrieve the data for 2023-11-27+01:00, we need to get anything between 2023-11-26T23:00:00Z and 2023-11-27T22:59:59Z
         var start = date.UtcDateTime;
-        var end = date.UtcDateTime.AddDays(1); 
+        var end = date.UtcDateTime.AddDays(1);
         var sql = $@"SELECT
                 CDM.*,
                 ""Metrics"".*,
@@ -117,30 +111,8 @@ public class MetricRepository : IMetricRepository
 
     public async Task SaveMetrics(Guid calendarDayId, List<MetricRegisterMetricDto> metrics)
     {
-        // Check if the metric passed is valid
-        var metricsIds = metrics.Select(m => m.MetricsId).Distinct().ToList();
-        var sql = @"SELECT ""Id"" FROM ""Metrics"" WHERE ""Id"" = ANY(@metricsIds)";
-        var validMetricsIds = await _db.QueryAsync<Guid>(sql, new { metricsIds });
-        if (validMetricsIds.Count() != metricsIds.Count)
-        {
-            throw new BadRequestException("The metric you are trying to log does not exist.");
-        }
-
-        // Check if the metric value passed is valid
-        var metricValuesIds = metrics.Select(m => m.MetricValueId).Distinct().ToList();
-        metricValuesIds.RemoveAll(m => m == null);
-        if (metricValuesIds.Count > 0)
-        {
-            sql = @"SELECT ""Id"" FROM ""MetricValue"" WHERE ""Id"" = ANY(@metricValuesIds)";
-            var validMetricValuesIds = await _db.QueryAsync<Guid>(sql, new { metricValuesIds });
-            if (validMetricValuesIds.Count() != metricValuesIds.Count)
-            {
-                throw new BadRequestException("The metric value you are trying to log does not exist.");
-            }
-        }
-
         // Insert new metrics for the day
-        sql = @"INSERT INTO ""CalendarDayMetric"" (""Id"",""CalendarDayId"", ""MetricsId"", ""MetricValueId"", ""CreatedAt"") VALUES (@Id, @calendarDayId, @metricsId, @metricValueId, @createdAt)";
+        var sql = @"INSERT INTO ""CalendarDayMetric"" (""Id"",""CalendarDayId"", ""MetricsId"", ""MetricValueId"", ""CreatedAt"") VALUES (@Id, @calendarDayId, @metricsId, @metricValueId, @createdAt)";
         foreach (var metricsDto in metrics)
         {
             await _db.ExecuteAsync(sql,
@@ -151,14 +123,14 @@ public class MetricRepository : IMetricRepository
                 });
         }
     }
-    
+
     public async Task<Dictionary<Guid, string>> GetMetricNamesByIds(List<Guid> metricIds)
     {
         var sql = @"SELECT ""Id"", ""Name"" FROM ""Metrics"" WHERE ""Id"" = ANY(@metricIds)";
         var result = await _db.QueryAsync<Metrics>(sql, new { metricIds });
         return result.ToDictionary(m => m.Id, m => m.Name);
     }
-   
+
     public async Task DeleteMetricEntry(Guid calendarDayMetricId)
     {
         var sql = @"DELETE FROM ""CalendarDayMetric"" WHERE ""Id"" = @calendarDayMetricId";
@@ -178,15 +150,15 @@ public class MetricRepository : IMetricRepository
             metrics.Values.Add(value);
             return metrics;
         }, new { calendarDayId });
-        
+
         // Group the metrics by their id and select the first one, since all of the elements in the group are the same, to prevent duplicates
         // Then, combine all the values from the group and add them to the metric
         return list
-            .GroupBy(m => m.Id) 
-            .Select(g => 
+            .GroupBy(m => m.Id)
+            .Select(g =>
         {
             var groupedMetric = g.First();
-            groupedMetric.Values = g.Select(p => p.Values.FirstOrDefault()).Where(p => p != null).ToList();
+            groupedMetric.Values = g.Select(p => p.Values.First()).ToList();
             return groupedMetric;
         }).ToList();
     }
@@ -196,5 +168,31 @@ public class MetricRepository : IMetricRepository
         var sql = @"SELECT ""CalendarDayId"" FROM ""CalendarDayMetric"" WHERE ""Id"" = @calendarDayMetricId";
         var result = await _db.QuerySingleOrDefaultAsync<Guid>(sql, new { calendarDayMetricId });
         return result;
+    }
+
+    public async Task<bool> CheckIfMetricsExist(List<MetricRegisterMetricDto> metrics)
+    {
+        // Check if the metric passed is valid
+        var metricIds = metrics.Select(m => m.MetricsId).Distinct().ToList();
+        var sql = @"SELECT ""Id"" FROM ""Metrics"" WHERE ""Id"" = ANY(@metricIds)";
+        var validMetricsIds = await _db.QueryAsync<Guid>(sql, new { metricIds });
+        if (validMetricsIds.Count() != metricIds.Count)
+        {
+            throw new BadRequestException("The metric you are trying to log does not exist.");
+        }
+
+        // Check if the metric value passed is valid
+        var metricValuesIds = metrics.Select(m => m.MetricValueId).Distinct().ToList();
+        metricValuesIds.RemoveAll(m => m == null);
+        if (metricValuesIds.Count > 0)
+        {
+            sql = @"SELECT ""Id"" FROM ""MetricValue"" WHERE ""Id"" = ANY(@metricValuesIds)";
+            var validMetricValuesIds = await _db.QueryAsync<Guid>(sql, new { metricValuesIds });
+            if (validMetricValuesIds.Count() != metricValuesIds.Count)
+            {
+                throw new BadRequestException("The metric value you are trying to log does not exist.");
+            }
+        }
+        return true;
     }
 }

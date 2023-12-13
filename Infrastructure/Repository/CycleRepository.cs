@@ -44,7 +44,7 @@ public class CycleRepository : ICycleRepository
         if (cycle != null) cycle.CycleDays = GetCycleDaysForCycleAsync(cycle.Id).Result.ToList();
         return cycle;
     }
-    
+
     /// <summary>
     /// Retrieves a list of period and cycle lengths for the specified user for a number of cycles.
     /// </summary>
@@ -55,7 +55,7 @@ public class CycleRepository : ICycleRepository
     {
         //get list of last number of cycles and their cycle days where enddate is today or later
         var cycleList = await GetRecentCyclesWithDays(userId, numberOfCycles);
-        
+
         //get difference between start and end dates of each cycle
         var periodAndCycleLengths = cycleList.Select(cycle =>
         {
@@ -63,7 +63,7 @@ public class CycleRepository : ICycleRepository
             var periodLength = cycle.CycleDays.Count(cd => cd.IsPeriod);
             return new PeriodAndCycleLengthDto
             {
-                CycleLength = (float)cycleLength?.Days,
+                CycleLength = cycleLength?.Days ?? 0,
                 PeriodLength = periodLength
             };
         });
@@ -80,12 +80,17 @@ public class CycleRepository : ICycleRepository
     {
         var sql =
             @"SELECT * FROM ""Cycles"" WHERE ""UserId""=@UserId AND ""EndDate"" IS NOT NULL ORDER BY ""StartDate"" DESC LIMIT @NumberOfCycles";
-        var cycles = await _db.QueryAsync<Cycle>(sql, new { UserId = userId, NumberOfCycles = numberOfCycles });
+        var cycles = await _db.QueryAsync<Cycle>(sql, new { UserId = userId, NumberOfCycles = numberOfCycles - 1 });
+
         var cycleList = cycles.ToList();
-        cycleList.ForEach(cycle =>
+        var currentCycle = await GetCurrentCycle(userId);
+        if (currentCycle != null)
         {
-            cycle.CycleDays = GetCycleDaysForCycleAsync(cycle.Id).Result.ToList();
-        });
+            currentCycle.EndDate = DateTimeOffset.UtcNow;
+            cycleList.Add(currentCycle);
+        }
+
+        cycleList.ForEach(cycle => { cycle.CycleDays = GetCycleDaysForCycleAsync(cycle.Id).Result.ToList(); });
         return cycleList;
     }
 
@@ -103,7 +108,7 @@ public class CycleRepository : ICycleRepository
     {
         cycle.StartDate = cycle.StartDate.ToOffset(TimeSpan.Zero);
         cycle.EndDate = cycle.EndDate?.ToOffset(TimeSpan.Zero);
-        var sql = @"UPDATE ""Cycles"" SET ""StartDate""=@StartDate, ""EndDate""=@EndDate WHERE ""Id""=@Id";
+        var sql = @"UPDATE ""Cycles"" SET ""StartDate"" = @StartDate, ""EndDate"" = @EndDate WHERE ""Id""=@Id";
 
         await _db.ExecuteAsync(sql, new
         {
@@ -126,5 +131,25 @@ public class CycleRepository : ICycleRepository
     {
         var sql = @"SELECT * FROM ""Cycles"" WHERE ""UserId""=@UserId AND ""EndDate"" IS NULL";
         return _db.QuerySingleOrDefaultAsync<Cycle>(sql, new { UserId = userId });
+    }
+
+    public Task<Cycle?> GetCycleByDate(Guid userId, DateTimeOffset date)
+    {
+        var sql =
+            @"SELECT * FROM ""Cycles"" WHERE ""UserId""=@UserId AND CAST(""StartDate"" AS DATE) <= CAST(@Date AS DATE) AND (CAST(""EndDate"" AS DATE) >= CAST(@Date as DATE) OR ""EndDate"" IS NULL)";
+        return _db.QuerySingleOrDefaultAsync<Cycle>(sql, new { UserId = userId, Date = date });
+    }
+
+    public async Task<Cycle?> GetFollowingCycle(Guid userId, DateTimeOffset date)
+    {
+        var sql =
+            @"SELECT * FROM ""Cycles"" WHERE ""UserId""=@UserId AND CAST(""StartDate"" AS DATE) > CAST(@Date AS DATE) ORDER BY ""StartDate"" LIMIT 1";
+        var cycle = await _db.QuerySingleOrDefaultAsync<Cycle>(sql, new { UserId = userId, Date = date });
+
+        if (cycle != null)
+        {
+            cycle.CycleDays = GetCycleDaysForCycleAsync(cycle.Id).Result.ToList();
+        }
+        return cycle;
     }
 }

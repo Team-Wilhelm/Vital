@@ -25,9 +25,7 @@ export class AnalyticsComponent implements OnInit {
   }
 
   async createChart(numberOfCycles: number) {
-
     this.analytics = await this.cycleService.getAnalytics(numberOfCycles);
-    if (this.analytics.length == 0) return;
 
     this.allCycleDays = this.getTotalCycleDays(this.analytics);
     this.allPeriodDays = this.getTotalPeriodDays(this.analytics);
@@ -35,13 +33,12 @@ export class AnalyticsComponent implements OnInit {
 
     if (this.chart) {
       this.chart.destroy();
-      this.chart = null;
     }
 
-    const chart = new Chart('Cycle analytics', {
+    const chart = new Chart('myChart', {
       type: 'bar',
       data: {
-        labels: this.allCycleDays,
+        labels: this.getCycleLabels(),
         datasets: [
           {
             label: "Period",
@@ -73,35 +70,95 @@ export class AnalyticsComponent implements OnInit {
         scales: {
           x: {
             stacked: true,
+            title: {
+              display: true,
+              text: 'Days'
+            }
           },
           y: {
-            stacked: true
+            stacked: true,
+            title: {
+              display: true,
+              text: 'Cycle start date'
+            }
           }
         }
       }
     });
+
+    this.chart = chart;
   }
 
   async ngOnInit(): Promise<void> {
-    await this.createChart(5); //TODO: make this come from user input
+    await this.createChart(3);
     this.periodCycleStats = await this.cycleService.getUserStats();
   }
 
   getTotalCycleDays(cycleAnalytics: CycleAnalyticsDto[]) {
-    return cycleAnalytics.map(a => a.EndDate.getTime() - a.StartDate.getTime());
+    return cycleAnalytics.map(a => {
+      const endTime = a.endDate.getTime();
+      const startTime = a.startDate.getTime();
+
+      const timeDiff = endTime - startTime;
+
+      // The number of milliseconds in one day
+      const oneDay = 1000 * 60 * 60 * 24;
+
+      // Convert time difference into days
+      const daysBetween = Math.ceil(timeDiff / oneDay);
+
+      return daysBetween;
+    });
   }
 
   getTotalPeriodDays(cycleAnalytics: CycleAnalyticsDto[]) {
-    return cycleAnalytics.map(a => a.PeriodDays.length);
+    return cycleAnalytics.map(a => a.periodDays.length);
   }
 
   getNonPeriodDays(cycleAnalytics: CycleAnalyticsDto[]) {
-    return cycleAnalytics.map(a => a.EndDate.getTime() - (a.PeriodDays.length * 86400000) - a.StartDate.getTime());
+    return cycleAnalytics.map(a => {
+
+      const endTime = a.endDate.getTime();
+
+      // Convert periodDays length into milliseconds
+      const periodDaysMilliseconds = a.periodDays.length * 24 * 60 * 60 * 1000;
+
+      const startTime = a.startDate.getTime();
+
+      const totalCycleDaysMilliseconds = endTime - startTime;
+
+      // Calculate non-period days in milliseconds
+      const nonPeriodDaysMilliseconds = totalCycleDaysMilliseconds - periodDaysMilliseconds;
+
+      // The number of milliseconds in one day
+      const oneDay = 24 * 60 * 60 * 1000;
+
+      // Convert milliseconds into days
+      const nonPeriodDays = Math.ceil(nonPeriodDaysMilliseconds / oneDay);
+
+      return nonPeriodDays;
+    });
   }
 
   async onOptionsSelected(item: number) {
     this.selectedOption = item;
     await this.createChart(item);
+  }
+
+  getCurrentCycleLength(): number {
+    return this.periodCycleStats?.currentCycleLength ?? 0;
+  }
+
+  getAverageCycleLength(): number {
+    return this.periodCycleStats?.averageCycleLength ?? 0;
+  }
+
+  getAveragePeriodLength(): number {
+    return this.periodCycleStats?.averagePeriodLength ?? 0;
+  }
+
+  getCycleLabels(): string[] {
+    return this.analytics.map(a => a.startDate.toLocaleDateString());
   }
 }
 

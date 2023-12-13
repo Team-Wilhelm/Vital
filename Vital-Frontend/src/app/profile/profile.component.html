@@ -1,85 +1,83 @@
-<div class="lg:gap-4 lg:flex lg:flex-row justify-between">
-  <div class="flex-auto lg:w-2/5 flex justify-center items-center">
-    <div class="w-full lg:w-4/5 gap-4 flex flex-col">
-      <div class="w-full mx-auto avatar flex flex-col card card-compact shadow bg-base-100 lg:p-12 p-3 flex-shrink-0">
-        <div class="w-48 rounded-xl mx-auto">
-          <img src="https://daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" />
-        </div>
-        <div class="flex flex-col items-center justify-center text-center p-5 h-24">
-          <p class="font-bold text-2xl">Sonya Juhas</p>
-          <p class="text-sm text-gray-500">@sonyajuhas</p>
-        </div>
+<div class="lg:grid lg:grid-cols-3 flex flex-col gap-4">
+  <app-card class="lg:col-span-1 row-span-1">
+     <div class="flex-col">
+       <figure><img src="assets/hot-water-bottle.png" alt="hot water bottle mascot" class="max-h-[150px] md:max-h-[200px] lg:max-h-[250px]"/></figure>
+     </div>
+  </app-card>
+
+  <!-- Change password -->
+  <app-card class="lg:col-span-2 row-span-1 order-3 lg:order-none lg:card-normal">
+    <div class="flex flex-col justify-start items-start h-full w-full">
+      <p class="stat-title mb-2">Change password</p>
+      <input type="password" placeholder="Old Password" class="user-profile-input"
+             [formControl]="changePasswordForm.controls.oldPassword"
+      />
+      <input type="password" placeholder="New Password" class="user-profile-input"
+             [formControl]="changePasswordForm.controls.password"
+             [class.input-error]="changePasswordForm.controls.password.invalid && changePasswordForm.controls.password.touched"
+             #passwordField
+      />
+      <div [hidden]="!passwordField.matches(':focus')" class="compact">
+        <ul class="list-disc list-inside">
+          <li
+            [ngClass]="{'text-primary-content': !passwordRulesMet.lengthCondition, 'text-success': passwordRulesMet.lengthCondition}">
+            At least 6 characters
+            <span *ngIf="passwordRulesMet.lengthCondition">&#x2713;</span>
+          </li>
+          <li
+            [ngClass]="{'text-primary-content': !passwordRulesMet.uppercaseCondition, 'text-success': passwordRulesMet.uppercaseCondition}">
+            At least 1 uppercase letter
+            <span *ngIf="passwordRulesMet.uppercaseCondition">&#x2713;</span>
+          </li>
+          <li
+            [ngClass]="{'text-primary-content': !passwordRulesMet.lowercaseCondition, 'text-success': passwordRulesMet.lowercaseCondition}">
+            At least 1 lowercase letter
+            <span *ngIf="passwordRulesMet.lowercaseCondition">&#x2713;</span>
+          </li>
+          <li
+            [ngClass]="{'text-primary-content': !passwordRulesMet.digitCondition, 'text-success': passwordRulesMet.digitCondition}">
+            At least 1 digit
+            <span *ngIf="passwordRulesMet.digitCondition">&#x2713;</span>
+          </li>
+          <li
+            [ngClass]="{'text-primary-content': !passwordRulesMet.specialCondition, 'text-success': passwordRulesMet.specialCondition}">
+            At least 1 special character
+            <span *ngIf="passwordRulesMet.specialCondition">&#x2713;</span>
+          </li>
+        </ul>
       </div>
+      <input type="password" placeholder="Repeat Password" class="user-profile-input"
+             [formControl]="changePasswordForm.controls.repeatPassword"
+             [class.input-error]="changePasswordForm.controls.repeatPassword.invalid && changePasswordForm.controls.repeatPassword.touched"
+      />
+      <p [hidden]="!(changePasswordForm.invalid && changePasswordForm.controls.password.valid)"
+         class="text-error">
+        Passwords do not match.</p>
+      <button class="btn btn-accent w-full max-w-md lg:max-w-sm"
+              (click)="changePassword()">
+        Change password
+      </button>
+    </div>
+  </app-card>
 
-      <app-card class="stats stats-vertical shadow w-full">
-
-        <div class="stat">
-          <div class="stat-title">Average period length</div>
-          <div class="stat-value">{{periodCycleStats?.averagePeriodLength}}</div>
-        </div>
-
-        <div class="stat">
-          <div class="stat-title">Average cycle length</div>
-          <div class="stat-value">{{periodCycleStats?.averageCycleLength}}</div>
-        </div>
-
-      </app-card>
+  <!-- Stats -->
+  <div class="stats stats-vertical shadow-xl w-full bg-base-200 z-50 col-span-1 row-span-1 order-2 lg:order-none">
+    <div class="stat">
+      <div class="stat-title">Average period length</div>
+      <div class="stat-value">{{ periodCycleStats?.averagePeriodLength }}</div>
     </div>
 
-  </div>
-  <div class="flex-auto lg:w-3/5 gap-4 flex flex-col">
-    <div class="card card-compact stats shadow bg-base-100 p-5">
-      <div class="stat">
-        <div class="stat-title">Change Password</div>
-        <div class="flex flex-col gap-3 card-body">
-          <input type="password" placeholder="New Password" class="input input-bordered w-full max-w-xs"
-                 [formControl]="changePasswordForm.controls.password"
-                 [class.input-error]="changePasswordForm.controls.password.invalid && changePasswordForm.controls.password.touched"
-                 #passwordField
-          />
-          <div [hidden]="!passwordField.matches(':focus')" class="compact">
-            <ul class="list-disc list-inside">
-              <li [ngClass]="{'text-primary-content': !passwordRulesMet.lengthCondition, 'text-success': passwordRulesMet.lengthCondition}">
-                At least 6 characters
-                <span *ngIf="passwordRulesMet.lengthCondition">&#x2713;</span>
-              </li>
-              <li [ngClass]="{'text-primary-content': !passwordRulesMet.uppercaseCondition, 'text-success': passwordRulesMet.uppercaseCondition}">
-                At least 1 uppercase letter
-                <span *ngIf="passwordRulesMet.uppercaseCondition">&#x2713;</span>
-              </li>
-              <li [ngClass]="{'text-primary-content': !passwordRulesMet.lowercaseCondition, 'text-success': passwordRulesMet.lowercaseCondition}">
-                At least 1 lowercase letter
-                <span *ngIf="passwordRulesMet.lowercaseCondition">&#x2713;</span>
-              </li>
-              <li [ngClass]="{'text-primary-content': !passwordRulesMet.digitCondition, 'text-success': passwordRulesMet.digitCondition}">
-                At least 1 digit
-                <span *ngIf="passwordRulesMet.digitCondition">&#x2713;</span>
-              </li>
-              <li [ngClass]="{'text-primary-content': !passwordRulesMet.specialCondition, 'text-success': passwordRulesMet.specialCondition}">
-                At least 1 special character
-                <span *ngIf="passwordRulesMet.specialCondition">&#x2713;</span>
-              </li>
-            </ul>
-          </div>
-          <input type="password" placeholder="Repeat Password" class="input input-bordered w-full max-w-xs"
-                 [formControl]="changePasswordForm.controls.repeatPassword"
-                 [class.input-error]="changePasswordForm.controls.repeatPassword.invalid && changePasswordForm.controls.repeatPassword.touched"
-          />
-          <p [hidden]="!(changePasswordForm.invalid && changePasswordForm.controls.password.valid)"
-            class="text-error">
-            Passwords do not match.</p>
-          <button class="btn btn-active btn-accent w-full max-w-xs">Change password</button>
-        </div>
-      </div>
-    </div>
-    <div class="card card-compact stats shadow bg-base-100 p-5">
-      <div class="stat">
-        <div class="stat-title">Change Email</div>
-        <div class="flex flex-col gap-3 card-body">
-          <input type="text" placeholder="New email" class="input input-bordered w-full max-w-xs" />
-          <button class="btn btn-active btn-accent w-full max-w-xs">Change password</button>
-        </div>
-      </div>
+    <div class="stat">
+      <div class="stat-title">Average cycle length</div>
+      <div class="stat-value">{{ periodCycleStats?.averageCycleLength }}</div>
     </div>
   </div>
+
+  <!-- E-mail address -->
+  <app-card class="col-span-2 row-span-1 order-1  lg:order-none lg:card-normal">
+    <div class="flex flex-col">
+      <p class="stat-title mb-2">E-mail address</p>
+      <p class="text-xl font-semibold">{{userEmail}}</p>
+    </div>
+  </app-card>
 </div>

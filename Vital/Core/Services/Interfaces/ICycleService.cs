@@ -1,5 +1,6 @@
 ﻿using Models;
 using Models.Dto.Cycle;
+using Models.Dto.InitialLogin;
 using Models.Pagination;
 
 namespace Vital.Core.Services.Interfaces;
@@ -42,13 +43,13 @@ public interface ICycleService
     Task<Cycle> Update(Guid id, UpdateCycleDto dto);
 
     /// <summary>
-    /// Gets a list of predicted period days for the specified cycle.
+    /// Gets a list of predicted period days for the specified user
     /// </summary>
-    /// <param name="cycleId">The unique ID of the specified cycle.</param>
+    /// <param name="userId">The unique ID of the specified user.</param>
     /// <returns>A task that represents the asynchronous operation. 
     /// The task result contains a list of PredictedPeriodDayDtos.</returns>
     Task<List<DateTimeOffset>> GetPredictedPeriod(Guid userId);
-    
+
     /// <summary>
     /// Retrieves the current cycle for the specified user.
     /// </summary>
@@ -60,13 +61,23 @@ public interface ICycleService
     /// Retrieves the last x number cycles for the specified user.
     /// </summary>
     /// <param name="userId"></param>
+    /// <param name="numberOfCycles"></param>
     /// <returns></returns>
     Task<List<CycleAnalyticsDto>> GetAnalytics(Guid userId, int numberOfCycles);
-    
+
     /// <summary>
     /// Retrieves the average length of the user's period and cycle and also the length of the current cycle so far.
     /// </summary>
     /// <param name="userId"></param>
     /// <returns></returns>
     Task<PeriodCycleStatsDto> GetPeriodCycleStats(Guid userId);
+
+    /// <summary>
+    /// Sets the average length of a user's cycle and period and creates a current cycle for the user, based on the user's input.
+    /// The flow metrics are also logged based on the last period's start and end dates.
+    /// </summary>
+    /// <param name="userId"></param>
+    /// <param name="initialLoginPutDto"></param>
+    /// <returns></returns>
+    Task SetInitialData(Guid userId, InitialLoginPutDto initialLoginPutDto);
 }

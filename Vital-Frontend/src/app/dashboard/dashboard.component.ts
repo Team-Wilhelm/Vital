@@ -23,7 +23,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   title = 'dashboard';
   nextPeriodInDays: number = 0;
-  currentCycleDays: CycleDay[] = [];
 
   constructor(public cycleService: CycleService,
               public metricService: MetricService,
@@ -36,7 +35,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     this.dateSubscription = this.dataService.clickedDate$.subscribe(clickedDate => {
       if (clickedDate) {
-        this.updateDashboardData(clickedDate);
+        this.updateDashboardData(clickedDate).then();
         this.clickedDate = clickedDate;
       }
     });
@@ -44,14 +43,14 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.metricDeletedSubscription = this.metricService.metricDeleted$.subscribe(metricDeleted => {
       if (metricDeleted) {
         this.showToast('Metric deleted', 'The metric was successfully deleted', 'success');
-        this.updateCalendar();
+        this.updateCalendar().then();
       }
     });
 
     this.metricAddedSubscription = this.metricService.newMetricAdded$.subscribe(newMetricAdded => {
       if (newMetricAdded) {
         this.showToast('Metric added', 'The metric was successfully added', 'success');
-        this.updateCalendar();
+        this.updateCalendar().then();
       }
     });
   }
@@ -78,18 +77,17 @@ export class DashboardComponent implements OnInit, OnDestroy {
     return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
   }
 
-  redirectToMetrics() {
-    this.router.navigate(['/add-metric']);
+  async redirectToMetrics() {
+    await this.router.navigate(['/add-metric']);
   }
 
-  updateDashboardData(date: Date) {
+  async updateDashboardData(date: Date) {
     // Call the methods to update your dashboard data here
-    this.metricService.getUsersMetric(date);
+    await this.metricService.getUsersMetric(date);
   }
 
-  updateCalendar() {
-    this.calendarComponent && this.calendarComponent.getPeriodDays();
-    this.calendarComponent && this.calendarComponent.getPredictedPeriodDays();
+  async updateCalendar() {
+    this.calendarComponent && await this.calendarComponent.updateCalendar();
     this.metricService.setMetricDeleted(false);
     this.metricService.setNewMetricAdded(false);
   }
