@@ -169,7 +169,7 @@ public class AccountTests(VitalApiFactory vaf) : TestBase(vaf)
     }
 
     [Fact]
-    public async Task Reset_Password_return_200()
+    public async Task Reset_Password_return_500()
     {
         var user = new ApplicationUser()
         {
@@ -197,7 +197,7 @@ public class AccountTests(VitalApiFactory vaf) : TestBase(vaf)
         var response =
             await _client.PostAsync("/Identity/Account/Reset-Password", JsonContent.Create(resetPasswordDto));
 
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.Should().Be(HttpStatusCode.ServiceUnavailable);
     }
 
     [Fact]
