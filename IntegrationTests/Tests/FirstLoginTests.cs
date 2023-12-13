@@ -22,18 +22,22 @@ public class FirstLoginTests(VitalApiFactory vaf) : TestBase(vaf)
     [Fact]
     public async Task Firs_Login_Should_Have_Null_Data()
     {
-        await RegisterNewUserAndVerifyEmailAsync("temp@application");
-        await AuthorizeUserAndSetHeaderAsync("temp@application");
+        var uniqueUserName = $"tempuser-{Guid.NewGuid()}@application";
+        try
+        {
+            await RegisterNewUserAndVerifyEmailAsync(uniqueUserName);
+            await AuthorizeUserAndSetHeaderAsync(uniqueUserName);
 
-        var response = await _client.GetAsync("/cycle/initial-login");
-        var actual = await response.Content.ReadFromJsonAsync<InitialLoginGetDto>();
-        var result = actual?.CycleLength == null || actual.PeriodLength == null;
+            var response = await _client.GetAsync("/cycle/initial-login");
+            var actual = await response.Content.ReadFromJsonAsync<InitialLoginGetDto>();
+            var result = actual?.CycleLength == null || actual.PeriodLength == null;
 
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
-        result.Should().BeTrue();
-
-        await ClearToken();
-        await RemoveUserAsync("temp@application");
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            result.Should().BeTrue();
+        } finally
+        {
+            await Cleanup(uniqueUserName);
+        }
     }
 
     [Fact]
@@ -53,191 +57,214 @@ public class FirstLoginTests(VitalApiFactory vaf) : TestBase(vaf)
     [Fact]
     public async Task Post_OK_OnGoing_Period()
     {
-        const string username = "temp@application";
-        await RegisterNewUserAndVerifyEmailAsync(username);
-        await AuthorizeUserAndSetHeaderAsync( username);
-
-        var initialLoginPutDto = new InitialLoginPutDto()
+        var uniqueUserName = $"tempuser-{Guid.NewGuid()}@application";
+        try
         {
-            CycleLength = 30,
-            PeriodLength = 6,
-            LastPeriodStart = DateTime.UtcNow.AddDays(-5)
-        };
+            await RegisterNewUserAndVerifyEmailAsync(uniqueUserName);
+            await AuthorizeUserAndSetHeaderAsync(uniqueUserName);
 
-        var response = await _client.PutAsJsonAsync("/cycle/initial-login", initialLoginPutDto);
+            var initialLoginPutDto = new InitialLoginPutDto()
+            {
+                CycleLength = 30,
+                PeriodLength = 6,
+                LastPeriodStart = DateTime.UtcNow.AddDays(-5)
+            };
 
-        var user = await _dbContext.Users.FirstAsync(u => u.Email == username);
-        user.CycleLength.Should().Be(initialLoginPutDto.CycleLength);
-        user.PeriodLength.Should().Be(initialLoginPutDto.PeriodLength);
-        await AssertUserHasCycleAsync(user, initialLoginPutDto);
-        await AssertMetricsWereCreatedAsync(user, initialLoginPutDto);
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+            var response = await _client.PutAsJsonAsync("/cycle/initial-login", initialLoginPutDto);
 
-        await ClearToken();
-        await RemoveUserAsync(username);
+            var user = await _dbContext.Users.FirstAsync(u => u.Email == uniqueUserName);
+            user.CycleLength.Should().Be(initialLoginPutDto.CycleLength);
+            user.PeriodLength.Should().Be(initialLoginPutDto.PeriodLength);
+            await AssertUserHasCycleAsync(user, initialLoginPutDto);
+            await AssertMetricsWereCreatedAsync(user, initialLoginPutDto);
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+        } finally
+        {
+            await Cleanup(uniqueUserName);
+        }
     }
 
     [Fact]
     public async Task Post_OK_Ended_Period()
     {
-        const string username = "temp@application";
-        await RegisterNewUserAndVerifyEmailAsync(username);
-        await AuthorizeUserAndSetHeaderAsync( username);
-
-        var initialLoginPutDto = new InitialLoginPutDto()
+        var uniqueUserName = $"tempuser-{Guid.NewGuid()}@application";
+        try
         {
-            CycleLength = 29,
-            PeriodLength = 5,
-            LastPeriodStart = DateTime.UtcNow.AddDays(-6),
-            LastPeriodEnd = DateTime.UtcNow.AddDays(-1)
-        };
+            await RegisterNewUserAndVerifyEmailAsync(uniqueUserName);
+            await AuthorizeUserAndSetHeaderAsync(uniqueUserName);
 
-        var response = await _client.PutAsJsonAsync("/cycle/initial-login", initialLoginPutDto);
+            var initialLoginPutDto = new InitialLoginPutDto()
+            {
+                CycleLength = 29,
+                PeriodLength = 5,
+                LastPeriodStart = DateTime.UtcNow.AddDays(-6),
+                LastPeriodEnd = DateTime.UtcNow.AddDays(-1)
+            };
 
-        var user = await _dbContext.Users.FirstAsync(u => u.Email == username);
-        user.CycleLength.Should().Be(initialLoginPutDto.CycleLength);
-        user.PeriodLength.Should().Be(initialLoginPutDto.PeriodLength);
-        await AssertUserHasCycleAsync(user, initialLoginPutDto);
-        await AssertMetricsWereCreatedAsync(user, initialLoginPutDto);
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+            var response = await _client.PutAsJsonAsync("/cycle/initial-login", initialLoginPutDto);
 
-        await ClearToken();
-        await RemoveUserAsync(username);
+            var user = await _dbContext.Users.FirstAsync(u => u.Email == uniqueUserName);
+            user.CycleLength.Should().Be(initialLoginPutDto.CycleLength);
+            user.PeriodLength.Should().Be(initialLoginPutDto.PeriodLength);
+            await AssertUserHasCycleAsync(user, initialLoginPutDto);
+            await AssertMetricsWereCreatedAsync(user, initialLoginPutDto);
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+        } finally
+        {
+            await Cleanup(uniqueUserName);
+        }
     }
 
     [Fact]
     public async Task Post_BadRequest_Invalid_CycleLength()
     {
-        const string username = "temp@application";
-        await RegisterNewUserAndVerifyEmailAsync(username);
-        await AuthorizeUserAndSetHeaderAsync( username);
-
-        var initialLoginPutDto = new InitialLoginPutDto()
+        var uniqueUserName = $"tempuser-{Guid.NewGuid()}@application";
+        try
         {
-            CycleLength = -1,
-            PeriodLength = 5,
-            LastPeriodStart = DateTime.UtcNow.AddDays(-6),
-            LastPeriodEnd = DateTime.UtcNow.AddDays(-1)
-        };
+            await RegisterNewUserAndVerifyEmailAsync(uniqueUserName);
+            await AuthorizeUserAndSetHeaderAsync(uniqueUserName);
 
-        var response = await _client.PutAsJsonAsync("/cycle/initial-login", initialLoginPutDto);
+            var initialLoginPutDto = new InitialLoginPutDto()
+            {
+                CycleLength = -1,
+                PeriodLength = 5,
+                LastPeriodStart = DateTime.UtcNow.AddDays(-6),
+                LastPeriodEnd = DateTime.UtcNow.AddDays(-1)
+            };
 
-        var user = await _dbContext.Users.FirstAsync(u => u.Email == username);
-        user.CycleLength.Should().BeNull();
-        user.PeriodLength.Should().BeNull();
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            var response = await _client.PutAsJsonAsync("/cycle/initial-login", initialLoginPutDto);
 
-        await ClearToken();
-        await RemoveUserAsync(username);
+            var user = await _dbContext.Users.FirstAsync(u => u.Email == uniqueUserName);
+            user.CycleLength.Should().BeNull();
+            user.PeriodLength.Should().BeNull();
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+
+        } finally
+        {
+            await Cleanup(uniqueUserName);
+        }
     }
 
     [Fact]
     public async Task Post_BadRequest_Invalid_PeriodLength()
     {
-        const string username = "temp@application";
-        await RegisterNewUserAndVerifyEmailAsync(username);
-        await AuthorizeUserAndSetHeaderAsync( username);
+        var uniqueUserName = $"tempuser-{Guid.NewGuid()}@application";
 
-        var initialLoginPutDto = new InitialLoginPutDto()
+        try
         {
-            CycleLength = 29,
-            PeriodLength = -1,
-            LastPeriodStart = DateTime.UtcNow.AddDays(-6),
-            LastPeriodEnd = DateTime.UtcNow.AddDays(-1)
-        };
+            await RegisterNewUserAndVerifyEmailAsync(uniqueUserName);
+            await AuthorizeUserAndSetHeaderAsync(uniqueUserName);
 
-        var response = await _client.PutAsJsonAsync("/cycle/initial-login", initialLoginPutDto);
+            var initialLoginPutDto = new InitialLoginPutDto()
+            {
+                CycleLength = 29,
+                PeriodLength = -1,
+                LastPeriodStart = DateTime.UtcNow.AddDays(-6),
+                LastPeriodEnd = DateTime.UtcNow.AddDays(-1)
+            };
 
-        var user = await _dbContext.Users.FirstAsync(u => u.Email == username);
-        user.CycleLength.Should().BeNull();
-        user.PeriodLength.Should().BeNull();
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            var response = await _client.PutAsJsonAsync("/cycle/initial-login", initialLoginPutDto);
 
-        await ClearToken();
-        await RemoveUserAsync(username);
+            var user = await _dbContext.Users.FirstAsync(u => u.Email == uniqueUserName);
+            user.CycleLength.Should().BeNull();
+            user.PeriodLength.Should().BeNull();
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        } finally
+        {
+            await Cleanup(uniqueUserName);
+        }
     }
 
     [Fact]
     public async Task Post_BadRequest_Invalid_LastPeriodStart()
     {
-        const string username = "temp@application";
-        await RegisterNewUserAndVerifyEmailAsync(username);
-        await AuthorizeUserAndSetHeaderAsync( username);
-
-        var initialLoginPutDto = new InitialLoginPutDto()
+        var uniqueUserName = $"tempuser-{Guid.NewGuid()}@application";
+        try
         {
-            CycleLength = 29,
-            PeriodLength = 5,
-            LastPeriodStart = DateTime.UtcNow.AddDays(1)
-        };
+            await RegisterNewUserAndVerifyEmailAsync(uniqueUserName);
+            await AuthorizeUserAndSetHeaderAsync(uniqueUserName);
 
-        var response = await _client.PutAsJsonAsync("/cycle/initial-login", initialLoginPutDto);
-        var responseContent = await response.Content.ReadAsStringAsync();
+            var initialLoginPutDto = new InitialLoginPutDto()
+            {
+                CycleLength = 29,
+                PeriodLength = 5,
+                LastPeriodStart = DateTime.UtcNow.AddDays(1)
+            };
 
-        var user = await _dbContext.Users.FirstAsync(u => u.Email == username);
-        user.CycleLength.Should().BeNull();
-        user.PeriodLength.Should().BeNull();
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-        responseContent.Should().Be("Last period start and end dates cannot be in the future.");
+            var response = await _client.PutAsJsonAsync("/cycle/initial-login", initialLoginPutDto);
+            var responseContent = await response.Content.ReadAsStringAsync();
 
-        await ClearToken();
-        await RemoveUserAsync(username);
+            var user = await _dbContext.Users.FirstAsync(u => u.Email == uniqueUserName);
+            user.CycleLength.Should().BeNull();
+            user.PeriodLength.Should().BeNull();
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            responseContent.Should().Be("Last period start and end dates cannot be in the future.");
+        } finally
+        {
+            await Cleanup(uniqueUserName);
+        }
     }
 
     [Fact]
     public async Task Post_BadRequest_Invalid_LastPeriodEnd()
     {
-        const string username = "temp@application";
-        await RegisterNewUserAndVerifyEmailAsync(username);
-        await AuthorizeUserAndSetHeaderAsync( username);
-
-        var initialLoginPutDto = new InitialLoginPutDto()
+        var uniqueUserName = $"tempuser-{Guid.NewGuid()}@application";
+        try
         {
-            CycleLength = 29,
-            PeriodLength = 5,
-            LastPeriodStart = DateTime.UtcNow.AddDays(-6),
-            LastPeriodEnd = DateTime.UtcNow.AddDays(1)
-        };
+            await RegisterNewUserAndVerifyEmailAsync(uniqueUserName);
+            await AuthorizeUserAndSetHeaderAsync(uniqueUserName);
 
-        var response = await _client.PutAsJsonAsync("/cycle/initial-login", initialLoginPutDto);
-        var responseContent = await response.Content.ReadAsStringAsync();
+            var initialLoginPutDto = new InitialLoginPutDto()
+            {
+                CycleLength = 29,
+                PeriodLength = 5,
+                LastPeriodStart = DateTime.UtcNow.AddDays(-6),
+                LastPeriodEnd = DateTime.UtcNow.AddDays(1)
+            };
 
-        var user = await _dbContext.Users.FirstAsync(u => u.Email == username);
-        user.CycleLength.Should().BeNull();
-        user.PeriodLength.Should().BeNull();
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-        responseContent.Should().Be("Last period start and end dates cannot be in the future.");
+            var response = await _client.PutAsJsonAsync("/cycle/initial-login", initialLoginPutDto);
+            var responseContent = await response.Content.ReadAsStringAsync();
 
-        await ClearToken();
-        await RemoveUserAsync(username);
+            var user = await _dbContext.Users.FirstAsync(u => u.Email == uniqueUserName);
+            user.CycleLength.Should().BeNull();
+            user.PeriodLength.Should().BeNull();
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            responseContent.Should().Be("Last period start and end dates cannot be in the future.");
+        } finally
+        {
+            await Cleanup(uniqueUserName);
+        }
     }
 
     [Fact]
     public async Task Post_BadRequest_Invalid_Period_Start_After_Period_End()
     {
-        const string username = "temp@application";
-        await RegisterNewUserAndVerifyEmailAsync(username);
-        await AuthorizeUserAndSetHeaderAsync( username);
-
-        var initialLoginPutDto = new InitialLoginPutDto()
+        var uniqueUserName = $"tempuser-{Guid.NewGuid()}@application";
+        try
         {
-            CycleLength = 29,
-            PeriodLength = 5,
-            LastPeriodStart = DateTime.UtcNow.AddDays(-3),
-            LastPeriodEnd = DateTime.UtcNow.AddDays(-6)
-        };
+            await RegisterNewUserAndVerifyEmailAsync(uniqueUserName);
+            await AuthorizeUserAndSetHeaderAsync(uniqueUserName);
 
-        var response = await _client.PutAsJsonAsync("/cycle/initial-login", initialLoginPutDto);
-        var responseContent = await response.Content.ReadAsStringAsync();
+            var initialLoginPutDto = new InitialLoginPutDto()
+            {
+                CycleLength = 29,
+                PeriodLength = 5,
+                LastPeriodStart = DateTime.UtcNow.AddDays(-3),
+                LastPeriodEnd = DateTime.UtcNow.AddDays(-6)
+            };
 
-        var user = await _dbContext.Users.FirstAsync(u => u.Email == username);
-        user.CycleLength.Should().BeNull();
-        user.PeriodLength.Should().BeNull();
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-        responseContent.Should().Be("Last period start date must be before the end date.");
+            var response = await _client.PutAsJsonAsync("/cycle/initial-login", initialLoginPutDto);
+            var responseContent = await response.Content.ReadAsStringAsync();
 
-        await ClearToken();
-        await RemoveUserAsync(username);
+            var user = await _dbContext.Users.FirstAsync(u => u.Email == uniqueUserName);
+            user.CycleLength.Should().BeNull();
+            user.PeriodLength.Should().BeNull();
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            responseContent.Should().Be("Last period start date must be before the end date.");
+        } finally
+        {
+            await Cleanup(uniqueUserName);
+        }
     }
 
     #region Utility methods

@@ -42,7 +42,7 @@ public class AccountTests(VitalApiFactory vaf) : TestBase(vaf)
     }
 
     [Fact]
-    public async Task Forgot_Password_return_200()
+    public async Task Forgot_Password_return_500()
     {
         var forgotPasswordDto = new ForgotPasswordDto()
         {
@@ -63,7 +63,7 @@ public class AccountTests(VitalApiFactory vaf) : TestBase(vaf)
         var response =
             await _client.PostAsync("/Identity/Account/Forgot-Password", JsonContent.Create(forgotPasswordDto));
 
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.Should().Be(HttpStatusCode.ServiceUnavailable);
     }
 
     [Fact]

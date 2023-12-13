@@ -59,4 +59,10 @@ export default class AccountService {
   public async changePassword(dto: ChangePasswordDto): Promise<void> {
     await this.httpService.post('/Identity/Account/change-password', dto, 'Your password was successfully changed');
   }
+
+  public async isValidTokenForUser(dto: VerifyRequestDto): Promise<boolean> {
+    const encodedToken = encodeURIComponent(dto.token);
+    const url = `${environment.baseUrl}/Identity/Auth/valid-token?userId=${dto.userId}&token=${encodedToken}`;
+    return await firstValueFrom(this.httpClient.get<boolean>(url));
+  }
 }
