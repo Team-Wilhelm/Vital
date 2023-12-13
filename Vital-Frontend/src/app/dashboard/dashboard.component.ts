@@ -7,6 +7,7 @@ import {DataService} from "../services/data.service";
 import {Subscription} from "rxjs";
 import {CalendarComponent} from "../calendar/calendar.component";
 import {ToastService} from "../services/toast.service";
+import {CurrentCycleComponent} from "./current-cycle/current-cycle.component";
 
 @Component({
   selector: 'app-dashboard',
@@ -15,6 +16,7 @@ import {ToastService} from "../services/toast.service";
 
 export class DashboardComponent implements OnInit, OnDestroy {
   @ViewChild('calendarComponent') calendarComponent: CalendarComponent | undefined;
+  @ViewChild('currentCycleComponent') currentCycleComponent: CurrentCycleComponent | undefined;
   private readonly dateSubscription: Subscription;
   private readonly metricDeletedSubscription: Subscription;
   private readonly metricAddedSubscription: Subscription;
@@ -40,17 +42,17 @@ export class DashboardComponent implements OnInit, OnDestroy {
       }
     });
 
-    this.metricDeletedSubscription = this.metricService.metricDeleted$.subscribe(metricDeleted => {
+    this.metricDeletedSubscription = this.metricService.metricDeleted$.subscribe(async metricDeleted => {
       if (metricDeleted) {
         this.showToast('Metric deleted', 'The metric was successfully deleted', 'success');
-        this.updateCalendar().then();
+        await this.updateDashboardComponents();
       }
     });
 
-    this.metricAddedSubscription = this.metricService.newMetricAdded$.subscribe(newMetricAdded => {
+    this.metricAddedSubscription = this.metricService.newMetricAdded$.subscribe(async newMetricAdded => {
       if (newMetricAdded) {
         this.showToast('Metric added', 'The metric was successfully added', 'success');
-        this.updateCalendar().then();
+        await this.updateDashboardComponents();
       }
     });
   }
@@ -88,11 +90,17 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   async updateCalendar() {
     this.calendarComponent && await this.calendarComponent.updateCalendar();
-    this.metricService.setMetricDeleted(false);
-    this.metricService.setNewMetricAdded(false);
   }
 
   showToast(title: string, message: string, type: 'info' | 'success' | 'error') {
     this.toastService.show(message, title, type);
+  }
+
+  async updateDashboardComponents() {
+    await this.cycleService.getPredictedPeriod();
+    this.updateCalendar();
+    this.currentCycleComponent && await this.currentCycleComponent.updateComponent();
+    this.metricService.setMetricDeleted(false);
+    this.metricService.setNewMetricAdded(false);
   }
 }
