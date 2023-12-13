@@ -159,10 +159,6 @@ public class MetricService : IMetricService
                     // Update the start of following cycle
                     await UpdateCycle(followingCycle.Id, userId, date, followingCycle.EndDate);
 
-                    // If the following cycle contains any metrics, which now belong to the new cycle, update their cycle id
-                    await _calendarDayRepository.UpdateCycleIds(followingCycle.Id, followingCycle.Id, date,
-                        followingCycle.EndDate ?? DateTimeOffset.UtcNow);
-
                     // Update the end of the retrieved cycle
                     await UpdateCycle(cycle.Id, userId, cycle.StartDate, date.AddDays(-1));
                 }

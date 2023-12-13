@@ -11,6 +11,7 @@ import AccountService from "../../services/account.service";
 @Component({
   selector: 'app-register-card',
   templateUrl: './registerCard.component.html',
+  styleUrls: ['./registerCard.component.css']
 })
 export class RegisterCardComponent implements OnDestroy {
   @Output() switchToLogin = new EventEmitter<void>();

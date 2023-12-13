@@ -34,11 +34,13 @@ import {FormControl, FormGroup, Validators} from "@angular/forms";
               <div class="flex-grow"></div>
               <!-- Optional values -->
               <select class="select select-bordered order-2 ml-3
-               md:order-1 md:mr-3 md:ml-0">
-                  <option selected>Optional</option>
-                  <option *ngFor="let value of metric?.values"
+               md:order-1 md:mr-3 md:ml-0" *ngIf="displayOptionalValues"> 0">
+                  <option selected *ngIf="displayOptionalValues"> Optional</option>
+                  <ng-container *ngFor="let value of metric?.values">
+                  <option *ngIf="value"
                           (click)="metric && metricService.selectOptionalValue(metric.id, value.id)">{{ value.name }}
                   </option>
+                  </ng-container>
               </select>
 
               <!-- Checkbox -->
@@ -50,10 +52,11 @@ import {FormControl, FormGroup, Validators} from "@angular/forms";
   `
 })
 
-// TODO: Increment minutes in 5 minute blocks
 export class MetricSelectionItemComponent implements OnInit {
   @Input() metric: MetricViewDto | undefined;
   @ViewChild('checkbox') checkbox: ElementRef<HTMLInputElement> | undefined;
+
+  displayOptionalValues: boolean = false;
 
   timeFormGroup = new FormGroup({
     hour: new FormControl(0, [Validators.min(0), Validators.max(23), Validators.required, Validators.pattern('^([0-1]?[0-9]|2[0-3])$')]),
@@ -76,6 +79,10 @@ export class MetricSelectionItemComponent implements OnInit {
     this.timeFormGroup.valueChanges.subscribe(() => {
       this.updateMetricTime();
     });
+
+    if (this.metric) {
+      this.displayOptionalValues =  this.metric.values.every(value => value !== null);
+    }
   }
 
   // This is called every time the input changes

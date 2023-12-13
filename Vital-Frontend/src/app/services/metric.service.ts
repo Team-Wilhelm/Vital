@@ -45,9 +45,9 @@ export class MetricService implements OnDestroy {
   }
 
   public async getAllMetricsWithValues(): Promise<MetricViewDto[]> {
-    const call = this.http.get<MetricViewDto[]>(`${this.apiUrl}/values`);
-    this.allMetrics = (await firstValueFrom(call)).filter((metric) => metric.name !== "Flow");
-    this.periodMetric = (await firstValueFrom(call)).filter((metric) => metric.name === "Flow")[0];
+    const response = await firstValueFrom(this.http.get<MetricViewDto[]>(`${this.apiUrl}/values`));
+    this.allMetrics = (response).filter((metric) => metric.name !== "Flow");
+    this.periodMetric = (response).filter((metric) => metric.name === "Flow")[0];
     return this.allMetrics;
   }
 

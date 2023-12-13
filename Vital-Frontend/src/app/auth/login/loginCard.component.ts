@@ -9,6 +9,7 @@ import AccountService from "../../services/account.service";
 @Component({
   selector: 'app-login-card',
   templateUrl: './loginCard.component.html',
+  styleUrls: ['./loginCard.component.css']
 })
 export class LoginCardComponent {
   invalidCredentials = false;
