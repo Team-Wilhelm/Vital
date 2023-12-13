@@ -54,7 +54,7 @@ export class AddMetricPageComponent implements OnDestroy {
 
   async saveMetrics() {
     // Check if the last logged flow is more than 2 days ago and less than 10 days ago, if so, ask if new cycle has started
-    if (this.lastLoggedFlowDate) {
+    if (this.isFlowMetric() && this.lastLoggedFlowDate) {
       const diffTime = Math.abs(this.dataService.clickedDate!.getTime() - this.lastLoggedFlowDate.getTime());
       const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
@@ -78,6 +78,10 @@ export class AddMetricPageComponent implements OnDestroy {
 
   isLastLoggedFlowDate() {
     return this.lastLoggedFlowDate?.getDate() === this.dataService.clickedDate?.getDate();
+  }
+
+  isFlowMetric():boolean {
+    return this.metricService.metricSelectionMap.has(this.metricService.periodMetric?.id!);
   }
 
 }
