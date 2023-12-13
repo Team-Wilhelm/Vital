@@ -103,7 +103,7 @@ public class DbInitializer
                     CalendarDayId = Guid.Parse("C8DCD3C7-8889-4BF0-BE6C-3017F45ACF1A"),
                     MetricsId = flowMetric.Id, // Flow
                     MetricValueId = flowMetric.Values.ToArray()[2].Id, // Heavy
-                    CreatedAt = DateTimeOffset.UtcNow.AddDays(-36)
+                    CreatedAt = new DateTimeOffset(DateTimeOffset.UtcNow.Date.AddDays(-36), TimeSpan.Zero).AddHours(12)
                 }
             }
         });
@@ -132,7 +132,7 @@ public class DbInitializer
                     CalendarDayId = Guid.Parse("14177B9E-B74B-4477-9496-89E10570411D"),
                     MetricsId = flowMetric.Id, // Flow
                     MetricValueId = flowMetric.Values.ToArray()[1].Id, // Moderate
-                    CreatedAt = DateTimeOffset.UtcNow.AddDays(-72)
+                    CreatedAt = new DateTimeOffset(DateTimeOffset.UtcNow.Date.AddDays(-72), TimeSpan.Zero).AddHours(12)
                 }
             }
         });
@@ -206,6 +206,7 @@ public class DbInitializer
         var flowMetric = _context.Metrics
             .Include(metrics => metrics.Values)
             .First(m => m.Name == "Flow");
+        var todayAtTwelve = new DateTimeOffset(DateTimeOffset.UtcNow.Date, TimeSpan.Zero).AddHours(12);
         
         
         for (var i = 0; i < amount; i++)
@@ -228,7 +229,7 @@ public class DbInitializer
                         MetricValueId = flowMetric.Values.Count > 0 
                             ? flowMetric.Values.ToArray()[random.Next(0, flowMetric.Values.Count - 1)].Id
                             : null, // Pick a random value
-                        CreatedAt = DateTimeOffset.UtcNow.AddDays(-amount + i).AddHours(-i)
+                        CreatedAt =  new DateTimeOffset(DateTimeOffset.UtcNow.Date.AddDays(-amount + i), TimeSpan.Zero).AddHours(12)
                     }
                 }
             });
