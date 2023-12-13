@@ -8,7 +8,7 @@
     </div>
 
     <!-- Period -->
-    <div class="collapse collapse-arrow bg-base-100 shadow">
+    <div *ngIf="!isLastLoggedFlowDate()" class="collapse collapse-arrow bg-base-100 shadow">
       <input type="radio" name="metrics-accordion" checked="checked"/>
       <div class="collapse-title text-xl font-medium bg-primary">
         Period
