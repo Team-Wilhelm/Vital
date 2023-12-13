@@ -49,7 +49,7 @@ public class MetricTests(VitalApiFactory vaf) : TestBase(vaf)
         // Arrange
         var user = await _dbContext.Users.FirstAsync(u => u.Email == "user@application");
         var date = DateTimeOffset.UtcNow.AddDays(-2).ToString("yyyy-MM-ddTHH:mm:ssZ", CultureInfo.InvariantCulture);
-        var utcDate = DateTime.Parse(date, CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal);
+        var utcDate = DateTimeOffset.Parse(date, CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal);
 
         var expected = _dbContext.CalendarDayMetric
             .Include(cdm => cdm.Metrics)
