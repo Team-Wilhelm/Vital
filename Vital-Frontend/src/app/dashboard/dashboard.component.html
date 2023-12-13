@@ -49,7 +49,7 @@ flex flex-col">
   <app-card cardTitle="Week overview"
             class="order-1 max-h-64 mb-3 overflow-x-hidden card shadow-lg
                     lg:order-none lg:col-span-4 lg:row-span-1 lg:mb-0 relative">
-    <app-current-cycle>
+    <app-current-cycle #currentCycleComponent>
     </app-current-cycle>
     <button class="text-gray-600 hover:text-black text-sm block lg:hidden absolute right-2 top-2"
             routerLink="/analytics">Go to analytics ↗

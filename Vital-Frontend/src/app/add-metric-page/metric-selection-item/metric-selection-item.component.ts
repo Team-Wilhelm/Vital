@@ -17,7 +17,7 @@ import {FormControl, FormGroup, Validators} from "@angular/forms";
 
 
               <!-- Time -->
-              <div class="flex items-center mr-3">
+              <div *ngIf="!isFlowMetric()" class="flex items-center mr-3">
                   <input type="number" class="input input-bordered max-w-[5rem] me-1"
                          [formControl]="timeFormGroup.controls.hour"
                          (input)="updateMetricTime()"
@@ -144,5 +144,9 @@ export class MetricSelectionItemComponent implements OnInit {
   addOrRemoveMetric(metric: MetricViewDto) {
     this.metricService.addOrRemoveMetric(metric);
     this.updateMetricTime();
+  }
+
+  isFlowMetric() {
+    return this.metric?.name === 'Flow';
   }
 }

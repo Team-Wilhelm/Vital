@@ -136,7 +136,7 @@ public class CycleService : ICycleService
             throw new NotFoundException("No current cycle found.");
         }
 
-        var today = DateTime.UtcNow.Date;
+        var today = new DateTimeOffset(DateTimeOffset.UtcNow.Date, TimeSpan.Zero).AddHours(12);
         var predictedPeriodDays = new List<DateTimeOffset>();
         var user = _userManager.Users.First(u => u.Id == userId);
         var cycleLength = user.CycleLength;
@@ -144,18 +144,24 @@ public class CycleService : ICycleService
         var cycleStartDay = currentCycle.StartDate.Date;
 
         //get latest period day for current cycle and add predicted days based on period length
-        var latestPeriodDay = currentCycle.CycleDays.Where(d => d.IsPeriod).OrderBy(d => d.Date).Last().Date;
+        var latestPeriodDay = currentCycle.CycleDays
+            .Where(d => d.IsPeriod)
+            .OrderBy(d => d.Date)
+            .Last().Date;
 
         //Only add predicted period days if latest period day is less than three cycles ago
-        if ((today - latestPeriodDay).TotalDays >= 3 * cycleLength) return predictedPeriodDays;
+        if (latestPeriodDay < today.AddDays(-cycleLength!.Value * 3))
+        {
+            return predictedPeriodDays;
+        }
         var periodElapsed = (latestPeriodDay - cycleStartDay).Days + 1;
         var difference = periodLength - periodElapsed;
 
         //Add predicted days after latest period day until cycle length is reached
-        for (var i = 0; i <= difference; i++)
+        for (var i = 0; i < difference; i++)
         {
             var dayToAdd = latestPeriodDay.AddDays(i + 1);
-            if (dayToAdd.Date > today)
+            if (latestPeriodDay.Date.Equals(dayToAdd.Date) == false)
             {
                 predictedPeriodDays.Add(dayToAdd);
             }

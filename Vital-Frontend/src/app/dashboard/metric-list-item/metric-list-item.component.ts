@@ -14,7 +14,7 @@ import {DeleteSectionService} from "../../services/deleteSection.service";
         <p>{{calendarDayMetric?.metricValue?.name}}</p>
       </div>
 
-      <div class="flex-col">
+      <div *ngIf="!isFlowMetric()" class="flex-col">
         <p>{{calendarDayMetric && calendarDayMetric!.createdAt.toLocaleTimeString()}}</p>
       </div>
 
@@ -99,5 +99,8 @@ export class MetricListItemComponent implements OnInit, OnDestroy {
       this.deleteHidden = true;
       this.deleteButtonDisabled = true;
     }
+  }
+  isFlowMetric() {
+    return this.calendarDayMetric?.metrics?.name === 'Flow';
   }
 }

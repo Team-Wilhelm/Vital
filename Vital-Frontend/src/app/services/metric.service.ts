@@ -126,7 +126,6 @@ export class MetricService implements OnDestroy {
       metricValueId: optionalValueId,
       createdAt: createdAt!
     });
-    console.log("Value selected: " + optionalValueId);
   }
 
   isMetricSelected(metricId: string) {
