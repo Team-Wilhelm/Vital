@@ -75,4 +75,9 @@ export class AddMetricPageComponent implements OnDestroy {
       await this.router.navigate(['/dashboard']);
     }
   }
+
+  isLastLoggedFlowDate() {
+    return this.lastLoggedFlowDate?.getDate() === this.dataService.clickedDate?.getDate();
+  }
+
 }
