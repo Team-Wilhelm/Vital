@@ -21,7 +21,7 @@ public abstract class DbInitializerHelper
         _roleManager = roleManager;
     }
     
-    protected void AddFlowCycleDays(int amount, Guid cycleId, Guid userId)
+    private void AddFlowCycleDays(int amount, Guid cycleId, Guid userId)
     {
         var flowMetric = _context.Metrics
             .Include(metrics => metrics.Values)
@@ -37,7 +37,7 @@ public abstract class DbInitializerHelper
             {
                 Id = calendarDayId,
                 UserId = userId,
-                Date = new DateTimeOffset(DateTimeOffset.UtcNow.AddDays(-amount + i).Date, TimeSpan.Zero).AddHours(12),
+                Date = new DateTimeOffset(DateTimeOffset.UtcNow.AddDays(-amount + i + 1).Date, TimeSpan.Zero).AddHours(12),
                 CycleId = cycleId,
                 IsPeriod = true,
                 SelectedMetrics = new List<CalendarDayMetric>()
@@ -49,14 +49,14 @@ public abstract class DbInitializerHelper
                         MetricValueId = flowMetric.Values.Count > 0 
                             ? flowMetric.Values.ToArray()[random.Next(0, flowMetric.Values.Count - 1)].Id
                             : null, // Pick a random value
-                        CreatedAt =  new DateTimeOffset(DateTimeOffset.UtcNow.Date.AddDays(-amount + i), TimeSpan.Zero).AddHours(12)
+                        CreatedAt =  new DateTimeOffset(DateTimeOffset.UtcNow.Date.AddDays(-amount + i + 1), TimeSpan.Zero).AddHours(12)
                     }
                 }
             });
         }
     }
     
-    protected Metrics CreateMetric(string metricName, List<string>? values = null)
+    private Metrics CreateMetric(string metricName, List<string>? values = null)
     {
         var metric = new Metrics()
         {
@@ -228,7 +228,7 @@ public abstract class DbInitializerHelper
         {
             Id = Guid.Parse("EA2DCAC0-47C5-4406-BA1C-FA870EE5577E"),
             UserId = user2.Id,
-            StartDate = new DateTimeOffset(utcNow.AddDays(-2).Date, TimeSpan.Zero).AddHours(12)
+            StartDate = new DateTimeOffset(utcNow.AddDays(-1).Date, TimeSpan.Zero).AddHours(12)
         });
         AddFlowCycleDays(2, Guid.Parse("EA2DCAC0-47C5-4406-BA1C-FA870EE5577E"), user2.Id);
         
