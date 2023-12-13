@@ -1,22 +1,22 @@
-import {Component} from "@angular/core";
+import {Component, ViewEncapsulation} from "@angular/core";
 import {animate, state, style, transition, trigger} from '@angular/animations';
 
 @Component({
   selector: 'app-register',
   templateUrl: './auth.component.html',
+  styleUrls: ['./auth.component.css'],
   animations: [
     trigger('flipState', [
       state('front', style({
-        transform: 'rotateY(0)'
+        transform: 'rotateY(0deg)'
       })),
       state('back', style({
-        transform: 'rotateY(180deg)'
+        transform: 'rotateY(-180deg)'
       })),
-      transition('front => back', animate('400ms ease-out')),
-      transition('back => front', animate('400ms ease-in'))
+      transition('front => back', animate('500ms ease')),
+      transition('back => front', animate('500ms ease')),
     ])
-  ]
-
+  ],
 })
 export class AuthComponent {
 

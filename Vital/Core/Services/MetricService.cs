@@ -112,16 +112,25 @@ public class MetricService : IMetricService
             {
                 throw new BadRequestException("Cannot log metrics without a current cycle.");
             }
-            
-            var metricNames =
-                await _metricRepository.GetMetricNamesByIds(metrics.Select(m => m.MetricsId)
-                    .ToList()); 
-            var isFlowMetric = metricNames.Values.Any(m => m.Contains("Flow"));
 
+            var metricNames = await _metricRepository.GetMetricNamesByIds(metrics.Select(m => m.MetricsId).ToList());
+            var flowMetricId = metricNames.FirstOrDefault(m => m.Value.Contains("Flow")).Key;
+
+            if (metrics.Select(m => m.MetricsId == flowMetricId).Count() > 1)
+            {
+                throw new BadRequestException("Cannot log more than one 'Flow' metric per day.");
+            }
+
+            var isFlowMetric = flowMetricId != Guid.Empty;
+
+            var createdAtTwelve = new DateTimeOffset(date.UtcDateTime.Date, TimeSpan.Zero).AddHours(12);
+            metrics.Where(m => m.MetricsId == flowMetricId)
+                .ToList().ForEach(m => m.CreatedAt = createdAtTwelve);
+            
             // Saving data for the current cycle
             if (cycle is not null && cycle.Id == currentCycle.Id)
             {
-                await HandleCurrentCycle(userId, metrics, date, cycle, isFlowMetric);
+                await SaveMetricsForACalendarDay(userId, date, cycle.Id, isFlowMetric, metrics);
             }
 
             else if (cycle is not null)
@@ -159,10 +168,6 @@ public class MetricService : IMetricService
                     // Update the start of following cycle
                     await UpdateCycle(followingCycle.Id, userId, date, followingCycle.EndDate);
 
-                    // If the following cycle contains any metrics, which now belong to the new cycle, update their cycle id
-                    await _calendarDayRepository.UpdateCycleIds(followingCycle.Id, followingCycle.Id, date,
-                        followingCycle.EndDate ?? DateTimeOffset.UtcNow);
-
                     // Update the end of the retrieved cycle
                     await UpdateCycle(cycle.Id, userId, cycle.StartDate, date.AddDays(-1));
                 }
@@ -182,13 +187,7 @@ public class MetricService : IMetricService
             }
         }
 
-        var calendarDay = await GetOrCreateCalendarDay(userId, date, cycle.Id);
-        if (isFlowMetric)
-        {
-            await SetIsPeriodOnCalendarDay(calendarDay);
-        }
-
-        await _metricRepository.SaveMetrics(calendarDay.Id, metrics.Where(m => m.CreatedAt == date).ToList());
+        await SaveMetricsForACalendarDay(userId, date, cycle.Id, isFlowMetric, metrics);
     }
 
     private async Task HandleNoHistoricCycle(Guid userId, List<MetricRegisterMetricDto> metrics, DateTimeOffset date, bool isFlowMetric)
@@ -219,24 +218,7 @@ public class MetricService : IMetricService
                 cycle.EndDate!.Value);
         }
 
-        var calendarDay = await GetOrCreateCalendarDay(userId, date, cycle.Id);
-        if (isFlowMetric)
-        {
-            await SetIsPeriodOnCalendarDay(calendarDay);
-        }
-
-        await _metricRepository.SaveMetrics(calendarDay.Id, metrics.Where(m => m.CreatedAt == date).ToList());
-    }
-
-    private async Task HandleCurrentCycle(Guid userId, List<MetricRegisterMetricDto> metrics, DateTimeOffset date, Cycle cycle, bool isFlowMetric)
-    {
-        var calendarDay = await GetOrCreateCalendarDay(userId, date, cycle.Id);
-        if (isFlowMetric)
-        {
-            await SetIsPeriodOnCalendarDay(calendarDay);
-        }
-
-        await _metricRepository.SaveMetrics(calendarDay.Id, metrics.Where(m => m.CreatedAt == date).ToList());
+        await SaveMetricsForACalendarDay(userId, date, cycle.Id, isFlowMetric, metrics);
     }
 
     private async Task UpdateCycle(Guid cycleId, Guid userId, DateTimeOffset startDate, DateTimeOffset? endDate) =>
@@ -345,5 +327,31 @@ public class MetricService : IMetricService
             default:
                 return null;
         }
+    }
+
+    /// <summary>
+    /// This method gets or creates a calendar day, then checks if the metric being saved is 'Flow' and if so, marks it as a period day.
+    /// </summary>
+    /// <param name="userId"></param>
+    /// <param name="date"></param>
+    /// <param name="cycleId"></param>
+    /// <param name="isFlowMetric"></param>
+    /// <param name="metrics"></param>
+    /// <exception cref="BadRequestException">If a flow metric is being saved for a day which already contains flow, a BadRequestException will be thrown.</exception>
+    private async Task SaveMetricsForACalendarDay(Guid userId, DateTimeOffset date, Guid cycleId, bool isFlowMetric, List<MetricRegisterMetricDto> metrics)
+    {
+        var calendarDay = await GetOrCreateCalendarDay(userId, date, cycleId);
+        if (calendarDay is CycleDay { IsPeriod: true } && isFlowMetric)
+        {
+            throw new BadRequestException("Cannot log more than one 'Flow' metric per day.");
+        }
+        
+        if (isFlowMetric)
+        {
+            await SetIsPeriodOnCalendarDay(calendarDay);
+        }
+
+        var metricsToSaveForDate = metrics.Where(m => m.CreatedAt.Date == date.Date).ToList();
+        await _metricRepository.SaveMetrics(calendarDay.Id, metricsToSaveForDate);
     }
 }

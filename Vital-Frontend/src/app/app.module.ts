@@ -35,7 +35,7 @@ import AccountService from "./services/account.service";
 import {ForgotPasswordComponent} from "./auth/forgot-password/forgot-password.component";
 import {ResetPasswordComponent} from "./auth/reset-password/reset-password.component";
 import {VerifyEmailComponent} from "./auth/verify-email/verify-email.component";
-import {ActivatedRoute, ActivatedRouteSnapshot} from "@angular/router";
+import {AuthCardComponent} from "./card/auth-card.component";
 
 @NgModule({
   declarations: [
@@ -62,19 +62,20 @@ import {ActivatedRoute, ActivatedRouteSnapshot} from "@angular/router";
     ApplicationStatCardComponent,
     ForgotPasswordComponent,
     ResetPasswordComponent,
-    VerifyEmailComponent
+    VerifyEmailComponent,
+    AuthCardComponent
   ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    NgOptimizedImage,
-    HttpClientModule,
-    ReactiveFormsModule,
-    FullCalendarModule,
-    FormsModule,
-    NgOptimizedImage,
-    BrowserAnimationsModule
-  ],
+    imports: [
+        BrowserModule,
+        AppRoutingModule,
+        NgOptimizedImage,
+        HttpClientModule,
+        ReactiveFormsModule,
+        FullCalendarModule,
+        FormsModule,
+        NgOptimizedImage,
+      BrowserAnimationsModule
+    ],
   providers: [
     TokenService,
     AccountService,
