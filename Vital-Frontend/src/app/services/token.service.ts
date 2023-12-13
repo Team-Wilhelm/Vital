@@ -48,7 +48,6 @@ export class TokenService {
     }
   }
 
-  //TODO: try catch and user feedback
   public async register(registerDto: RegisterDto) {
     await this.httpService.post('/identity/auth/register', registerDto, 'Confirm your email')
   }
