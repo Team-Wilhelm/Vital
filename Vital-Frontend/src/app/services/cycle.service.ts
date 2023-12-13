@@ -19,7 +19,8 @@ export class CycleService {
 
   async getPredictedPeriod() {
     this.predictedPeriod = await firstValueFrom(this.httpClient.get<Date[]>(environment.baseUrl + '/cycle/predicted-period'));
-    this.predictedPeriod = this.predictedPeriod.map(date => new Date(date)).filter(date => date >= new Date());
+    const today = new Date(new Date().setHours(0, 0, 0, 0));
+    this.predictedPeriod = this.predictedPeriod.map(date => new Date(date)).filter(date => date >= today);
   }
 
   async getAnalytics(numberOfCycles: number) {
