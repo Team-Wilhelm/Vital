@@ -136,7 +136,7 @@ public class CycleService : ICycleService
             throw new NotFoundException("No current cycle found.");
         }
 
-        var today = DateTime.UtcNow.Date;
+        var today = new DateTimeOffset(DateTimeOffset.UtcNow.Date, TimeSpan.Zero).AddHours(12);
         var predictedPeriodDays = new List<DateTimeOffset>();
         var user = _userManager.Users.First(u => u.Id == userId);
         var cycleLength = user.CycleLength;
@@ -144,7 +144,10 @@ public class CycleService : ICycleService
         var cycleStartDay = currentCycle.StartDate.Date;
 
         //get latest period day for current cycle and add predicted days based on period length
-        var latestPeriodDay = currentCycle.CycleDays.Where(d => d.IsPeriod).OrderBy(d => d.Date).Last().Date;
+        var latestPeriodDay = currentCycle.CycleDays
+            .Where(d => d.IsPeriod)
+            .OrderBy(d => d.Date)
+            .Last().Date;
 
         //Only add predicted period days if latest period day is less than three cycles ago
         if (latestPeriodDay < today.AddDays(-cycleLength!.Value * 3))

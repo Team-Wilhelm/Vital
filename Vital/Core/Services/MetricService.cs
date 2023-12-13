@@ -113,37 +113,37 @@ public class MetricService : IMetricService
                 throw new BadRequestException("Cannot log metrics without a current cycle.");
             }
 
-            var metricNames = await _metricRepository.GetMetricNamesByIds(metrics.Select(m => m.MetricsId).ToList());
+            var metricsForDate = metrics.Where(m => m.CreatedAt.Date == date.Date).ToList();
+            var metricNames = await _metricRepository.GetMetricNamesByIds(metricsForDate.Select(m => m.MetricsId).ToList());
             var flowMetricId = metricNames.FirstOrDefault(m => m.Value.Contains("Flow")).Key;
-
-            if (metrics.Select(m => m.MetricsId == flowMetricId).Count() > 1)
+            
+            if (metricsForDate.Select(m => m.MetricsId == flowMetricId).Count() > 1)
             {
                 throw new BadRequestException("Cannot log more than one 'Flow' metric per day.");
             }
 
             var isFlowMetric = flowMetricId != Guid.Empty;
-
             var createdAtTwelve = new DateTimeOffset(date.UtcDateTime.Date, TimeSpan.Zero).AddHours(12);
-            metrics.Where(m => m.MetricsId == flowMetricId)
+            metricsForDate.Where(m => m.MetricsId == flowMetricId)
                 .ToList().ForEach(m => m.CreatedAt = createdAtTwelve);
             
             // Saving data for the current cycle
             if (cycle is not null && cycle.Id == currentCycle.Id)
             {
-                await SaveMetricsForACalendarDay(userId, date, cycle.Id, isFlowMetric, metrics);
+                await SaveMetricsForACalendarDay(userId, date, cycle.Id, isFlowMetric, metricsForDate);
             }
 
             else if (cycle is not null)
             {
                 // If the cycle is not null, but it's not the current cycle, then we need to check if the metric being saved is 'Flow' and if so, 
                 // check if the metric's date is more than 7 days from the retrieved cycle's last 'Flow' metric date, which should create a new cycle
-                await HandleExistingHistoricCycle(userId, metrics, isFlowMetric, cycle, date);
+                await HandleExistingHistoricCycle(userId, metricsForDate, isFlowMetric, cycle, date);
             } 
             
             else
             {
                 // This case means there is no historic cycle (old enough to contain the logged date), so a new one needs to be created from the metric date up until the following cycle's start date
-                await HandleNoHistoricCycle(userId, metrics, date, isFlowMetric);
+                await HandleNoHistoricCycle(userId, metricsForDate, date, isFlowMetric);
             }
         }
     }
@@ -351,7 +351,6 @@ public class MetricService : IMetricService
             await SetIsPeriodOnCalendarDay(calendarDay);
         }
 
-        var metricsToSaveForDate = metrics.Where(m => m.CreatedAt.Date == date.Date).ToList();
-        await _metricRepository.SaveMetrics(calendarDay.Id, metricsToSaveForDate);
+        await _metricRepository.SaveMetrics(calendarDay.Id, metrics);
     }
 }
