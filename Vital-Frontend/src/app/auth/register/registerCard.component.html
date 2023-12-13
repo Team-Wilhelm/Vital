@@ -65,9 +65,9 @@
      [hidden]="!(registerForm.invalid && registerForm.controls.email.valid && registerForm.controls.password.valid)">
     Passwords do not match.</p>
 
-  <!-- Register button -->
+  <!-- Sign up button -->
   <a href="/forgot-password" class="text-accent self-end mb-1">Forgot password?</a>
-  <button class="btn btn-accent" (click)="register()">Sign Up</button>
+  <button class="btn btn-accent" (click)="register()" [disabled]="registerForm.invalid">Sign Up</button>
   <p class="text-center">Already have an account? <a href="javascript:void(0)" (click)="redirectToLogin()"
                                                      class="text-accent">Login</a></p>
 </auth-card>
