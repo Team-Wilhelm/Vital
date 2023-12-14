@@ -91,7 +91,7 @@ export class AnalyticsComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     await this.createChart(3);
-    this.periodCycleStats = await this.cycleService.getUserStats();
+    this.periodCycleStats = await this.cycleService.getUserStats() ?? {} as PeriodCycleStatsDto;
   }
 
   getTotalCycleDays(cycleAnalytics: CycleAnalyticsDto[]) {
