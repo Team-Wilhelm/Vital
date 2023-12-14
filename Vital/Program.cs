@@ -6,6 +6,7 @@ using FluentValidation.AspNetCore;
 using Infrastructure.Data;
 using Infrastructure.Initialize;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -155,6 +156,8 @@ builder.Services.AddCors(options =>
                 .SetIsOriginAllowed(_ => true);
         });
 });
+
+builder.Services.Configure<PasswordHasherOptions>(opt => opt.IterationCount = 210_000);
 
 var app = builder.Build();
 
