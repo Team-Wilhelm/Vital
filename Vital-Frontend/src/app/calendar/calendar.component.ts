@@ -154,7 +154,6 @@ export class CalendarComponent implements AfterViewInit {
     this.eventList = [];
     await this.getPeriodDays();
     await this.getPredictedPeriodDays();
-    console.log(this.eventList);
   }
 }
 

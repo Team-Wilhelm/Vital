@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using System.Web;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Models.Dto.Identity;
@@ -134,4 +135,29 @@ public class AuthController : BaseController
         var user = await _userManager.Users.FirstOrDefaultAsync(u => u.UserName == username);
         return Ok(user != null);
     }
+
+    [HttpGet("valid-token")]
+    public async Task<IActionResult> IsValidTokenForUser([FromQuery] string userId, [FromQuery] string token)
+    {
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user == null)
+        {
+            return Ok(false);
+        }
+
+        var isEmailTokenValid = await _userManager.VerifyUserTokenAsync(
+            user,
+            _userManager.Options.Tokens.EmailConfirmationTokenProvider,
+            "EmailConfirmation",
+            token);
+
+        var isResetTokenValid = await _userManager.VerifyUserTokenAsync(
+            user,
+            _userManager.Options.Tokens.PasswordResetTokenProvider,
+            "ResetPassword", 
+            token);
+
+        return Ok(isEmailTokenValid || isResetTokenValid);
+    }
+
 }

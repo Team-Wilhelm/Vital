@@ -17,8 +17,6 @@ import {animate, state, style, transition, trigger} from '@angular/animations';
       transition('back => front', animate('500ms ease')),
     ])
   ],
-  encapsulation: ViewEncapsulation.None
-
 })
 export class AuthComponent {
 

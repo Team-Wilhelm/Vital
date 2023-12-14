@@ -49,7 +49,7 @@ public class MetricTests(VitalApiFactory vaf) : TestBase(vaf)
         // Arrange
         var user = await _dbContext.Users.FirstAsync(u => u.Email == "user@application");
         var date = DateTimeOffset.UtcNow.AddDays(-2).ToString("yyyy-MM-ddTHH:mm:ssZ", CultureInfo.InvariantCulture);
-        var utcDate = DateTime.Parse(date, CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal);
+        var utcDate = DateTimeOffset.Parse(date, CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal);
 
         var expected = _dbContext.CalendarDayMetric
             .Include(cdm => cdm.Metrics)
@@ -75,10 +75,11 @@ public class MetricTests(VitalApiFactory vaf) : TestBase(vaf)
     [Description("Logging flow should mark the day as a period day.")]
     public async Task Save_Flow_Marks_Day_As_Period_Day()
     {
+        var uniqueUserName = $"tempuser-{Guid.NewGuid()}@application";
         try
         {
             // Arrange
-            var user = await RegisterUserAndCreateCycle("temp@application");
+            var user = await RegisterUserAndCreateCycle(uniqueUserName);
             await AuthorizeUserAndSetHeaderAsync(user.Email!);
             var metricRegisterMetricDto = await GetRegisterMetricDtoFlow();
 
@@ -94,7 +95,7 @@ public class MetricTests(VitalApiFactory vaf) : TestBase(vaf)
             cycleDay.IsPeriod.Should().BeTrue();
         } finally
         {
-            await Cleanup("temp@application");
+            await Cleanup(uniqueUserName);
         }
     }
 
@@ -188,10 +189,11 @@ public class MetricTests(VitalApiFactory vaf) : TestBase(vaf)
     [Fact]
     public async Task SaveMetrics_Historic_Data_Success()
     {
+        var uniqueUserName = $"tempuser-{Guid.NewGuid()}@application";
         try
         {
             // Arrange
-            var user = await RegisterUserAndCreateCycle("temp@application");
+            var user = await RegisterUserAndCreateCycle(uniqueUserName);
             await AuthorizeUserAndSetHeaderAsync(user.Email!);
 
             // Add two historic cycles
@@ -233,17 +235,18 @@ public class MetricTests(VitalApiFactory vaf) : TestBase(vaf)
             cycles[^1].EndDate.Should().BeNull();
         } finally
         {
-            await Cleanup("temp@application");
+            await Cleanup(uniqueUserName);
         }
     }
 
     [Fact]
     public async Task SaveMetrics_No_Current_Cycle()
     {
+        var uniqueUserName = $"tempuser-{Guid.NewGuid()}@application";
         try
         {
-            await RegisterNewUserAndVerifyEmailAsync("temp@application");
-            await AuthorizeUserAndSetHeaderAsync("temp@application");
+            await RegisterNewUserAndVerifyEmailAsync(uniqueUserName);
+            await AuthorizeUserAndSetHeaderAsync(uniqueUserName);
 
             var registerMetricDto = await GetRegisterMetricDtoFlow();
             var response =
@@ -255,7 +258,7 @@ public class MetricTests(VitalApiFactory vaf) : TestBase(vaf)
             problemDetails?.Detail.Should().Contain("Cannot log metrics without a current cycle.");
         } finally
         {
-            await Cleanup("temp@application");
+            await Cleanup(uniqueUserName);
         }
     }
 
@@ -264,14 +267,15 @@ public class MetricTests(VitalApiFactory vaf) : TestBase(vaf)
         "If a user tries to log a flow within seven days of the start of another cycle, the cycle should be extended instead of creating a new very short cycle.")]
     public async Task Save_Flow_Within_Seven_Days_Of_Another_Cycle()
     {
+        var uniqueUserName = $"tempuser-{Guid.NewGuid()}@application";
         try
         {
             // Arrange
-            var user = await RegisterUserAndCreateCycle("temp@application");
+            var user = await RegisterUserAndCreateCycle(uniqueUserName);
             var cycle = await _dbContext.Cycles.FirstAsync(c => c.UserId == user.Id);
             var dateBeforeCurrentCycle = cycle.StartDate.AddDays(-7);
             var metricRegisterMetricDto = await GetRegisterMetricDtoFlow(dateBeforeCurrentCycle);
-            await AuthorizeUserAndSetHeaderAsync("temp@application");
+            await AuthorizeUserAndSetHeaderAsync(uniqueUserName);
 
             // Act
             var response =
@@ -289,7 +293,7 @@ public class MetricTests(VitalApiFactory vaf) : TestBase(vaf)
             updatedCycle.EndDate.Should().BeNull();
         } finally
         {
-            await Cleanup("temp@application");
+            await Cleanup(uniqueUserName);
         }
     }
 
@@ -298,46 +302,50 @@ public class MetricTests(VitalApiFactory vaf) : TestBase(vaf)
         "If a user tries to log a flow more than seven days before the start of another cycle, a new cycle should be created.")]
     public async Task Save_Flow_Eight_Days_Before_Another_Cycle()
     {
-        // Arrange
-        var user = await RegisterUserAndCreateCycle("temp@application");
-        var cycle = await _dbContext.Cycles.FirstAsync(c => c.UserId == user.Id);
-        var dateBeforeCurrentCycle = cycle.StartDate.AddDays(-20);
-        var metricRegisterMetricDto = await GetRegisterMetricDtoFlow(dateBeforeCurrentCycle);
-        await AuthorizeUserAndSetHeaderAsync("temp@application");
+        var uniqueUserName = $"tempuser-{Guid.NewGuid()}@application";
+        try
+        {
+            // Arrange
+            var user = await RegisterUserAndCreateCycle(uniqueUserName);
+            var cycle = await _dbContext.Cycles.FirstAsync(c => c.UserId == user.Id);
+            var dateBeforeCurrentCycle = cycle.StartDate.AddDays(-20);
+            var metricRegisterMetricDto = await GetRegisterMetricDtoFlow(dateBeforeCurrentCycle);
+            await AuthorizeUserAndSetHeaderAsync(uniqueUserName);
 
-        // Act
-        var response =
-            await _client.PostAsJsonAsync($"/Metric", new List<MetricRegisterMetricDto> { metricRegisterMetricDto });
-        _dbContext.ChangeTracker.Clear();
+            // Act
+            var response =
+                await _client.PostAsJsonAsync($"/Metric", new List<MetricRegisterMetricDto> { metricRegisterMetricDto });
+            _dbContext.ChangeTracker.Clear();
 
-        // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+            // Assert
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        // Check that a new cycle was created
-        (await _dbContext.Cycles.Where(c => c.UserId == user.Id).CountAsync()).Should().Be(2);
-        var newCycle = await _dbContext.Cycles.FirstAsync(c => c.UserId == user.Id && c.EndDate != null);
-        newCycle.StartDate.Date.Should().Be(dateBeforeCurrentCycle.Date);
-        newCycle.EndDate.Should().NotBeNull();
+            // Check that a new cycle was created
+            (await _dbContext.Cycles.Where(c => c.UserId == user.Id).CountAsync()).Should().Be(2);
+            var newCycle = await _dbContext.Cycles.FirstAsync(c => c.UserId == user.Id && c.EndDate != null);
+            newCycle.StartDate.Date.Should().Be(dateBeforeCurrentCycle.Date);
+            newCycle.EndDate.Should().NotBeNull();
 
-        // Check that current cycle was not changed
-        var currentCycle = await _dbContext.Cycles.FirstAsync(c => c.UserId == user.Id && c.EndDate == null);
-        currentCycle.StartDate.Date.Should().Be(cycle.StartDate.Date);
-        currentCycle.EndDate.Should().BeNull();
-
-        // Cleanup
-        await ClearToken();
-        await RemoveUserAsync("temp@application");
+            // Check that current cycle was not changed
+            var currentCycle = await _dbContext.Cycles.FirstAsync(c => c.UserId == user.Id && c.EndDate == null);
+            currentCycle.StartDate.Date.Should().Be(cycle.StartDate.Date);
+            currentCycle.EndDate.Should().BeNull();
+        } finally
+        {
+            await Cleanup(uniqueUserName);
+        }
     }
 
     [Fact]
     [Description("If a user logs a non-flow metric before an existing cycle, the following cycle should be extended.")]
     public async Task Logging_Cramps_Should_Extend_Following_Cycle()
     {
+        var uniqueUserName = $"tempuser-{Guid.NewGuid()}@application";
         try
         {
             // Arrange
-            var user = await RegisterUserAndCreateCycle("temp@application");
-            await AuthorizeUserAndSetHeaderAsync("temp@application");
+            var user = await RegisterUserAndCreateCycle(uniqueUserName);
+            await AuthorizeUserAndSetHeaderAsync(uniqueUserName);
             var cycle = await _dbContext.Cycles.FirstAsync(c => c.UserId == user.Id);
             var dateBeforeCurrentCycle = cycle.StartDate.AddDays(-7);
 
@@ -364,7 +372,7 @@ public class MetricTests(VitalApiFactory vaf) : TestBase(vaf)
             updatedCycle.EndDate.Should().BeNull();
         } finally
         {
-            await Cleanup("temp@application");
+            await Cleanup(uniqueUserName);
         }
     }
 
@@ -374,11 +382,12 @@ public class MetricTests(VitalApiFactory vaf) : TestBase(vaf)
         "a new cycle should be created and it should encapsulate the non-flow metric.")]
     public async Task Logging_Flow_Should_Update_Metric_Cycle_Link()
     {
+        var uniqueUserName = $"tempuser-{Guid.NewGuid()}@application";
         try
         {
             // Arrange
-            var user = await RegisterUserAndCreateCycle("temp@application");
-            await AuthorizeUserAndSetHeaderAsync("temp@application");
+            var user = await RegisterUserAndCreateCycle(uniqueUserName);
+            await AuthorizeUserAndSetHeaderAsync(uniqueUserName);
             var cycle = await _dbContext.Cycles.FirstAsync(c => c.UserId == user.Id);
             var crampsMetricLogDate = cycle.StartDate.AddDays(-7);
 
@@ -425,7 +434,7 @@ public class MetricTests(VitalApiFactory vaf) : TestBase(vaf)
             calendarDay.Cycle!.Id.Should().Be(newlyCreatedCycle.Id);
         } finally
         {
-            await Cleanup("temp@application");
+            await Cleanup(uniqueUserName);
         }
     }
 
@@ -485,12 +494,6 @@ public class MetricTests(VitalApiFactory vaf) : TestBase(vaf)
         await _dbContext.SaveChangesAsync();
         await _userManager.UpdateAsync(user);
         return user;
-    }
-
-    private async Task Cleanup(string email)
-    {
-        await ClearToken();
-        await RemoveUserAsync(email);
     }
 
     private async Task<List<Cycle>> CreateHistoricCycles(IReadOnlyList<DateTimeOffset> startDateList, Guid userId)

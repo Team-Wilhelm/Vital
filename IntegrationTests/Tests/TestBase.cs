@@ -71,4 +71,10 @@ public abstract class TestBase
         await _userManager.DeleteAsync(user);
         _dbContext.ChangeTracker.Clear();
     }
+    
+    protected async Task Cleanup(string email)
+    {
+        await RemoveUserAsync(email);
+        await ClearToken();
+    }
 }

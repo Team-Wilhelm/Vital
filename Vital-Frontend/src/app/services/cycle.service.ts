@@ -4,6 +4,7 @@ import {firstValueFrom} from "rxjs";
 import {environment} from "../../../environments/environment";
 import {Cycle} from "../interfaces/cycle.interface";
 import {CycleAnalyticsDto, PeriodCycleStatsDto} from "../interfaces/analytics.interface";
+import HttpService from "./http.service";
 
 @Injectable({
   providedIn: 'root'
@@ -13,17 +14,18 @@ export class CycleService {
   currentCycle: Cycle | undefined;
   predictedPeriod: Date[] = [];
 
-  constructor(private httpClient: HttpClient) {
+  constructor(private httpService: HttpService) {
     this.getPredictedPeriod().then();
   }
 
   async getPredictedPeriod() {
-    this.predictedPeriod = await firstValueFrom(this.httpClient.get<Date[]>(environment.baseUrl + '/cycle/predicted-period'));
-    this.predictedPeriod = this.predictedPeriod.map(date => new Date(date));
+    this.predictedPeriod = await this.httpService.get<Date[]>('/cycle/predicted-period') ?? [];
+    const today = new Date(new Date().setHours(0, 0, 0, 0));
+    this.predictedPeriod = this.predictedPeriod.map(date => new Date(date)).filter(date => date >= today);
   }
 
   async getAnalytics(numberOfCycles: number) {
-    const result = await firstValueFrom(this.httpClient.get<CycleAnalyticsDto[]>(environment.baseUrl + '/cycle/analytics/' + numberOfCycles));
+    const result = await this.httpService.get<CycleAnalyticsDto[]>('/cycle/analytics/' + numberOfCycles) ?? [];
     result.forEach(cycle => {
       cycle.startDate = new Date(cycle.startDate);
       cycle.endDate = cycle.endDate ? new Date(cycle.endDate) : new Date();
@@ -34,10 +36,10 @@ export class CycleService {
   }
 
   async getUserStats() {
-    return firstValueFrom(this.httpClient.get<PeriodCycleStatsDto>(environment.baseUrl + '/cycle/period-cycle-stats'));
+    return await this.httpService.get<PeriodCycleStatsDto>('/cycle/period-cycle-stats') ?? {} as PeriodCycleStatsDto;
   }
 
-  startNewCycle() {
-    return firstValueFrom(this.httpClient.post(environment.baseUrl + '/cycle', {}));
+  async startNewCycle() {
+    await this.httpService.post('/cycle', {});
   }
 }

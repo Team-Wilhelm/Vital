@@ -1,6 +1,7 @@
 ﻿using System.Net.Mime;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Models.Dto.Identity.Account;
 using Models.Exception;
 using Models.Identity;
@@ -37,7 +38,8 @@ public class AccountController : BaseController
             return BadRequest(ModelState);
         }
 
-        var user = await _userManager.FindByEmailAsync(dto.Email);
+        //var user = await _userManager.FindByEmailAsync(dto.Email);
+        var user = await _userManager.Users.FirstOrDefaultAsync(u => u.UserName == dto.Email);
 
         if (user is not null)
         {

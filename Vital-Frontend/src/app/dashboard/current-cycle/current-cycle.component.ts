@@ -2,6 +2,8 @@ import {Component, Input, OnInit} from '@angular/core';
 import {DatePipe} from "@angular/common";
 import {CycleService} from "../../services/cycle.service";
 import {MetricService} from "../../services/metric.service";
+import _default from "chart.js/dist/core/core.layouts";
+import update = _default.update;
 
 @Component({
   selector: 'app-current-cycle',
@@ -40,24 +42,17 @@ export class CurrentCycleComponent implements OnInit {
   }> = new Map();
   dateKeys: Date[] = [];
   periodDays: Date[] = [];
-  predictedPeriodDays: Date[] = [];
 
   constructor(private cycleService: CycleService, private metricService: MetricService, private datePipe: DatePipe) {
 
   }
 
   async ngOnInit() {
-    const originalToday = new Date(this.today);
-    const threeDaysAgo = new Date(originalToday.setDate(originalToday.getDate() - 3));
-    const threeDaysHence = new Date(originalToday.setDate(originalToday.getDate() + 6));
-
-    this.periodDays = await this.metricService.getPeriodDays(threeDaysAgo, threeDaysHence);
-    this.predictedPeriodDays = this.cycleService.predictedPeriod;
-
-    this.initializeDateMap();
+    await this.updateComponent();
   }
 
   initializeDateMap() {
+    this.dateMap.clear();
     const interval = 3;
 
     for (let i = -interval; i <= interval; i++) {
@@ -67,7 +62,7 @@ export class CurrentCycleComponent implements OnInit {
       const conditionMapping = {
         isToday: this.isSameDate(date, this.today),
         isFutureDate: date > this.today,
-        isPredictedPeriod: this.predictedPeriodDays.some(pp => this.isSameDate(pp, date)),
+        isPredictedPeriod: this.cycleService.predictedPeriod.some(pp => this.isSameDate(pp, date)),
         isActualPeriod: this.periodDays.some(p => this.isSameDate(p, date)),
       };
 
@@ -139,5 +134,14 @@ export class CurrentCycleComponent implements OnInit {
   dateString(date: Date): string {
     const dateFormat = 'dd/MM';
     return this.datePipe.transform(date, dateFormat) || '';
+  }
+
+  async updateComponent() {
+    const originalToday = new Date(this.today);
+    const threeDaysAgo = new Date(originalToday.setDate(originalToday.getDate() - 3));
+    const threeDaysHence = new Date(originalToday.setDate(originalToday.getDate() + 6));
+
+    this.periodDays = await this.metricService.getPeriodDays(threeDaysAgo, threeDaysHence);
+    this.initializeDateMap();
   }
 }
