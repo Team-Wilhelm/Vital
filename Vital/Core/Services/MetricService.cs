@@ -97,56 +97,56 @@ public class MetricService : IMetricService
     /// <param name="userId"></param>
     /// <param name="metrics"></param>
     /// <exception cref="BadRequestException"></exception>
-    public async Task SaveMetrics(Guid userId, List<MetricRegisterMetricDto> metrics)
-    {
-        var dayList = metrics.Select(m => m.CreatedAt).Distinct().OrderBy(d => d).ToList();
-        
-        ThrowBadRequestIfFutureDate(dayList);
-        await ThrowBadRequestIfMetricsNotExist(metrics);
-
-        foreach (var date in dayList)
+        public async Task SaveMetrics(Guid userId, List<MetricRegisterMetricDto> metrics)
         {
-            var cycle = await _cycleRepository.GetCycleByDate(userId, date);
-            var currentCycle = await _cycleRepository.GetCurrentCycle(userId);
-            if (currentCycle is null)
-            {
-                throw new BadRequestException("Cannot log metrics without a current cycle.");
-            }
-
-            var metricsForDate = metrics.Where(m => m.CreatedAt.Date == date.Date).ToList();
-            var metricNames = await _metricRepository.GetMetricNamesByIds(metricsForDate.Select(m => m.MetricsId).ToList());
-            var flowMetricId = metricNames.FirstOrDefault(m => m.Value.Contains("Flow")).Key;
+            var dayList = metrics.Select(m => m.CreatedAt).Distinct().OrderBy(d => d).ToList();
             
-            if (metricsForDate.Select(m => m.MetricsId == flowMetricId).Count() > 1)
-            {
-                throw new BadRequestException("Cannot log more than one 'Flow' metric per day.");
-            }
+            ThrowBadRequestIfFutureDate(dayList);
+            await ThrowBadRequestIfMetricsNotExist(metrics);
 
-            var isFlowMetric = flowMetricId != Guid.Empty;
-            var createdAtTwelve = new DateTimeOffset(date.UtcDateTime.Date, TimeSpan.Zero).AddHours(12);
-            metricsForDate.Where(m => m.MetricsId == flowMetricId)
-                .ToList().ForEach(m => m.CreatedAt = createdAtTwelve);
-            
-            // Saving data for the current cycle
-            if (cycle is not null && cycle.Id == currentCycle.Id)
+            foreach (var date in dayList)
             {
-                await SaveMetricsForACalendarDay(userId, date, cycle.Id, isFlowMetric, metricsForDate);
-            }
+                var cycle = await _cycleRepository.GetCycleByDate(userId, date);
+                var currentCycle = await _cycleRepository.GetCurrentCycle(userId);
+                if (currentCycle is null)
+                {
+                    throw new BadRequestException("Cannot log metrics without a current cycle.");
+                }
 
-            else if (cycle is not null)
-            {
-                // If the cycle is not null, but it's not the current cycle, then we need to check if the metric being saved is 'Flow' and if so, 
-                // check if the metric's date is more than 7 days from the retrieved cycle's last 'Flow' metric date, which should create a new cycle
-                await HandleExistingHistoricCycle(userId, metricsForDate, isFlowMetric, cycle, date);
-            } 
-            
-            else
-            {
-                // This case means there is no historic cycle (old enough to contain the logged date), so a new one needs to be created from the metric date up until the following cycle's start date
-                await HandleNoHistoricCycle(userId, metricsForDate, date, isFlowMetric);
+                var metricsForDate = metrics.Where(m => m.CreatedAt.Date == date.Date).ToList();
+                var metricNames = await _metricRepository.GetMetricNamesByIds(metricsForDate.Select(m => m.MetricsId).ToList());
+                var flowMetricId = metricNames.FirstOrDefault(m => m.Value.Contains("Flow")).Key;
+                
+                if (metricsForDate.Select(m => m.MetricsId == flowMetricId).Count() > 1)
+                {
+                    throw new BadRequestException("Cannot log more than one 'Flow' metric per day.");
+                }
+
+                var isFlowMetric = flowMetricId != Guid.Empty;
+                var createdAtTwelve = new DateTimeOffset(date.UtcDateTime.Date, TimeSpan.Zero).AddHours(12);
+                metricsForDate.Where(m => m.MetricsId == flowMetricId)
+                    .ToList().ForEach(m => m.CreatedAt = createdAtTwelve);
+                
+                // Saving data for the current cycle
+                if (cycle is not null && cycle.Id == currentCycle.Id)
+                {
+                    await SaveMetricsForACalendarDay(userId, date, cycle.Id, isFlowMetric, metricsForDate);
+                }
+
+                else if (cycle is not null)
+                {
+                    // If the cycle is not null, but it's not the current cycle, then we need to check if the metric being saved is 'Flow' and if so, 
+                    // check if the metric's date is more than 7 days from the retrieved cycle's last 'Flow' metric date, which should create a new cycle
+                    await HandleExistingHistoricCycle(userId, metricsForDate, isFlowMetric, cycle, date);
+                } 
+                
+                else
+                {
+                    // This case means there is no historic cycle (old enough to contain the logged date), so a new one needs to be created from the metric date up until the following cycle's start date
+                    await HandleNoHistoricCycle(userId, metricsForDate, date, isFlowMetric);
+                }
             }
         }
-    }
 
     private async Task HandleExistingHistoricCycle(Guid userId, List<MetricRegisterMetricDto> metrics, bool isFlowMetric, Cycle cycle,
         DateTimeOffset date)

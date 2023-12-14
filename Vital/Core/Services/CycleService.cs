@@ -224,7 +224,7 @@ public class CycleService : ICycleService
 
         var cycleDays =
             (List<CycleDay>)await _calendarDayRepository.GetCycleDaysForSpecifiedPeriodAsync(userId, cycle.StartDate,
-                DateTimeOffset.UtcNow);
+                new DateTimeOffset(DateTimeOffset.UtcNow.Date, TimeSpan.Zero).AddHours(12));
         cycle.CycleDays = cycleDays;
 
         return cycle;
