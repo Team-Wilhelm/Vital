@@ -5,12 +5,13 @@ import {environment} from "../../../environments/environment";
 import {MetricRegisterMetricDto, MetricViewDto} from "../interfaces/dtos/metric.dto.interface";
 import {CalendarDay, CalendarDayMetric} from "../interfaces/day.interface";
 import {DataService} from "./data.service";
+import HttpService from "./http.service";
 
 @Injectable({
   providedIn: 'root'
 })
 export class MetricService implements OnDestroy {
-  private apiUrl = environment.baseUrl + '/metric';
+  private apiUrl = '/metric';
   private readonly subscription: Subscription | undefined;
 
   metricDeletedSource = new BehaviorSubject<boolean | null>(false);
@@ -26,7 +27,7 @@ export class MetricService implements OnDestroy {
   periodMetric: MetricViewDto | undefined;
   periodDays: Date[] = [];
 
-  constructor(private http: HttpClient, private dataService: DataService) {
+  constructor(private httpService: HttpService, private dataService: DataService) {
     this.getAllMetricsWithValues().then();
     this.getUsersMetric(this.clickedDate).then();
 
@@ -45,7 +46,7 @@ export class MetricService implements OnDestroy {
   }
 
   public async getAllMetricsWithValues(): Promise<MetricViewDto[]> {
-    const response = await firstValueFrom(this.http.get<MetricViewDto[]>(`${this.apiUrl}/values`));
+    const response = await this.httpService.get<MetricViewDto[]>(`${this.apiUrl}/values`) ?? {} as MetricViewDto[];
     this.allMetrics = (response).filter((metric) => metric.name !== "Flow");
     this.periodMetric = (response).filter((metric) => metric.name === "Flow")[0];
     return this.allMetrics;
@@ -64,7 +65,7 @@ export class MetricService implements OnDestroy {
 
     // Get the metrics for the date
     this.metricSelectionMap.clear();
-    const calendarDayArray = await firstValueFrom(this.http.get<CalendarDayMetric[]>(`${this.apiUrl}/${formattedDate}`));
+    const calendarDayArray = await this.httpService.get<CalendarDayMetric[]>(`${this.apiUrl}/${formattedDate}`) ?? {} as CalendarDayMetric[];
     calendarDayArray.forEach((calendarDay) => {
       calendarDay.createdAt = new Date(calendarDay.createdAt);
     });
@@ -72,8 +73,7 @@ export class MetricService implements OnDestroy {
   }
 
   public async getMetricsForCalendarDays(startDate: Date, endDate: Date): Promise<CalendarDay[]> {
-    const call = this.http.get<CalendarDay[]>(`${this.apiUrl}/calendar?fromDate=${startDate.toISOString()}&toDate=${endDate.toISOString()}`);
-    return await firstValueFrom(call);
+    return await this.httpService.get<CalendarDay[]>(`${this.apiUrl}/calendar?fromDate=${startDate.toISOString()}&toDate=${endDate.toISOString()}`) ?? {} as CalendarDay[];
   }
 
   addOrRemoveMetric(metric: MetricViewDto) {
@@ -159,11 +159,9 @@ export class MetricService implements OnDestroy {
     });
 
     try {
-      this.http.post(`${this.apiUrl}`, metricsToPost)
-        .subscribe(() => {
-          this.getUsersMetric(this.clickedDate);
-          this.setNewMetricAdded(true);
-        });
+      await this.httpService.post(`${this.apiUrl}`, metricsToPost);
+      await this.getUsersMetric(this.clickedDate);
+      this.setNewMetricAdded(true);
       return true;
     } catch (e) {
       return false;
@@ -171,8 +169,7 @@ export class MetricService implements OnDestroy {
   }
 
   async getPeriodDays(previousMonthFirstDay: Date, nextMonthLastDay: Date) {
-    const call = this.http.get<Date[]>(`${this.apiUrl}/period?fromDate=${previousMonthFirstDay.toISOString()}&toDate=${nextMonthLastDay.toISOString()}`);
-    let result = await firstValueFrom(call);
+    let result = await this.httpService.get<Date[]>(`${this.apiUrl}/period?fromDate=${previousMonthFirstDay.toISOString()}&toDate=${nextMonthLastDay.toISOString()}`) ?? {} as Date[];
 
     this.periodDays = result.map(date => new Date(date));
     this.periodDays.sort((a, b) => a.getTime() - b.getTime()); // Sort the dates in ascending order
@@ -182,7 +179,7 @@ export class MetricService implements OnDestroy {
 
   async deleteMetric(calendarDayMetricId: string) {
     const calendarDayMetric = this.loggedMetrics.filter((metric) => metric.id === calendarDayMetricId)[0];
-    await firstValueFrom(this.http.delete(`${this.apiUrl}/${calendarDayMetric.id}`));
+    await this.httpService.delete(`${this.apiUrl}/${calendarDayMetric.id}`);
     await this.getUsersMetric(this.clickedDate); // Refresh the metrics
 
     const today = new Date();

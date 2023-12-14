@@ -1,12 +1,8 @@
 import {Injectable} from "@angular/core";
-import {environment} from "../../../environments/environment";
-import {firstValueFrom} from "rxjs";
 import {InitialLoginGetDto, InitialLoginPostDto} from "../interfaces/dtos/user.dto.interface";
-import {HttpClient} from "@angular/common/http";
 import {ResetPasswordDto} from "../interfaces/account/resetPasswordDto.interface";
 import {ForgotPasswordDto} from "../interfaces/account/forgotPasswordDto.interface";
 import {VerifyRequestDto} from "../interfaces/account/verifyEmailDto.interface";
-import {ToastService} from "./toast.service";
 import {Router} from "@angular/router";
 import HttpService from "./http.service";
 import {ChangePasswordDto} from "../interfaces/account/ChangePasswordDto";
@@ -15,26 +11,22 @@ import {ChangePasswordDto} from "../interfaces/account/ChangePasswordDto";
   providedIn: 'root'
 })
 export default class AccountService {
-  constructor(private httpClient: HttpClient, private toastService: ToastService, private router: Router, private httpService: HttpService) {
+  constructor(private router: Router, private httpService: HttpService) {
   }
 
   public async setInitialLoginData(loginData: InitialLoginPostDto): Promise<void> {
-    try {
-      const request = this.httpClient.put(environment.baseUrl + '/cycle/initial-login', loginData);
-      await firstValueFrom(request);
-    } catch (e) {
-      throw new Error('Could not set initial login data.');
-    }
+    await this.httpService.put('/cycle/initial-login', loginData, 'Initial login data set');
   }
 
-  public async checkIfUsernameIsTaken(username: string): Promise<boolean> {
-    const request = this.httpClient.get<boolean>(environment.baseUrl + '/identity/auth/username-taken/' + username);
-    return await firstValueFrom(request);
+  public async checkIfUsernameIsTaken(username: string){
+    return await this.httpService.get<boolean>('/identity/auth/username-taken/' + username);
   }
 
   public async isFirstLogin() {
-    const request = this.httpClient.get<InitialLoginGetDto>(environment.baseUrl + '/cycle/initial-login');
-    const response = await firstValueFrom(request);
+    const response = await this.httpService.get<InitialLoginGetDto>('/cycle/initial-login');
+    if(response === undefined || response === null){
+      return false;
+    }
     return response.periodLength === null || response.cycleLength === null;
   }
 
@@ -62,7 +54,6 @@ export default class AccountService {
 
   public async isValidTokenForUser(dto: VerifyRequestDto): Promise<boolean> {
     const encodedToken = encodeURIComponent(dto.token);
-    const url = `${environment.baseUrl}/Identity/Auth/valid-token?userId=${dto.userId}&token=${encodedToken}`;
-    return await firstValueFrom(this.httpClient.get<boolean>(url));
+    return await this.httpService.get<boolean>(`$/Identity/Auth/valid-token?userId=${dto.userId}&token=${encodedToken}`) ?? false;
   }
 }
