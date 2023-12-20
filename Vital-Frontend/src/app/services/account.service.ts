@@ -54,6 +54,6 @@ export default class AccountService {
 
   public async isValidTokenForUser(dto: VerifyRequestDto): Promise<boolean> {
     const encodedToken = encodeURIComponent(dto.token);
-    return await this.httpService.get<boolean>(`$/Identity/Auth/valid-token?userId=${dto.userId}&token=${encodedToken}`) ?? false;
+    return await this.httpService.get<boolean>(`/Identity/Auth/valid-token?userId=${dto.userId}&token=${encodedToken}`) ?? false;
   }
 }
