@@ -22,7 +22,7 @@
     "@fullcalendar/angular": "^6.1.9",
     "@fullcalendar/core": "^6.1.9",
     "@fullcalendar/daygrid": "^6.1.9",
-    "@fullcalendar/interaction": "^6.1.9",
+    "@fullcalendar/interaction": "^6.1.10",
     "@fullcalendar/multimonth": "^6.1.9",
     "@fullcalendar/timegrid": "^6.1.9",
     "chart.js": "^4.4.0",
