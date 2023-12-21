@@ -38,10 +38,6 @@ export class RegisterCardComponent implements OnDestroy {
   constructor(private tokenService: TokenService, private accountService: AccountService, private router: Router) {
     this.subscribeToPasswordChanges();
     this.subscribeToEmailChanges();
-
-    this.registerForm.controls.email.setValue('1julka1il@gmail.com');
-    this.registerForm.controls.password.setValue('P@ssw0rd.+');
-    this.registerForm.controls.repeatPassword.setValue('P@ssw0rd.+');
   }
 
   ngOnDestroy(): void {

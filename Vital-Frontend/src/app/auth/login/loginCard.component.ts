@@ -19,8 +19,6 @@ export class LoginCardComponent {
   @Output() switchToRegister = new EventEmitter<void>();
 
   constructor(private tokenService: TokenService, private accountService: AccountService, private router: Router) {
-    this.loginForm.controls.email.setValue(environment.userEmailAddress);
-    this.loginForm.controls.password.setValue(environment.userPassword);
     this.subscribeToPasswordFieldChanged();
   }
 
