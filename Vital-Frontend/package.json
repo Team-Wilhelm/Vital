@@ -20,7 +20,7 @@
     "@angular/router": "^16.2.0",
     "@auth0/angular-jwt": "^5.2.0",
     "@fullcalendar/angular": "^6.1.9",
-    "@fullcalendar/core": "^6.1.9",
+    "@fullcalendar/core": "^6.1.10",
     "@fullcalendar/daygrid": "^6.1.9",
     "@fullcalendar/interaction": "^6.1.9",
     "@fullcalendar/multimonth": "^6.1.9",
